@@ -20,7 +20,7 @@ function visit(path = '/', storage = new Map(), blocked = false) {
   runInNewContext(source, { window, document, localStorage, URLSearchParams, Date });
   return { window, elements, storage };
 }
-for (const path of ['/', '/rengi-istanbul.html', '/rengi-antalya.html']) {
+for (const path of ['/', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-our-team.html']) {
   test(`${path}: direct, valid, lowercase and invalid URLs`, () => {
     const direct = visit(path);
     assert.equal(direct.window.getTurkLuxxReferral(), 'DIRECT');
@@ -65,7 +65,7 @@ test('AHMAD client attribution reaches validated lead email', () => {
   assert.match(createLeadEmail(lead, 'test-id', 'test-time').text, /Referral: AHMAD/);
 });
 test('All public landing pages load the shared referral guard', () => {
-  for (const page of ['index.html', 'rengi-istanbul.html', 'rengi-antalya.html']) {
+  for (const page of ['index.html', 'rengi-istanbul.html', 'rengi-antalya.html', 'meet-our-team.html']) {
     assert.match(readFileSync(new URL(`../${page}`, import.meta.url), 'utf8'), /<script src="js\/referral.js" defer><\/script>/);
   }
 });

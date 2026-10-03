@@ -1,0 +1,73 @@
+/* Editorial content only; header and footer retain the project-page components. */
+.team-main {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding: 64px 40px 0;
+    color: #212c6c;
+}
+.team-main * { box-sizing: border-box; min-width: 0; }
+.team-intro { padding-bottom: 56px; }
+.team-eyebrow {
+    margin: 0 0 20px;
+    color: #8c6b30;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    line-height: 1.6;
+}
+.team-intro h1 {
+    max-width: 22ch;
+    margin: 0 0 28px;
+    font: 500 clamp(38px, 4vw, 58px)/1.08 'Cormorant Garamond', Georgia, serif;
+}
+.team-intro-copy { max-width: 850px; }
+.team-intro-copy p,
+.team-body {
+    margin: 0 0 18px;
+    font-size: 16px;
+    line-height: 1.85;
+}
+.team-intro-copy p:last-child,
+.team-body:last-child { margin-bottom: 0; }
+.team-member {
+    display: grid;
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: clamp(32px, 5vw, 72px);
+    padding-block: 64px;
+    border-top: 1px solid #d4c8b0;
+}
+.team-member:nth-child(even) { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); }
+.team-member:nth-child(even) .team-portrait { grid-column: 2; grid-row: 1; }
+.team-member:nth-child(even) .team-biography { grid-column: 1; grid-row: 1; }
+.team-portrait {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    aspect-ratio: 4 / 5;
+    padding: 28px;
+    border: 1px solid #d4c8b0;
+    background: #eee9df;
+    color: #8c6b30;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.7;
+}
+.team-portrait-initials { font: 500 clamp(64px, 7vw, 100px)/1 'Cormorant Garamond', Georgia, serif; }
+.team-biography h2 {
+    margin: 0 0 12px;
+    font: 500 clamp(34px, 3vw, 44px)/1.12 'Cormorant Garamond', Georgia, serif;
+}
+.team-title { margin: 0 0 12px; font-size: 16px; font-weight: 700; line-height: 1.6; }
+.team-specialization { margin: 0 0 24px; color: #8c6b30; font-size: 14px; line-height: 1.8; }
+@media (max-width: 767px) {
+    .team-main { padding: 40px 24px 0; }
+    .team-intro { padding-bottom: 40px; }
+    .team-member,
+    .team-member:nth-child(even) { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 40px; }
+    .team-member:nth-child(even) .team-portrait,
+    .team-member:nth-child(even) .team-biography { grid-column: auto; grid-row: auto; }
+    .team-portrait { width: 100%; max-width: 400px; justify-self: center; }
+}

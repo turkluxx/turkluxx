@@ -108,5 +108,7 @@
     "locales/es.json",
     "locales/ar.json",
     "locales/tr.json",
-    "locales/nl.json"
+    "locales/nl.json",
+    "meet-our-team.html",
+    "css/team.css"
 ]

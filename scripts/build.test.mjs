@@ -32,11 +32,13 @@ function fixture(t) {
 test('bundles production pages, copies only allowlisted assets, and cleans stale output', t => {
   const f = fixture(t);
   f.put('rengi-antalya.html', readFileSync(join(f.root, 'index.html'), 'utf8'));
+  f.put('meet-our-team.html', readFileSync(join(f.root, 'index.html'), 'utf8'));
+  f.put('scripts/public-files.json', JSON.stringify([...f.files, 'meet-our-team.html']));
   for (const file of ['.git/objects/pack/secret.pack', 'node_modules/private.js', 'assets/README.md', 'assets/unlisted.png', 'dist/.git/old', 'dist/stale.html']) f.put(file, 'private');
   const result = f.run();
   assert.equal(result.status, 0, result.stderr);
   assert.deepEqual(readFileSync(join(f.root, 'dist/img/villa/floor.jpg')), readFileSync(join(f.root, 'img/villa/floor.jpg')));
-  for (const file of ['index.html', 'rengi-istanbul.html', 'rengi-antalya.html']) {
+  for (const file of ['index.html', 'rengi-istanbul.html', 'rengi-antalya.html', 'meet-our-team.html']) {
     const html = readFileSync(join(f.root, 'dist', file), 'utf8');
     assert.match(html, /css\/turkluxx.min.css/); assert.match(html, /js\/turkluxx.min.js/);
     assert.doesNotMatch(html, /css\/site.css|js\/i18n.js/);
@@ -44,7 +46,7 @@ test('bundles production pages, copies only allowlisted assets, and cleans stale
   assert.match(readFileSync(join(f.root, 'dist/css/turkluxx.min.css'), 'utf8'), /font-weight:600/);
   assert.match(readFileSync(join(f.root, 'dist/js/turkluxx.min.js'), 'utf8'), /Русский العربية Türkçe/);
   assert.equal(existsSync(join(f.root, 'dist/css/site.css')), false);
-  assert.deepEqual(readdirSync(join(f.root, 'dist')).sort(), ['css', 'img', 'index.html', 'js', 'rengi-antalya.html', 'rengi-istanbul.html']);
+  assert.deepEqual(readdirSync(join(f.root, 'dist')).sort(), ['css', 'img', 'index.html', 'js', 'meet-our-team.html', 'rengi-antalya.html', 'rengi-istanbul.html']);
   assert.equal(f.run().status, 0);
 });
 
