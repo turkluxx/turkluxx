@@ -1232,7 +1232,7 @@
 .turkluxx-roi-modal .turkluxx-roi-return {
     margin: 24px 0 32px;
     color: #f3d992;
-    font-size: clamp(22px, 3vw, 32px);
+    font-size: clamp(14.6667px, 2vw, 21.3333px);
     font-weight: 600;
     line-height: 1.35;
     letter-spacing: .025em;
@@ -1272,6 +1272,9 @@
     margin-top: 6px;
 }
 @media (min-width: 768px) {
+    .turkluxx-roi-opportunity h3 {
+        font-size: clamp(20px, 2vw, 28px);
+    }
     .turkluxx-roi-modal #turkluxx-roi-title {
         max-width: none;
         font-size: clamp(20px, 2vw, 28px);

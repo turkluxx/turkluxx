@@ -990,6 +990,28 @@
     letter-spacing: .08em;
 }
 .rengi-roi-points dd { margin: 0; font-size: 16px; line-height: 1.65; }
+.rengi-roi-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+    gap: 12px;
+    direction: ltr;
+}
+.rengi-page .rengi-roi-actions .rengi-roi-cta {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 14px 12px;
+    font-size: 14px;
+}
+html[dir="rtl"] .rengi-roi-actions .rengi-roi-cta { direction: rtl; }
+@media (max-width: 767px) {
+    .rengi-roi-actions { grid-template-columns: minmax(0, 1fr); }
+    .rengi-page .rengi-roi-actions .rengi-roi-cta { font-size: 16px; }
+}
+html[dir="rtl"] .rengi-roi-learn > [aria-hidden="true"] { transform: scaleX(-1); }
 .rengi-roi .rengi-roi-cta {
     min-width: 0;
     max-width: 100%;

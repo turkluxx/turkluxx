@@ -105,11 +105,36 @@
     if (active) active[1].close(opener => callback.open(opener));
     else callback.open(button);
   }));
+  // Project pages use the homepage's single ROI markup source and controller.
+  let roiLoading;
+  async function informationFor(button) {
+    const id = button.getAttribute('aria-controls');
+    if (id === 'turkluxx-roi' && !document.getElementById(id)) {
+      if (!roiLoading) roiLoading = (async () => {
+        const response = await fetch('./', { credentials: 'same-origin' });
+        if (!response.ok) throw new Error('ROI information unavailable');
+        const source = new DOMParser().parseFromString(await response.text(), 'text/html');
+        const modal = source.getElementById(id);
+        if (!modal) throw new Error('ROI information missing');
+        document.body.append(document.importNode(modal, true));
+        const sharedModal = document.getElementById(id);
+        informationModals.set(sharedModal, modalController(sharedModal));
+        await window.TurkLuxxI18n.ready;
+        sharedModal.querySelectorAll('[data-i18n]').forEach(element => {
+          window.TurkLuxxI18n.bind(element, element.dataset.i18n);
+        });
+      })().catch(error => { roiLoading = null; throw error; });
+      await roiLoading;
+    }
+    return informationModals.get(document.getElementById(id));
+  }
   document.querySelectorAll('.turkluxx-roi-trigger, .turkluxx-info-trigger').forEach(button => {
-    const information = informationModals.get(document.getElementById(button.getAttribute('aria-controls')));
-    button.addEventListener('click', event => {
+    button.addEventListener('click', async event => {
       event.preventDefault();
-      information?.open(button);
+      try {
+        const information = await informationFor(button);
+        information?.open(button);
+      } catch (error) { console.error(error); }
     });
     button.addEventListener('keydown', event => {
       if (event.key === ' ') {

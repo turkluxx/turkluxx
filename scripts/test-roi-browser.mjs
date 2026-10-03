@@ -91,6 +91,9 @@ try {
             assert.equal(await evaluate('document.body.style.overflow'), 'hidden');
             assert.equal(await evaluate('dataLayer.filter(e=>e.event==="roi_popup_open").length'), eventCount + 1);
             assert.equal(await evaluate('document.activeElement.id'), 'turkluxx-roi-title', 'Initial focus');
+            const fontSizes = await evaluate(`(()=>{const size=s=>parseFloat(getComputedStyle(document.querySelector(s)).fontSize);return {title:size('#turkluxx-roi-title'),opportunity:size('#turkluxx-roi-opportunity-title'),roi:size('.turkluxx-roi-return')}})()`);
+            assert.equal(fontSizes.opportunity, fontSizes.title, 'ROI headings have identical font sizes');
+            assert.ok(Math.abs(fontSizes.roi - Math.min(32, Math.max(22, width * .03)) / 1.5) < .01, 'Potential ROI font reduced by 1.5');
             const content = await evaluate(`${roi}.querySelectorAll('[data-i18n]') && [...${roi}.querySelectorAll('[data-i18n]')].map(e=>({key:e.dataset.i18n,text:e.textContent.replace(/[\u2066-\u2069]/g,'')}))`);
             assert.equal(content.filter(item => item.key.startsWith('home.roi.')).length, 14);
             for (const item of content) assert.equal(item.text, catalogs[code][item.key], code + ': ' + item.key);
@@ -149,6 +152,49 @@ try {
             assert.equal(await evaluate('document.body.getAttribute("style") || ""'), originalStyle);
             assert.equal(await evaluate('scrollY'), pageScroll);
             console.log(`${width}px ${code}: trigger, copy, RTL, focus, X/backdrop/Escape, scroll lock/restoration, reopening, analytics, callback and referral passed`);
+        }
+    }
+    for (const page of ['rengi-istanbul.html', 'rengi-antalya.html']) {
+        for (const width of [1440, 390]) {
+            await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 768 });
+            await send('Page.navigate', { url: `${origin}/${page}?lang=en` });
+            await until('document.readyState === "complete" && !!window.TurkLuxxI18n');
+            await evaluate('TurkLuxxI18n.ready');
+            for (const code of codes) {
+                await evaluate(`TurkLuxxI18n.setLanguage('${code}')`);
+                assert.equal(await evaluate('document.querySelector(".rengi-roi-learn [data-i18n]").textContent'), catalogs[code]['home.learn_more']);
+                const buttons = await evaluate(`(()=>{const box=s=>{const e=document.querySelector(s),r=e.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,height:r.height,width:r.width,background:getComputedStyle(e).backgroundColor}};return {learn:box('.rengi-roi-learn'),consult:box('.rengi-roi-actions .turkluxx-callback-trigger'),note:box('.rengi-roi-note')}})()`);
+                assert.equal(buttons.learn.background, buttons.consult.background, 'Matching button backgrounds');
+                assert.ok(buttons.note.y >= Math.max(buttons.learn.bottom, buttons.consult.bottom), 'Disclaimer below both buttons');
+                if (width >= 768) {
+                    assert.equal(buttons.learn.y, buttons.consult.y, 'Buttons aligned in one row');
+                    assert.equal(buttons.learn.height, buttons.consult.height, 'Equal button heights');
+                    assert.ok(buttons.learn.right < buttons.consult.x, 'Learn More on the left');
+                } else assert.ok(buttons.learn.bottom < buttons.consult.y, 'Mobile buttons stack');
+                for (const trigger of ['.turkluxx-sales-nav .turkluxx-roi-trigger', '.rengi-roi-learn']) {
+                    await evaluate(`document.querySelector('${trigger}').scrollIntoView({block:'center',behavior:'instant'})`);
+                    await pause(150);
+                    await click(trigger);
+                    await until(roi + '?.open');
+                    assert.equal(await evaluate('document.querySelectorAll("#turkluxx-roi").length'), 1, 'One shared ROI dialog');
+                    if (!await evaluate('!!window.roiTestInstance')) await evaluate(`window.roiTestInstance=${roi}`);
+                    assert.equal(await evaluate(`window.roiTestInstance===${roi}`), true, 'Both triggers reuse the same instance');
+                    assert.equal(await evaluate(`${roi}.querySelector('#turkluxx-roi-title').textContent`), catalogs[code]['home.roi.title']);
+                    const sizes = await evaluate(`['#turkluxx-roi-title','#turkluxx-roi-opportunity-title'].map(s=>getComputedStyle(document.querySelector(s)).fontSize)`);
+                    assert.equal(sizes[0], sizes[1]);
+                    await click('#turkluxx-roi .turkluxx-callback-close');
+                    await until('!' + roi + '.open');
+                    await pause(200);
+                    assert.equal(await evaluate(`document.activeElement===document.querySelector('${trigger}')`), true);
+                }
+                await evaluate('document.querySelector(".rengi-roi-actions .turkluxx-callback-trigger").click()');
+                await until('document.querySelector("#turkluxx-callback").open');
+                assert.equal(await evaluate(roi + '.open'), false);
+                await evaluate('document.querySelector("#turkluxx-callback .turkluxx-callback-close").click()');
+                await until('!document.querySelector("#turkluxx-callback").open');
+                await pause(200);
+                console.log(`${page} ${width}px ${code}: both triggers reuse ROI, translated CTA, matching headings and consultation passed`);
+            }
         }
     }
     assert.deepEqual(errors, [], 'No JavaScript console errors or exceptions');
