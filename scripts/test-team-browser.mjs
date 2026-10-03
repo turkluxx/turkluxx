@@ -78,6 +78,8 @@ try {
             await evaluate('TurkLuxxI18n.setLanguage(TurkLuxxI18n.language)');
             await pause(200);
             assert.equal(await evaluate('document.documentElement.dir'), code === 'ar' ? 'rtl' : 'ltr');
+            assert.equal(await evaluate('document.querySelectorAll(".turkluxx-sales-nav a").length'), 3, 'Team navigation has only projects, ROI and contact');
+            assert.equal(await evaluate('!!document.querySelector(".turkluxx-sales-nav a[href*=rengi-location]")'), false, 'Team Location item removed');
             assert.equal(await evaluate('document.title'), catalogs[code]['team.pageTitle']);
             const text = await evaluate(`[...document.querySelectorAll('.team-main [data-i18n]')].map(e=>({key:e.dataset.i18n,text:e.textContent}))`);
             assert.equal(text.length, 29, 'Complete introduction, placeholders and biographies');
@@ -135,6 +137,19 @@ try {
             assert.equal(await evaluate('TurkLuxxI18n.language'),code,'Language persists through navigation');
             assert.equal(await evaluate('JSON.stringify(getTurkLuxxReferralAttribution())'),attribution);
             assert.equal(await evaluate('!!document.querySelector("#turkluxx-antalya-heading")'),true,'Both project choices present');
+            await evaluate('document.querySelector(".turkluxx-team-cta").scrollIntoView({block:"center",behavior:"instant"})');
+            await pause(150);
+            assert.equal(await evaluate('document.querySelector(".turkluxx-team-cta [data-i18n]").textContent'),catalogs[code]['team.nav']);
+            const ctaLayout = await evaluate(`(()=>{const c=document.querySelector('.turkluxx-team-cta'),copy=c.parentElement,s=copy.querySelector('.turkluxx-developer-statement'),section=c.closest('section'),r=c.getBoundingClientRect();return {width:r.width,copyWidth:copy.getBoundingClientRect().width,top:r.top,statementBottom:s.getBoundingClientRect().bottom,spaceBelow:section.getBoundingClientRect().bottom-r.bottom,columns:getComputedStyle(section.querySelector('.turkluxx-section-layout')).gridTemplateColumns.split(' ').length}})()`);
+            assert.ok(ctaLayout.width < ctaLayout.copyWidth, 'CTA stays narrower than its column');
+            assert.ok(ctaLayout.top >= ctaLayout.statementBottom + 19, 'CTA below statement');
+            assert.ok(ctaLayout.spaceBelow >= 39, 'Breathing room below button');
+            if (width===1440) assert.equal(ctaLayout.columns,3,'Existing three-column layout');
+            await click('.turkluxx-team-cta');
+            await until('location.pathname==="/meet-our-team.html" && document.readyState==="complete"');
+            await evaluate('TurkLuxxI18n.setLanguage(TurkLuxxI18n.language)');
+            assert.equal(await evaluate('TurkLuxxI18n.language'),code);
+            assert.equal(await evaluate('JSON.stringify(getTurkLuxxReferralAttribution())'),attribution);
             for (const project of ['rengi-istanbul.html','rengi-antalya.html']) {
                 await send('Page.navigate',{url:`${origin}/${project}`});
                 await until('document.readyState==="complete" && !!window.TurkLuxxI18n');

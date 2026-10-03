@@ -1836,12 +1836,27 @@
 /* Karaarslan and TurkLuxx partnership composition. */
 .turkluxx-developer {
     min-height: 0;
-    padding: 40px clamp(24px, 5vw, 96px);
+    padding: 40px clamp(24px, 5vw, 96px) 56px;
     background: #fff;
     color: #212c6c;
     font-family: 'Manrope', sans-serif;
 }
 
+.turkluxx-developer .turkluxx-team-cta {
+    width: 250px;
+    max-width: 100%;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 20px;
+    border-color: #212c6c;
+    background: #212c6c;
+    color: #fff;
+    font-size: 16px;
+}
+
+.turkluxx-developer .turkluxx-team-cta:hover {
+    background: #172154;
+}
 .turkluxx-developer, .turkluxx-developer * {
     box-sizing: border-box;
 }
