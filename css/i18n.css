@@ -275,3 +275,296 @@ html[lang="ar"] {
         height: 32px;
     }
 }
+/* Mobile header controls never participate in tablet/desktop layout. */
+.turkluxx-mobile-menu-control,
+.turkluxx-mobile-primary-nav {
+    display: none;
+}
+
+.turkluxx-mobile-hero-stage {
+    display: contents;
+}
+
+@media (max-width: 767px) {
+    .turkluxx-homepage .turkluxx-sales-hero {
+        grid-template-columns: minmax(0, 1fr) 88px 48px;
+        grid-template-areas: 'stage stage stage' 'citizenship citizenship citizenship' 'secondary secondary secondary' 'social social social' 'climate climate climate' 'benefits benefits benefits';
+        column-gap: 8px;
+        row-gap: 20px;
+    }
+
+    .rengi-page .rengi-header-shell {
+        grid-template-columns: minmax(0, 1fr) 88px 48px;
+        grid-template-areas: 'header header header' 'primary primary primary';
+        column-gap: 8px;
+        row-gap: 20px;
+    }
+
+    .turkluxx-sales-header > .turkluxx-sales-nav {
+        display: none;
+    }
+
+    .turkluxx-page .turkluxx-sales-hero > .turkluxx-sales-header,
+    .turkluxx-page .turkluxx-mobile-hero-stage > .turkluxx-sales-header {
+        grid-area: header;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 88px 48px;
+        grid-template-areas: 'logo language toggle' 'nav nav nav';
+        align-items: center;
+        column-gap: 8px;
+        row-gap: 6px;
+    }
+
+    .turkluxx-homepage .turkluxx-mobile-hero-stage {
+        grid-area: stage;
+        display: grid;
+        grid-template-columns: subgrid;
+        grid-template-rows: max-content minmax(min-content, 1fr) max-content;
+        grid-template-areas: 'header header header' 'heading heading heading' 'primary primary primary';
+        align-items: start;
+        gap: 20px 8px;
+        height: calc(100svh - 20px);
+        height: calc(100dvh - 20px);
+        min-height: max-content;
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    .turkluxx-mobile-hero-stage > .turkluxx-sales-heading {
+        align-self: end;
+    }
+
+    /* Zoom out on shorter phones so the family stays above the lower title. */
+    .turkluxx-homepage .turkluxx-sales-hero::before {
+        --turkluxx-mobile-photo-height: clamp(400px, calc(100svh - 260px), 620px);
+        --turkluxx-mobile-photo-height: clamp(400px, calc(100dvh - 260px), 620px);
+        height: var(--turkluxx-mobile-photo-height);
+        background: linear-gradient(180deg, rgb(7 30 52 / 18%), transparent 30%, transparent calc(var(--turkluxx-mobile-photo-height) - 30px), #071e34 var(--turkluxx-mobile-photo-height)), url('../assets/istanbul-family-hero.png') 82% top / auto var(--turkluxx-mobile-photo-height) no-repeat;
+    }
+
+    .turkluxx-sales-header > .turkluxx-sales-logo > span {
+        font-size: clamp(34px, 10.77vw, 44px);
+        letter-spacing: -2px;
+    }
+
+    .turkluxx-sales-header > .turkluxx-sales-logo small {
+        display: none;
+    }
+
+    .turkluxx-sales-header > .turkluxx-sales-language {
+        width: 88px;
+        height: 48px;
+        margin-top: 0;
+    }
+
+    .turkluxx-sales-header .turkluxx-language-toggle {
+        gap: 5px;
+        padding-inline: 6px;
+    }
+
+    .turkluxx-sales-header .turkluxx-language-toggle .turkluxx-language-flag img {
+        width: 26px;
+        height: 26px;
+    }
+
+    .turkluxx-mobile-menu-control {
+        grid-area: toggle;
+        position: relative;
+        display: block;
+        align-self: start;
+        width: 48px;
+        height: 48px;
+        z-index: 90;
+        isolation: isolate;
+    }
+
+    .turkluxx-mobile-menu-wrapper {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 48px;
+        grid-template-rows: 48px auto;
+        width: 48px;
+        pointer-events: none;
+    }
+
+    .turkluxx-mobile-menu-control.is-open .turkluxx-mobile-menu-wrapper {
+        width: min(280px, calc(100vw - 40px));
+    }
+
+    .turkluxx-mobile-menu-surface {
+        display: none;
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: -1;
+        pointer-events: none;
+        overflow: visible;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        filter: drop-shadow(0 8px 12px #0005);
+    }
+
+    .turkluxx-mobile-menu-control.is-open .turkluxx-mobile-menu-surface {
+        display: block;
+    }
+
+    .turkluxx-mobile-menu-surface path {
+        fill: rgb(7 30 52 / 95%);
+        stroke: #d8b66a80;
+        stroke-width: 1;
+    }
+
+    .turkluxx-mobile-menu-toggle {
+        grid-column: 2;
+        grid-row: 1;
+        pointer-events: auto;
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        padding: 10px;
+        border: 1px solid #fffdf780;
+        border-radius: 12px 3px 3px 12px;
+        background: #071e3460;
+        color: #d8b66a;
+        cursor: pointer;
+    }
+
+    .turkluxx-mobile-menu-toggle svg {
+        width: 26px;
+        height: 26px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+    }
+
+    .turkluxx-mobile-menu-toggle[aria-expanded='true'] svg {
+        display: none;
+    }
+
+    .turkluxx-mobile-menu-toggle[aria-expanded='true'] {
+        border-color: transparent;
+        background: transparent;
+    }
+
+    .turkluxx-mobile-menu-toggle[aria-expanded='true']::after {
+        content: '\00d7' / '';
+        font: 400 34px/1 'Manrope', sans-serif;
+    }
+
+    .turkluxx-mobile-primary-nav {
+        grid-area: nav;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(8px, 3vw, 16px);
+        direction: ltr;
+    }
+
+    .turkluxx-mobile-primary-nav a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 4px 6px;
+        color: #fffdf7;
+        font: 700 18px/1.3 'Manrope', sans-serif;
+        text-decoration: none;
+    }
+
+    .turkluxx-mobile-primary-nav a:first-child {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    .turkluxx-mobile-primary-nav a:last-child {
+        min-width: 0;
+        text-align: center;
+    }
+
+    .turkluxx-mobile-menu {
+        position: relative;
+        grid-column: 1 / -1;
+        grid-row: 2;
+        pointer-events: auto;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        transform: none;
+        padding: 4px 12px;
+        border: 0;
+        background: transparent;
+    }
+
+    .turkluxx-mobile-menu[hidden] {
+        display: none;
+    }
+
+    .turkluxx-mobile-menu a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 48px;
+        padding: 8px 0;
+        color: #fffdf7;
+        font: 700 16px/1.35 'Manrope', sans-serif;
+        text-decoration: none;
+    }
+
+    .turkluxx-mobile-menu a + a {
+        border-top: 1px solid rgb(216 182 106 / 24%);
+    }
+
+    .turkluxx-mobile-menu a::after {
+        content: '\203a' / '';
+        color: #d8b66a;
+        font-size: 25px;
+    }
+
+    html[dir='rtl'] .turkluxx-mobile-primary-nav,
+    html[dir='rtl'] .turkluxx-mobile-menu {
+        direction: rtl;
+    }
+
+    html[dir='rtl'] .turkluxx-page .turkluxx-sales-hero > .turkluxx-sales-header,
+    html[dir='rtl'] .turkluxx-page .turkluxx-mobile-hero-stage > .turkluxx-sales-header {
+        grid-template-columns: 48px 88px minmax(0, 1fr);
+        grid-template-areas: 'toggle language logo' 'nav nav nav';
+    }
+
+    html[dir='rtl'] .turkluxx-sales-header > .turkluxx-sales-logo {
+        justify-self: end;
+    }
+
+    html[dir='rtl'] .turkluxx-mobile-menu-wrapper,
+    html[dir='rtl'] .turkluxx-mobile-menu-surface {
+        right: auto;
+        left: 0;
+    }
+
+    html[dir='rtl'] .turkluxx-mobile-menu-wrapper {
+        grid-template-columns: 48px minmax(0, 1fr);
+    }
+
+    html[dir='rtl'] .turkluxx-mobile-menu-toggle {
+        grid-column: 1;
+    }
+
+    html[dir='rtl'] .turkluxx-mobile-menu-surface {
+        transform: scaleX(-1);
+    }
+
+    html[dir='rtl'] .turkluxx-mobile-menu a::after {
+        transform: scaleX(-1);
+    }
+
+    .turkluxx-mobile-menu-toggle:focus-visible,
+    .turkluxx-mobile-primary-nav a:focus-visible,
+    .turkluxx-mobile-menu a:focus-visible {
+        outline: 2px solid #d8b66a;
+        outline-offset: 3px;
+    }
+}

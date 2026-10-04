@@ -416,6 +416,10 @@
   "team.projectsNav": "Projeleri keşfedin",
   "mobile.nav.team": "Ekibimiz",
   "mobile.nav.roi": "Getiri (30%–70%)",
-  "mobile.nav.properties": "Villalar",
-  "mobile.nav.contact": "İletişim"
+  "mobile.nav.properties": "Villaları Keşfet",
+  "mobile.nav.contact": "İletişim",
+  "mobile.nav.primary_roi": "Getiri (30%–70%)",
+  "mobile.nav.primary_properties": "Villaları Keşfet",
+  "mobile.nav.open": "Menüyü aç",
+  "mobile.nav.close": "Menüyü kapat"
 }

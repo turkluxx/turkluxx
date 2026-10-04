@@ -3001,6 +3001,18 @@
     text-align: right;
 }
 
+.turkluxx-homepage .turkluxx-footer-legal .turkluxx-privacy-link,
+.turkluxx-homepage .turkluxx-footer-legal .turkluxx-policy-link {
+    color: inherit;
+    font: inherit;
+    text-decoration: none;
+}
+.turkluxx-footer-legal .turkluxx-privacy-link:focus-visible,
+.turkluxx-footer-legal .turkluxx-policy-link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+}
+
 @media (min-width: 768px) and (max-width: 1199px) {
     .turkluxx-final-cta {
         min-height: 540px;

@@ -9,18 +9,6 @@
     const phraseOrders = new WeakMap();
     const selectorQuery = '.turkluxx-sales-language select, .turkluxx-language-select';
     const normalize = text => text.replace(/\s+/gu, ' ').trim();
-    const mobileNavigation = window.matchMedia('(max-width: 767px)');
-    // Bind short labels only to existing header links; destinations remain intact.
-    document.querySelectorAll('.turkluxx-home-desktop-nav a, .rengi-header-shell .turkluxx-sales-nav a').forEach(link => {
-        const href = link.getAttribute('href');
-        const kind = href === 'meet-our-team.html' ? 'team'
-            : link.classList.contains('turkluxx-roi-trigger') ? 'roi'
-            : link.dataset.homeScroll === 'contact' ? 'contact'
-            : link.dataset.homeScroll === 'properties' || href === './#turkluxx-project-heading' ? 'properties' : null;
-        if (!kind) return;
-        link.dataset.i18nMobile = `mobile.nav.${kind}`;
-        link.dataset.i18n ||= { team: 'team.nav', roi: 'common.roi_30_70', properties: 'home.explore_properties', contact: 'common.contact_us' }[kind];
-    });
     let language = 'en', english = {}, sourceKeys = new Map(), templates = [], requestId = 0;
     try {
         const requested = new URLSearchParams(location.search).get('lang');
@@ -73,14 +61,35 @@
         if (!attribute) element.dataset.i18nText = '';
         applyBinding(element, record);
     }
+    function setTranslatedText(element, value) {
+        // Keep the full section heading, but treat its range as one unit.
+        if (element.id === 'rengi-roi-title') {
+            if (element.textContent === value && element.querySelector('.rengi-roi-percentage')) return;
+            const range = value.match(/\([\u2066-\u2069]*30%–70%[\u2066-\u2069]*\)/u);
+            if (range) {
+                const percentage = document.createElement('span');
+                percentage.className = 'rengi-roi-percentage';
+                percentage.dir = 'ltr';
+                percentage.textContent = range[0];
+                const prefix = value.slice(0, range.index);
+                const lastWord = prefix.match(/\S+\s*$/u);
+                const ending = document.createElement('span');
+                ending.className = 'rengi-roi-ending';
+                ending.append(lastWord ? lastWord[0] : '', percentage);
+                element.replaceChildren(lastWord ? prefix.slice(0, lastWord.index) : prefix, ending, value.slice(range.index + range[0].length));
+                return;
+            }
+        }
+        if (element.textContent !== value) element.textContent = value;
+    }
     function applyBinding(element, record) {
         const value = t(record.key, typeof record.values === 'function' ? record.values() : record.values);
         if (record.attribute) {
             if (element.getAttribute(record.attribute) !== value) element.setAttribute(record.attribute, value);
-        } else if (element.textContent !== value) element.textContent = value;
+        } else setTranslatedText(element, value);
         record.output = value;
     }
-    const ignored = node => node.parentElement?.closest('script, style, noscript, svg, select, [data-i18n-ignore], [data-i18n-text], [data-i18n-mobile]');
+    const ignored = node => node.parentElement?.closest('script, style, noscript, svg, select, [data-i18n-ignore], [data-i18n-text]');
     function translate(root = document.documentElement) {
         observer.disconnect();
         try {
@@ -114,9 +123,8 @@
                 attributes.set(element, records);
             }
             for (const element of root.querySelectorAll('[data-i18n]')) {
-                const key = mobileNavigation.matches && element.dataset.i18nMobile ? element.dataset.i18nMobile : element.dataset.i18n;
-                const value = t(key);
-                if (value && element.textContent !== value) element.textContent = value;
+                const value = t(element.dataset.i18n);
+                if (value) setTranslatedText(element, value);
             }
             for (const element of [root, ...root.querySelectorAll('[data-i18n-bound]')]) {
                 for (const [attribute, record] of bindings.get(element) || []) {
@@ -301,7 +309,6 @@
         }).sort((a, b) => english[b.key].replace(/\{[^}]+\}/g, '').length - english[a.key].replace(/\{[^}]+\}/g, '').length);
     });
     window.TurkLuxxI18n = { t, text, bind, setLanguage, get language() { return language; }, ready };
-    mobileNavigation.addEventListener('change', () => ready.then(() => translate()));
     selectors();
     setLanguage(language);
 })();

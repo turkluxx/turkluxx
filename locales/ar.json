@@ -416,6 +416,10 @@
   "team.projectsNav": "استكشف المشاريع",
   "mobile.nav.team": "فريقنا",
   "mobile.nav.roi": "العائد (30%–70%)",
-  "mobile.nav.properties": "الفلل",
-  "mobile.nav.contact": "تواصل معنا"
+  "mobile.nav.properties": "استكشف العقارات",
+  "mobile.nav.contact": "تواصل معنا",
+  "mobile.nav.primary_roi": "العائد (30%–70%)",
+  "mobile.nav.primary_properties": "استكشف العقارات",
+  "mobile.nav.open": "فتح القائمة",
+  "mobile.nav.close": "إغلاق القائمة"
 }

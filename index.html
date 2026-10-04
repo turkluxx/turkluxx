@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="css/desktop-components.css">
     <link rel="stylesheet" href="css/i18n.css">
     <script src="js/i18n.js" defer></script>
+    <script src="js/mobile-header.js" defer></script>
     <script src="js/referral.js" defer></script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -32,6 +33,7 @@
 <!-- End Google Tag Manager (noscript) -->
 <!-- Desktop restart. The existing narrow-screen layout remains below. -->
 <section class="turkluxx-sales-hero" aria-labelledby="turkluxx-sales-title">
+    <div class="turkluxx-mobile-hero-stage">
     <header class="turkluxx-sales-header">
         <a class="turkluxx-sales-logo" href="./" aria-label="TurkLuxx home"><span>TurkLuxx</span><small>EXCEPTIONAL
             HOMES<br>A BRIGHTER TOMORROW</small></a>
@@ -74,6 +76,7 @@
         <h1 id="turkluxx-sales-title"><span>LUXURY VILLAS</span><span>IN ISTANBUL</span></h1>
         <p>A PRESTIGIOUS HOME<br>A BRIGHTER FUTURE</p>
         <div class="turkluxx-ornament" aria-hidden="true"><span>&#9671;</span></div>
+    </div>
     </div>
     <aside class="turkluxx-citizenship" aria-labelledby="turkluxx-citizenship-title">
         <div class="turkluxx-citizenship-top">
@@ -425,7 +428,7 @@
             <p>© 2026 TurkLuxx. All rights reserved.</p>
             <!-- Replace these non-interactive placeholders with links when approved legal pages exist. -->
             <div class="turkluxx-footer-legal" role="group" aria-label="Legal policies — pending publication">
-                <span>Privacy Policy</span><span>Cookie Policy</span><span>Terms &amp; Conditions</span>
+                <a class="turkluxx-privacy-link" href="privacy-policy.html">Privacy Policy</a><a class="turkluxx-policy-link" href="cookie-policy.html">Cookie Policy</a><span>Terms &amp; Conditions</span>
             </div>
         </div>
     </div>

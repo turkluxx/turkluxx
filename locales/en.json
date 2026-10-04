@@ -416,6 +416,10 @@
   "team.projectsNav": "Explore The Projects",
   "mobile.nav.team": "Meet Our Team",
   "mobile.nav.roi": "ROI (30%–70%)",
-  "mobile.nav.properties": "Explore Properties",
-  "mobile.nav.contact": "Contact"
+  "mobile.nav.properties": "Discover Properties",
+  "mobile.nav.contact": "Contact",
+  "mobile.nav.primary_roi": "ROI (30%–70%)",
+  "mobile.nav.primary_properties": "Discover Properties",
+  "mobile.nav.open": "Open menu",
+  "mobile.nav.close": "Close menu"
 }

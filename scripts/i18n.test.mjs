@@ -8,7 +8,7 @@ const catalogs = Object.fromEntries(codes.map(code => [code, JSON.parse(readFile
 const source = readFileSync(new URL('../js/i18n.js', import.meta.url), 'utf8');
 const placeholders = s => [...s.matchAll(/\{([a-zA-Z]+)\}/g)].map(m => m[1]).sort();
 test('Six catalogs cover every English key with valid strings and matching parameters', () => {
-    assert.equal(Object.keys(catalogs.en).length, 419);
+    assert.equal(Object.keys(catalogs.en).length, 423);
     for (const key of ['istanbul.master_plan_186', 'istanbul.villa_types_188', 'antalya.explore_the_projects_199']) assert.ok(key in catalogs.en);
     for (const code of codes) {
         const bytes = readFileSync(new URL(`../locales/${code}.json`, import.meta.url));
@@ -40,7 +40,7 @@ test('Identical English values are limited to proper names and shared vocabulary
     const properNames = ['home.karaarslan_i_n_aat', 'istanbul.rengi_istanbul_turkluxx', 'antalya.rengi_antalya_turkluxx', 'antalya.facts.lara_lara_turizm_caddesi', ...Object.keys(catalogs.en).filter(key => key.startsWith('villa.names.'))];
     const shared = {
         ru: [], ar: [], es: ['istanbul.hospital', 'common.total'], tr: ['istanbul.plan'],
-        nl: ['common.contact', 'mobile.nav.roi', 'mobile.nav.contact', 'home.in_istanbul', 'home.privacy', 'istanbul.school', 'rooms.garage', 'rooms.vestibule', 'antalya.facts.status', 'antalya.apartments.1_1_type_1', 'antalya.apartments.1_1_type_2']
+        nl: ['common.contact', 'mobile.nav.roi', 'mobile.nav.primary_roi', 'mobile.nav.contact', 'home.in_istanbul', 'home.privacy', 'istanbul.school', 'rooms.garage', 'rooms.vestibule', 'antalya.facts.status', 'antalya.apartments.1_1_type_1', 'antalya.apartments.1_1_type_2']
     };
     for (const code of codes.filter(code => code !== 'en')) {
         for (const [key, english] of Object.entries(catalogs.en)) {

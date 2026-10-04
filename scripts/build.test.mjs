@@ -50,6 +50,60 @@ test('bundles production pages, copies only allowlisted assets, and cleans stale
   assert.equal(f.run().status, 0);
 });
 
+test('Privacy Policy inherits the current Team shell without translating its legal content', t => {
+  const f = fixture(t);
+  const shell = '<html lang="en"><head><title data-i18n="team.pageTitle">Team</title><link rel="canonical" href="https://turkluxx.com/meet-our-team.html"><link rel="stylesheet" href="css/i18n.css"><script src="js/i18n.js" defer></script></head><body class="team-page"><header>Shared header</header><main>Team biographies</main><footer>Shared footer</footer></body></html>';
+  f.put('meet-our-team.html', shell);
+  f.put('privacy-policy.html', '<main lang="en" dir="ltr" data-i18n-ignore><h1>Privacy Policy</h1><p>Exact legal wording.</p></main>');
+  f.put('cookie-policy.html', '<main lang="en" dir="ltr" data-i18n-ignore><h1>Cookie Policy</h1><p>Exact cookie wording.</p></main>');
+  f.put('css/i18n.css', 'body { color: navy; }');
+  f.put('css/privacy-policy.css', '.privacy-section { color: navy; }');
+  f.put('scripts/public-files.json', JSON.stringify([...f.files, 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html', 'css/i18n.css', 'css/privacy-policy.css']));
+  let result = f.run(); assert.equal(result.status, 0, result.stderr);
+  let html = readFileSync(join(f.root, 'dist/privacy-policy.html'), 'utf8');
+  assert.match(html, /<header>Shared header<\/header>/);
+  assert.match(html, /<footer>Shared footer<\/footer>/);
+  assert.match(html, /<main lang="en" dir="ltr" data-i18n-ignore>/);
+  assert.match(html, /Exact legal wording\./);
+  assert.match(html, /https:\/\/turkluxx.com\/privacy-policy/);
+  assert.doesNotMatch(html, /Team biographies|data-i18n="team.pageTitle"/);
+  assert.match(readFileSync(join(f.root, 'dist/meet-our-team.html'), 'utf8'), /Team biographies/);
+  f.put('meet-our-team.html', shell.replace('Shared header', 'Updated header').replace('Shared footer', 'Updated footer'));
+  result = f.run(); assert.equal(result.status, 0, result.stderr);
+  html = readFileSync(join(f.root, 'dist/privacy-policy.html'), 'utf8');
+  assert.match(html, /Updated header/); assert.match(html, /Updated footer/);
+  const source = readFileSync(join(f.root, 'privacy-policy.html'), 'utf8');
+  assert.match(source, /<html lang="en">/);
+  assert.match(source, /href="css\/privacy-policy.css"/);
+  assert.match(source, /Updated header/); assert.match(source, /Updated footer/);
+  const cookie = readFileSync(join(f.root, 'dist/cookie-policy.html'), 'utf8');
+  assert.match(cookie, /Updated header/); assert.match(cookie, /Updated footer/);
+  assert.match(cookie, /https:\/\/turkluxx.com\/cookie-policy/);
+  assert.match(cookie, /Exact cookie wording\./);
+  assert.doesNotMatch(cookie, /Team biographies|data-i18n="team.pageTitle"/);
+  assert.match(readFileSync(join(f.root, 'cookie-policy.html'), 'utf8'), /href="css\/privacy-policy.css"/);
+});
+
+test('shared footer opens both policies and omits the current legal page without placeholders', t => {
+  const f = fixture(t);
+  const shell = '<html lang="en"><head><script src="js/i18n.js" defer></script></head><body><main>Content</main><footer><div class="turkluxx-footer-legal"><a href="#">Privacy Policy</a><span>Cookie Policy</span><span>Terms &amp; Conditions</span></div></footer></body></html>';
+  f.put('index.html', shell); f.put('rengi-istanbul.html', shell); f.put('meet-our-team.html', shell);
+  f.put('privacy-policy.html', '<main>Privacy content</main>');
+  f.put('cookie-policy.html', '<main>Cookie content</main>');
+  f.put('scripts/public-files.json', JSON.stringify([...f.files, 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html']));
+  const result = f.run(); assert.equal(result.status, 0, result.stderr);
+  for (const directory of ['', 'dist/']) {
+    for (const file of ['index.html', 'rengi-istanbul.html', 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html']) {
+      const html = readFileSync(join(f.root, directory, file), 'utf8');
+      const footer = html.match(/<footer>[\s\S]*?<\/footer>/)[0];
+      assert.equal(footer.includes('href="/privacy-policy"'), file !== 'privacy-policy.html');
+      assert.equal(footer.includes('href="/cookie-policy"'), file !== 'cookie-policy.html');
+      assert.match(footer, /<span>Terms &amp; Conditions<\/span>/);
+      assert.doesNotMatch(footer, /href="#"|<span>Cookie Policy<\/span>|<a[^>]*>\s*<\/a>/);
+    }
+  }
+});
+
 test('preserves CSS order and prevents page-specific CSS leaking into other pages', t => {
   const f = fixture(t);
   f.put('css/istanbul.css', '.control { color: blue; } @keyframes glow { from { opacity: 0; } to { opacity: 1; } }');

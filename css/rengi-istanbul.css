@@ -958,16 +958,23 @@
 /* Paired editorial sections: content may grow on short screens. */
 .rengi-roi {
     display: grid;
-    grid-template-columns: minmax(0, 39fr) minmax(0, 61fr);
+    grid-template-columns: minmax(0, 37fr) minmax(0, 63fr);
     align-items: center;
     gap: clamp(32px, 3vw, 56px);
     border-top: 1px solid #d4c8b0;
 }
 .rengi-roi-media img {
     display: block;
-    width: 100%;
-    max-height: 320px;
+    width: min(100%, 840px);
+    height: auto;
+    max-height: none;
     object-fit: contain;
+}
+.rengi-roi-copy { container-type: inline-size; }
+.rengi-roi-percentage { display: inline-block; white-space: nowrap; }
+.rengi-roi-ending { white-space: nowrap; }
+html:not([lang='en']) .rengi-roi h2 {
+    font-size: clamp(24px, 7cqi, 40px);
 }
 /* Investment copy stays inside the existing editorial column. */
 .rengi-roi-subheading {
@@ -1061,7 +1068,7 @@ html[dir="rtl"] .rengi-roi-learn > [aria-hidden="true"] { transform: scaleX(-1);
     .rengi-location .rengi-map { min-height: 300px; max-height: 380px; align-self: center; height: 36vh; }
     .rengi-location .rengi-landmarks li { padding-block: 12px; }
     .rengi-master-preview img { max-height: clamp(240px, 36vh, 380px); }
-    .rengi-roi-media img { height: clamp(240px, 36vh, 380px); max-height: 380px; }
+    .rengi-roi-media img { height: auto; }
 }
 @media (max-width: 1199px) {
     .rengi-master-plan, .rengi-roi { padding-block: 48px; }
@@ -1070,7 +1077,7 @@ html[dir="rtl"] .rengi-roi-learn > [aria-hidden="true"] { transform: scaleX(-1);
     .rengi-roi { grid-template-columns: minmax(0, 1fr); gap: 32px; }
     .rengi-master-info { grid-row: 1; }
     .rengi-master-preview img { height: auto; max-height: 280px; }
-    .rengi-roi-media img { max-height: 240px; }
+    .rengi-roi-media img { max-height: none; }
 }
 .rengi-philosophy-lead {
     font-weight: 700;

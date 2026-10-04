@@ -417,5 +417,9 @@
   "mobile.nav.team": "Наша команда",
   "mobile.nav.roi": "Доходность (30%–70%)",
   "mobile.nav.properties": "Виллы",
-  "mobile.nav.contact": "Связаться"
+  "mobile.nav.contact": "Связаться",
+  "mobile.nav.primary_roi": "Доходность (30%–70%)",
+  "mobile.nav.primary_properties": "Виллы",
+  "mobile.nav.open": "Открыть меню",
+  "mobile.nav.close": "Закрыть меню"
 }

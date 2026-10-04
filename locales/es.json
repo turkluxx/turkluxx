@@ -417,5 +417,9 @@
   "mobile.nav.team": "Nuestro Equipo",
   "mobile.nav.roi": "Rentabilidad (30%–70%)",
   "mobile.nav.properties": "Ver Propiedades",
-  "mobile.nav.contact": "Contacto"
+  "mobile.nav.contact": "Contacto",
+  "mobile.nav.primary_roi": "Rentabilidad (30%–70%)",
+  "mobile.nav.primary_properties": "Ver Propiedades",
+  "mobile.nav.open": "Abrir menú",
+  "mobile.nav.close": "Cerrar menú"
 }

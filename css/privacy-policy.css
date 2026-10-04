@@ -1,0 +1,48 @@
+﻿/* Shared legal content design; header/footer still come from Meet Our Team. */
+.privacy-page { background: #f7f5f1; }
+.privacy-document { padding-bottom: 88px; background: #f7f5f1; color: #212c6c; font: 500 17px/1.7 'Manrope', sans-serif; overflow-wrap: anywhere; }
+.privacy-intro { position: relative; padding-block: 16px 48px; margin-bottom: 56px; border-bottom: 1px solid #d4c8b0; }
+.privacy-intro::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 80px; height: 2px; background: #b49450; }
+.privacy-intro .team-eyebrow { margin: 0 0 20px; color: #8c6b30; font: 700 12px/1.6 'Manrope', sans-serif; letter-spacing: .16em; }
+.privacy-intro h1 { max-width: none; margin: 0 0 24px; color: #212c6c; font: 500 clamp(48px, 5.4vw, 76px)/1.08 'Cormorant Garamond', Georgia, serif; letter-spacing: -.025em; }
+.privacy-intro h1::after { content: ''; display: block; width: 80px; height: 1px; margin-top: 24px; background: #b49450; }
+.privacy-subtitle { margin: 0 0 24px; font: 700 13px/1.6 'Manrope', sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+.privacy-dates { margin: 0; color: #63616b; font-size: 14px; line-height: 1.9; }
+.legal-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: clamp(40px, 5vw, 72px); align-items: start; }
+.legal-contents { position: sticky; top: 24px; max-height: calc(100svh - 48px); overflow-y: auto; scrollbar-width: thin; padding-inline-end: 20px; border-inline-end: 1px solid #d4c8b0; }
+.legal-contents-title { margin: 0 0 18px; color: #8c6b30; font-size: 11px; font-weight: 700; letter-spacing: .16em; }
+.legal-contents nav { display: grid; }
+.legal-contents a { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; padding: 11px 0; border-bottom: 1px solid #e4dccd; color: #212c6c; text-decoration: none; font-size: 13px; line-height: 1.5; }
+.legal-contents a > span:first-child { color: #8c6b30; font-size: 11px; font-weight: 700; }
+.legal-contents a:hover { color: #8c6b30; background: #eee9df; }
+.legal-contents a:focus-visible { outline: 2px solid #8c6b30; outline-offset: -2px; }
+.legal-body { max-width: 760px; }
+.privacy-section { padding-block: 40px; border-top: 1px solid #d4c8b0; scroll-margin-top: 28px; }
+.privacy-section:first-child { padding-top: 0; border-top: 0; }
+.privacy-section h2 { margin: 0 0 24px; color: #212c6c; font: 600 clamp(28px, 2.7vw, 36px)/1.2 'Cormorant Garamond', Georgia, serif; }
+.privacy-section h2::after { content: ''; display: block; width: 56px; height: 1px; margin-top: 20px; background: #b49450; }
+.privacy-number { display: block; margin-bottom: 12px; color: #8c6b30; font: 700 12px/1.5 'Manrope', sans-serif; letter-spacing: .14em; }
+.privacy-section h3 { margin: 30px 0 16px; font: 700 18px/1.5 'Manrope', sans-serif; }
+.privacy-section p { margin: 0 0 20px; }
+.privacy-section ul { list-style: none; padding: 0; margin: 0 0 24px; }
+.privacy-section li { position: relative; padding-inline-start: 22px; margin-block: 10px; }
+.privacy-section li::before { content: ''; position: absolute; left: 2px; top: .7em; width: 5px; height: 5px; background: #b49450; transform: rotate(45deg); }
+.privacy-section > :last-child { margin-bottom: 0; }
+.privacy-section a { color: inherit; text-decoration-color: #8c6b30; text-underline-offset: .2em; }
+.privacy-section a:hover { color: #8c6b30; }
+.privacy-section a:focus-visible { outline: 2px solid #8c6b30; outline-offset: 4px; }
+.legal-contact { padding: 32px; border: 1px solid #d4c8b0; background: #eee9df; border-radius: 8px; }
+.legal-contact p { margin-bottom: 20px; }
+html:has(.privacy-document) { scroll-behavior: smooth; }
+@media (max-width: 1023px) { .legal-layout { grid-template-columns: 210px minmax(0, 1fr); gap: 32px; } }
+@media (max-width: 767px) {
+    .privacy-document { padding-bottom: 48px; }
+    .privacy-intro { padding-block: 0 32px; margin-bottom: 36px; }
+    .privacy-intro h1 { font-size: clamp(40px, 11vw, 48px); }
+    .privacy-subtitle { font-size: 12px; }
+    .legal-layout { display: block; }
+    .legal-contents { display: none; }
+    .privacy-section { padding-block: 32px; }
+    .legal-contact { padding: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { html:has(.privacy-document) { scroll-behavior: auto; } }
