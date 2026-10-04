@@ -84,22 +84,24 @@ test('Privacy Policy inherits the current Team shell without translating its leg
   assert.match(readFileSync(join(f.root, 'cookie-policy.html'), 'utf8'), /href="css\/privacy-policy.css"/);
 });
 
-test('shared footer opens both policies and omits the current legal page without placeholders', t => {
+test('shared footer opens all four policies and omits the current legal page without placeholders', t => {
   const f = fixture(t);
   const shell = '<html lang="en"><head><script src="js/i18n.js" defer></script></head><body><main>Content</main><footer><div class="turkluxx-footer-legal"><a href="#">Privacy Policy</a><span>Cookie Policy</span><span>Terms &amp; Conditions</span></div></footer></body></html>';
   f.put('index.html', shell); f.put('rengi-istanbul.html', shell); f.put('meet-our-team.html', shell);
   f.put('privacy-policy.html', '<main>Privacy content</main>');
   f.put('cookie-policy.html', '<main>Cookie content</main>');
   f.put('terms-and-conditions.html', '<main>Terms content</main>');
-  f.put('scripts/public-files.json', JSON.stringify([...f.files, 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html', 'terms-and-conditions.html']));
+  f.put('disclaimer.html', '<main>Exact disclaimer content</main>');
+  f.put('scripts/public-files.json', JSON.stringify([...f.files, 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html', 'terms-and-conditions.html', 'disclaimer.html']));
   const result = f.run(); assert.equal(result.status, 0, result.stderr);
   for (const directory of ['', 'dist/']) {
-    for (const file of ['index.html', 'rengi-istanbul.html', 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html', 'terms-and-conditions.html']) {
+    for (const file of ['index.html', 'rengi-istanbul.html', 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html', 'terms-and-conditions.html', 'disclaimer.html']) {
       const html = readFileSync(join(f.root, directory, file), 'utf8');
       const footer = html.match(/<footer>[\s\S]*?<\/footer>/)[0];
       assert.equal(footer.includes('href="privacy-policy.html"'), file !== 'privacy-policy.html');
       assert.equal(footer.includes('href="cookie-policy.html"'), file !== 'cookie-policy.html');
       assert.equal(footer.includes('href="terms-and-conditions.html"'), file !== 'terms-and-conditions.html');
+      assert.equal(footer.includes('href="disclaimer.html"'), file !== 'disclaimer.html');
       assert.doesNotMatch(footer, /href="#"|<span>Cookie Policy<\/span>|<a[^>]*>\s*<\/a>/);
     }
   }
