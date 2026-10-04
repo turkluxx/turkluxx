@@ -65,7 +65,7 @@ test('Privacy Policy inherits the current Team shell without translating its leg
   assert.match(html, /<footer>Shared footer<\/footer>/);
   assert.match(html, /<main lang="en" dir="ltr" data-i18n-ignore>/);
   assert.match(html, /Exact legal wording\./);
-  assert.match(html, /https:\/\/turkluxx.com\/privacy-policy/);
+  assert.match(html, /https:\/\/turkluxx.com\/privacy-policy\.html"/);
   assert.doesNotMatch(html, /Team biographies|data-i18n="team.pageTitle"/);
   assert.match(readFileSync(join(f.root, 'dist/meet-our-team.html'), 'utf8'), /Team biographies/);
   f.put('meet-our-team.html', shell.replace('Shared header', 'Updated header').replace('Shared footer', 'Updated footer'));
@@ -78,7 +78,7 @@ test('Privacy Policy inherits the current Team shell without translating its leg
   assert.match(source, /Updated header/); assert.match(source, /Updated footer/);
   const cookie = readFileSync(join(f.root, 'dist/cookie-policy.html'), 'utf8');
   assert.match(cookie, /Updated header/); assert.match(cookie, /Updated footer/);
-  assert.match(cookie, /https:\/\/turkluxx.com\/cookie-policy/);
+  assert.match(cookie, /https:\/\/turkluxx.com\/cookie-policy\.html"/);
   assert.match(cookie, /Exact cookie wording\./);
   assert.doesNotMatch(cookie, /Team biographies|data-i18n="team.pageTitle"/);
   assert.match(readFileSync(join(f.root, 'cookie-policy.html'), 'utf8'), /href="css\/privacy-policy.css"/);
@@ -90,15 +90,16 @@ test('shared footer opens both policies and omits the current legal page without
   f.put('index.html', shell); f.put('rengi-istanbul.html', shell); f.put('meet-our-team.html', shell);
   f.put('privacy-policy.html', '<main>Privacy content</main>');
   f.put('cookie-policy.html', '<main>Cookie content</main>');
-  f.put('scripts/public-files.json', JSON.stringify([...f.files, 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html']));
+  f.put('terms-and-conditions.html', '<main>Terms content</main>');
+  f.put('scripts/public-files.json', JSON.stringify([...f.files, 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html', 'terms-and-conditions.html']));
   const result = f.run(); assert.equal(result.status, 0, result.stderr);
   for (const directory of ['', 'dist/']) {
-    for (const file of ['index.html', 'rengi-istanbul.html', 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html']) {
+    for (const file of ['index.html', 'rengi-istanbul.html', 'meet-our-team.html', 'privacy-policy.html', 'cookie-policy.html', 'terms-and-conditions.html']) {
       const html = readFileSync(join(f.root, directory, file), 'utf8');
       const footer = html.match(/<footer>[\s\S]*?<\/footer>/)[0];
-      assert.equal(footer.includes('href="/privacy-policy"'), file !== 'privacy-policy.html');
-      assert.equal(footer.includes('href="/cookie-policy"'), file !== 'cookie-policy.html');
-      assert.match(footer, /<span>Terms &amp; Conditions<\/span>/);
+      assert.equal(footer.includes('href="privacy-policy.html"'), file !== 'privacy-policy.html');
+      assert.equal(footer.includes('href="cookie-policy.html"'), file !== 'cookie-policy.html');
+      assert.equal(footer.includes('href="terms-and-conditions.html"'), file !== 'terms-and-conditions.html');
       assert.doesNotMatch(footer, /href="#"|<span>Cookie Policy<\/span>|<a[^>]*>\s*<\/a>/);
     }
   }

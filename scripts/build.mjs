@@ -15,9 +15,9 @@ const localScripts = html => [...html.matchAll(/<script\b[^>]*src="(js\/[^"]+)"[
 
 function footerPolicies(html, file) {
   return html.replace(/(<div\b[^>]*class="turkluxx-footer-legal"[^>]*>)([\s\S]*?)(<\/div>)/g, (_, open, body, close) => {
-    for (const [slug, label, className] of [['privacy-policy', 'Privacy Policy', 'turkluxx-privacy-link'], ['cookie-policy', 'Cookie Policy', 'turkluxx-policy-link']]) {
+    for (const [slug, label, className] of [['privacy-policy', 'Privacy Policy', 'turkluxx-privacy-link'], ['cookie-policy', 'Cookie Policy', 'turkluxx-policy-link'], ['terms-and-conditions', 'Terms &amp; Conditions', 'turkluxx-policy-link']]) {
       const entry = new RegExp(`<(?:a|span)\\b[^>]*>${label}<\\/(?:a|span)>`, 'g');
-      body = body.replace(entry, file === `${slug}.html` ? '' : `<a class="${className}" href="/${slug}">${label}</a>`);
+      body = body.replace(entry, file === `${slug}.html` ? '' : `<a class="${className}" href="${slug}.html">${label}</a>`);
     }
     return open + body + close;
   });
@@ -27,7 +27,7 @@ function syncPage(file, html) {
   return html;
 }
 function pageHtml(file) {
-  const legalPages = { 'privacy-policy.html': 'Privacy Policy', 'cookie-policy.html': 'Cookie Policy' };
+  const legalPages = { 'privacy-policy.html': 'Privacy Policy', 'cookie-policy.html': 'Cookie Policy', 'terms-and-conditions.html': 'Terms &amp; Conditions' };
   if (!Object.hasOwn(legalPages, file)) return syncPage(file, footerPolicies(read(file), file));
   // The Team page remains the single source for this page's complete shell.
   const template = read('meet-our-team.html');
@@ -35,7 +35,7 @@ function pageHtml(file) {
   if (!content || !/<main\b[\s\S]*?<\/main>/.test(template)) throw new Error('Missing Privacy Policy or Team page content');
   const html = template
     .replace(/<main\b[\s\S]*?<\/main>/, () => content)
-    .replace('https://turkluxx.com/meet-our-team.html', `https://turkluxx.com/${file.replace('.html', '')}`)
+    .replace('https://turkluxx.com/meet-our-team.html', `https://turkluxx.com/${file}`)
     .replace(/<title\b[^>]*>[\s\S]*?<\/title>/, `<title data-i18n-ignore>${legalPages[file]} — TurkLuxx</title>`)
     .replace('team-page"', 'team-page privacy-page"')
     .replace('<link rel="stylesheet" href="css/i18n.css">', '<link rel="stylesheet" href="css/privacy-policy.css">\n    <link rel="stylesheet" href="css/i18n.css">');
@@ -141,7 +141,7 @@ try {
   let largest = { file: '', size: 0 };
   for (const file of files) {
     const parts = file.split('/');
-    const allowed = /^(?:index\.html|rengi-istanbul\.html|rengi-antalya\.html|meet-our-team\.html|privacy-policy\.html|cookie-policy\.html)$/.test(file)
+    const allowed = /^(?:index\.html|rengi-istanbul\.html|rengi-antalya\.html|meet-our-team\.html|privacy-policy\.html|cookie-policy\.html|terms-and-conditions\.html)$/.test(file)
       || (/^locales\/(?:en|ru|es|ar|tr|nl)\.json$/.test(file))
       || (/^(?:css|js|img|assets)\//.test(file) && /^(?:\.css|\.js|\.png|\.jpg|\.jpeg|\.svg|\.webp|\.avif|\.gif|\.ico|\.woff2?)$/i.test(extname(file)));
     if (!allowed || file.includes('\\') || parts.some(part => !part || forbidden.test(part))) {
