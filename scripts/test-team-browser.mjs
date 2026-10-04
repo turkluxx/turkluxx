@@ -82,10 +82,13 @@ try {
             assert.equal(await evaluate('!!document.querySelector(".turkluxx-sales-nav a[href*=rengi-location]")'), false, 'Team Location item removed');
             assert.equal(await evaluate('document.title'), catalogs[code]['team.pageTitle']);
             const text = await evaluate(`[...document.querySelectorAll('.team-main [data-i18n]')].map(e=>({key:e.dataset.i18n,text:e.textContent}))`);
-            assert.equal(text.length, 29, 'Complete introduction, placeholders and biographies');
+            assert.equal(text.length, 25, 'Complete introduction and biographies');
             for (const item of text) assert.equal(item.text, catalogs[code][item.key], item.key);
             assert.deepEqual(await evaluate(`[...document.querySelectorAll('.team-biography h2')].map(e=>e.textContent)`), names);
-            assert.deepEqual(await evaluate(`[...document.querySelectorAll('.team-portrait')].map(e=>e.getAttribute('aria-label'))`), Array(4).fill(catalogs[code]['team.portrait']));
+            assert.deepEqual(await evaluate(`[...document.querySelectorAll('.team-portrait img')].map(e=>e.alt)`), names);
+            assert.deepEqual(await evaluate(`[...document.querySelectorAll('.team-portrait img')].map(e=>e.getAttribute('src'))`), ['Ahmad', 'Alma', 'Muhamed', 'Vladimir'].map(name => `img/about_us/${name}.png`));
+            assert.equal(await evaluate(`[...document.querySelectorAll('.team-portrait img')].every(e=>e.complete && e.naturalWidth>0 && getComputedStyle(e).objectFit==='cover')`), true, 'All portraits loaded and preserve proportions');
+            assert.equal(await evaluate(`document.querySelectorAll('.team-portrait[role], .team-portrait[aria-label], .team-portrait span').length`), 0, 'No placeholder text, initials or container accessibility labels');
             assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'), true, 'No page overflow');
             assert.equal(await evaluate(`/\\bVlad\\b/.test(document.querySelector('[aria-labelledby="team-vlad-name"]').textContent)`), false, 'Use Vladimir throughout the profile');
             const spacing = await evaluate(`(()=>{const section=document.querySelector('[aria-labelledby="team-vlad-name"]'),r=section.getBoundingClientRect(),children=[...section.children].map(e=>e.getBoundingClientRect()),footer=document.querySelector('#rengi-footer').getBoundingClientRect();return {top:Math.min(...children.map(r=>r.top))-r.top,bottom:footer.top-Math.max(...children.map(r=>r.bottom))}})()`);

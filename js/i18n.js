@@ -299,7 +299,7 @@
     }
     const ready = catalog('en').then(data => {
         english = data;
-        sourceKeys = new Map(Object.entries(data).filter(([key, value]) => !key.startsWith('mobile.nav.') && typeof value === 'string' && !value.includes('{'))
+        sourceKeys = new Map(Object.entries(data).filter(([key, value]) => !key.startsWith('mobile.nav.') && !key.startsWith('nav.') && typeof value === 'string' && !value.includes('{'))
             .map(([key, value]) => [normalize(value), key]));
         templates = Object.entries(data).filter(([, value]) => typeof value === 'string' && value.includes('{')).map(([key, value]) => {
             const names = [];
