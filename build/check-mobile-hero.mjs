@@ -90,6 +90,11 @@ await navigate('/?lang='+code);
 await evaluate('document.fonts.ready');
 const record=await evaluate(`(() => {const box=s=>{const e=document.querySelector(s),r=e.getBoundingClientRect(),c=getComputedStyle(e);return {x:r.x,y:r.y,width:r.width,height:r.height,font:c.fontSize,margin:c.marginTop,text:e.innerText}};return {lang:document.documentElement.lang,overflow:document.documentElement.scrollWidth>innerWidth,logo:box('.turkluxx-sales-logo > span'),tagline:box('.turkluxx-sales-logo small'),heading:box('.turkluxx-sales-heading'),cta:box('.turkluxx-mobile-primary-ctas'),hero:box('.turkluxx-sales-hero'),imageHeight:getComputedStyle(document.querySelector('.turkluxx-sales-hero'),'::before').height}})()`);
 record.width=width;records.push(record);
+const nav=await evaluate("[...document.querySelectorAll('.turkluxx-home-desktop-nav a')].map(e=>({display:getComputedStyle(e).display,align:getComputedStyle(e).textAlign,dir:getComputedStyle(e).direction,icon:getComputedStyle(e,'::before').backgroundImage,chevron:getComputedStyle(e,'::after').content}))");
+assert.equal(nav.length,4);
+for(const row of nav){if(width===390){assert.equal(row.display,'grid');assert.equal(row.align,'start');assert.equal(row.dir,code==='ar'?'rtl':'ltr');assert.ok(row.icon.includes('svg'));assert.ok(row.chevron.includes(String.fromCharCode(8250)));}else{assert.equal(row.icon,'none');assert.equal(row.chevron,'none');}}
+if(width===390){await evaluate("document.querySelector('.turkluxx-home-desktop-nav .turkluxx-roi-trigger').click()");assert.equal(await evaluate("document.querySelector('#turkluxx-roi').open"),true);await evaluate("document.querySelector('#turkluxx-roi').close()");}
+
 if(width===390){
 assert.equal(record.overflow,false);
 assert.equal(record.cta.margin,'0px');

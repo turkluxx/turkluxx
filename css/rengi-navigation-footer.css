@@ -4,7 +4,7 @@
 }
 
 @media (max-width: 767px) {
-    .rengi-page .turkluxx-sales-nav .rengi-desktop-contact { display: flex; }
+    .rengi-page .turkluxx-sales-nav .rengi-desktop-contact { display: grid; }
 
     /* Keep project-page branding; layout and type size use the shared mobile rules. */
     .rengi-page .rengi-header-shell .turkluxx-sales-nav a {

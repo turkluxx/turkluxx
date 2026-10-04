@@ -233,12 +233,12 @@
         color: #f3d992;
     }
 
-    .turkluxx-homepage .turkluxx-home-desktop-nav {
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
         align-items: center;
         gap: 0;
-        padding: 12px;
+        padding: 4px 12px;
         border: 1px solid #d8b66a66;
         border-radius: 10px;
         background: #071e34a6;
@@ -247,7 +247,7 @@
         box-shadow: inset 0 1px 0 #fffdf71a;
     }
 
-    .turkluxx-homepage .turkluxx-home-desktop-nav a {
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a {
         flex: 0 0 auto;
         min-height: 38px;
         font-size: 17px;
@@ -255,6 +255,62 @@
         line-height: 1.35;
         white-space: normal;
         text-transform: uppercase;
+    }
+
+    /* Mobile row decorations leave the shared desktop links and handlers intact. */
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr) 12px;
+        align-items: center;
+        column-gap: 10px;
+        min-height: 44px;
+        padding: 6px 0;
+        font-size: 15px;
+        text-align: start;
+    }
+
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a + a {
+        border-top: 1px solid rgb(216 182 106 / 24%);
+    }
+
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a::before {
+        content: '';
+        width: 22px;
+        height: 22px;
+        background: var(--turkluxx-mobile-nav-icon) center / contain no-repeat;
+    }
+
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a::after {
+        content: '›' / '';
+        color: #d8b66a;
+        font-size: 25px;
+        font-weight: 500;
+        line-height: 1;
+        text-align: center;
+    }
+
+    html[dir='rtl'] :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a::after {
+        transform: scaleX(-1);
+    }
+
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a[href='meet-our-team.html'] {
+        --turkluxx-mobile-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d8b66a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='7' r='3'/%3E%3Cpath d='M3 20v-3a6 6 0 0 1 12 0v3M16 4a3 3 0 0 1 0 6M18 13a5 5 0 0 1 3 4v3'/%3E%3C/svg%3E");
+    }
+
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a[href='#turkluxx-roi'] {
+        --turkluxx-mobile-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d8b66a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3v18h18M6 15l5-5 4 3 6-8M16 5h5v5'/%3E%3C/svg%3E");
+    }
+
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a:is([data-home-scroll='properties'], [href='./#turkluxx-project-heading']) {
+        --turkluxx-mobile-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d8b66a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10l9-7 9 7M5 9v12h14V9M9 21v-7h6v7'/%3E%3C/svg%3E");
+    }
+
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a[data-home-scroll='contact'] {
+        --turkluxx-mobile-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d8b66a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 6 9-6'/%3E%3C/svg%3E");
+    }
+
+    .rengi-header-shell .turkluxx-sales-nav a[data-home-scroll='location'] {
+        --turkluxx-mobile-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d8b66a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 0 1 14 0Z'/%3E%3Ccircle cx='12' cy='10' r='2.5'/%3E%3C/svg%3E");
     }
 }
 
@@ -547,7 +603,7 @@
         display: none;
     }
 
-    .turkluxx-homepage .turkluxx-home-desktop-nav {
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) {
         display: flex;
         gap: clamp(20px, 2vw, 36px);
         min-width: 0;
@@ -1098,6 +1154,10 @@
     padding: 44px;
     overscroll-behavior: contain;
     scroll-padding-block: 24px;
+
+    :is(.turkluxx-homepage .turkluxx-home-desktop-nav, .rengi-header-shell .turkluxx-sales-nav) a[data-home-scroll='location'] {
+        --turkluxx-mobile-nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d8b66a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 0 1 14 0Z'/%3E%3Ccircle cx='12' cy='10' r='2.5'/%3E%3C/svg%3E");
+    }
 }
 :is(.turkluxx-roi-modal, .turkluxx-info-modal) :is(.turkluxx-roi-label, .turkluxx-info-label) {
     margin: 0 32px 18px 0;

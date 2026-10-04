@@ -1,0 +1,3 @@
+﻿import {readFile,writeFile} from 'node:fs/promises';
+const labels={en:['Meet Our Team','ROI (30%–70%)','Explore Properties','Contact'],nl:['Ons Team','ROI (30%–70%)','Bekijk Vastgoed','Contact'],ru:['Наша команда','Доходность (30%–70%)','Виллы','Связаться'],es:['Nuestro Equipo','Rentabilidad (30%–70%)','Ver Propiedades','Contacto'],tr:['Ekibimiz','Getiri (30%–70%)','Villalar','İletişim'],ar:['فريقنا','العائد (30%–70%)','الفلل','تواصل معنا']};
+for(const [lang,values]of Object.entries(labels)){const p='locales/'+lang+'.json';const s=await readFile(p,'utf8');const additions=values.map((v,i)=>'  '+JSON.stringify('mobile.nav.'+['team','roi','properties','contact'][i])+': '+JSON.stringify(v)).join(',\n');await writeFile(p,s.replace(/\n}\s*$/,',\n'+additions+'\n}\n'));}

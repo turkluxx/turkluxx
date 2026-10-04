@@ -9,6 +9,18 @@
     const phraseOrders = new WeakMap();
     const selectorQuery = '.turkluxx-sales-language select, .turkluxx-language-select';
     const normalize = text => text.replace(/\s+/gu, ' ').trim();
+    const mobileNavigation = window.matchMedia('(max-width: 767px)');
+    // Bind short labels only to existing header links; destinations remain intact.
+    document.querySelectorAll('.turkluxx-home-desktop-nav a, .rengi-header-shell .turkluxx-sales-nav a').forEach(link => {
+        const href = link.getAttribute('href');
+        const kind = href === 'meet-our-team.html' ? 'team'
+            : link.classList.contains('turkluxx-roi-trigger') ? 'roi'
+            : link.dataset.homeScroll === 'contact' ? 'contact'
+            : link.dataset.homeScroll === 'properties' || href === './#turkluxx-project-heading' ? 'properties' : null;
+        if (!kind) return;
+        link.dataset.i18nMobile = `mobile.nav.${kind}`;
+        link.dataset.i18n ||= { team: 'team.nav', roi: 'common.roi_30_70', properties: 'home.explore_properties', contact: 'common.contact_us' }[kind];
+    });
     let language = 'en', english = {}, sourceKeys = new Map(), templates = [], requestId = 0;
     try {
         const requested = new URLSearchParams(location.search).get('lang');
@@ -68,7 +80,7 @@
         } else if (element.textContent !== value) element.textContent = value;
         record.output = value;
     }
-    const ignored = node => node.parentElement?.closest('script, style, noscript, svg, select, [data-i18n-ignore], [data-i18n-text]');
+    const ignored = node => node.parentElement?.closest('script, style, noscript, svg, select, [data-i18n-ignore], [data-i18n-text], [data-i18n-mobile]');
     function translate(root = document.documentElement) {
         observer.disconnect();
         try {
@@ -102,7 +114,8 @@
                 attributes.set(element, records);
             }
             for (const element of root.querySelectorAll('[data-i18n]')) {
-                const value = t(element.dataset.i18n);
+                const key = mobileNavigation.matches && element.dataset.i18nMobile ? element.dataset.i18nMobile : element.dataset.i18n;
+                const value = t(key);
                 if (value && element.textContent !== value) element.textContent = value;
             }
             for (const element of [root, ...root.querySelectorAll('[data-i18n-bound]')]) {
@@ -278,7 +291,7 @@
     }
     const ready = catalog('en').then(data => {
         english = data;
-        sourceKeys = new Map(Object.entries(data).filter(([, value]) => typeof value === 'string' && !value.includes('{'))
+        sourceKeys = new Map(Object.entries(data).filter(([key, value]) => !key.startsWith('mobile.nav.') && typeof value === 'string' && !value.includes('{'))
             .map(([key, value]) => [normalize(value), key]));
         templates = Object.entries(data).filter(([, value]) => typeof value === 'string' && value.includes('{')).map(([key, value]) => {
             const names = [];
@@ -288,6 +301,7 @@
         }).sort((a, b) => english[b.key].replace(/\{[^}]+\}/g, '').length - english[a.key].replace(/\{[^}]+\}/g, '').length);
     });
     window.TurkLuxxI18n = { t, text, bind, setLanguage, get language() { return language; }, ready };
+    mobileNavigation.addEventListener('change', () => ready.then(() => translate()));
     selectors();
     setLanguage(language);
 })();

@@ -1,0 +1,260 @@
+[
+  {
+    "path": "/",
+    "code": "en",
+    "height": 186,
+    "labels": [
+      "Meet Our Team",
+      "ROI (30%–70%)",
+      "Explore Properties",
+      "Contact"
+    ]
+  },
+  {
+    "path": "/",
+    "code": "nl",
+    "height": 186,
+    "labels": [
+      "Ons Team",
+      "ROI (30%–70%)",
+      "Bekijk Vastgoed",
+      "Contact"
+    ]
+  },
+  {
+    "path": "/",
+    "code": "ru",
+    "height": 186,
+    "labels": [
+      "Наша команда",
+      "Доходность (30%–70%)",
+      "Виллы",
+      "Связаться"
+    ]
+  },
+  {
+    "path": "/",
+    "code": "es",
+    "height": 186,
+    "labels": [
+      "Nuestro Equipo",
+      "Rentabilidad (30%–70%)",
+      "Ver Propiedades",
+      "Contacto"
+    ]
+  },
+  {
+    "path": "/",
+    "code": "tr",
+    "height": 186,
+    "labels": [
+      "Ekibimiz",
+      "Getiri (30%–70%)",
+      "Villalar",
+      "İletişim"
+    ]
+  },
+  {
+    "path": "/",
+    "code": "ar",
+    "height": 186,
+    "labels": [
+      "فريقنا",
+      "العائد (30%–70%)",
+      "الفلل",
+      "تواصل معنا"
+    ]
+  },
+  {
+    "path": "/rengi-istanbul.html",
+    "code": "en",
+    "height": 186,
+    "labels": [
+      "Meet Our Team",
+      "Location",
+      "ROI (30%–70%)",
+      "Contact"
+    ]
+  },
+  {
+    "path": "/rengi-istanbul.html",
+    "code": "nl",
+    "height": 186,
+    "labels": [
+      "Ons Team",
+      "Locatie",
+      "ROI (30%–70%)",
+      "Contact"
+    ]
+  },
+  {
+    "path": "/rengi-istanbul.html",
+    "code": "ru",
+    "height": 186,
+    "labels": [
+      "Наша команда",
+      "Расположение",
+      "Доходность (30%–70%)",
+      "Связаться"
+    ]
+  },
+  {
+    "path": "/rengi-istanbul.html",
+    "code": "es",
+    "height": 186,
+    "labels": [
+      "Nuestro Equipo",
+      "Ubicación",
+      "Rentabilidad (30%–70%)",
+      "Contacto"
+    ]
+  },
+  {
+    "path": "/rengi-istanbul.html",
+    "code": "tr",
+    "height": 186,
+    "labels": [
+      "Ekibimiz",
+      "Konum",
+      "Getiri (30%–70%)",
+      "İletişim"
+    ]
+  },
+  {
+    "path": "/rengi-istanbul.html",
+    "code": "ar",
+    "height": 186,
+    "labels": [
+      "فريقنا",
+      "الموقع",
+      "العائد (30%–70%)",
+      "تواصل معنا"
+    ]
+  },
+  {
+    "path": "/rengi-antalya.html",
+    "code": "en",
+    "height": 186,
+    "labels": [
+      "Meet Our Team",
+      "Location",
+      "ROI (30%–70%)",
+      "Contact"
+    ]
+  },
+  {
+    "path": "/rengi-antalya.html",
+    "code": "nl",
+    "height": 186,
+    "labels": [
+      "Ons Team",
+      "Locatie",
+      "ROI (30%–70%)",
+      "Contact"
+    ]
+  },
+  {
+    "path": "/rengi-antalya.html",
+    "code": "ru",
+    "height": 186,
+    "labels": [
+      "Наша команда",
+      "Расположение",
+      "Доходность (30%–70%)",
+      "Связаться"
+    ]
+  },
+  {
+    "path": "/rengi-antalya.html",
+    "code": "es",
+    "height": 186,
+    "labels": [
+      "Nuestro Equipo",
+      "Ubicación",
+      "Rentabilidad (30%–70%)",
+      "Contacto"
+    ]
+  },
+  {
+    "path": "/rengi-antalya.html",
+    "code": "tr",
+    "height": 186,
+    "labels": [
+      "Ekibimiz",
+      "Konum",
+      "Getiri (30%–70%)",
+      "İletişim"
+    ]
+  },
+  {
+    "path": "/rengi-antalya.html",
+    "code": "ar",
+    "height": 186,
+    "labels": [
+      "فريقنا",
+      "الموقع",
+      "العائد (30%–70%)",
+      "تواصل معنا"
+    ]
+  },
+  {
+    "path": "/meet-our-team.html",
+    "code": "en",
+    "height": 142,
+    "labels": [
+      "Explore Properties",
+      "ROI (30%–70%)",
+      "Contact"
+    ]
+  },
+  {
+    "path": "/meet-our-team.html",
+    "code": "nl",
+    "height": 142,
+    "labels": [
+      "Bekijk Vastgoed",
+      "ROI (30%–70%)",
+      "Contact"
+    ]
+  },
+  {
+    "path": "/meet-our-team.html",
+    "code": "ru",
+    "height": 142,
+    "labels": [
+      "Виллы",
+      "Доходность (30%–70%)",
+      "Связаться"
+    ]
+  },
+  {
+    "path": "/meet-our-team.html",
+    "code": "es",
+    "height": 142,
+    "labels": [
+      "Ver Propiedades",
+      "Rentabilidad (30%–70%)",
+      "Contacto"
+    ]
+  },
+  {
+    "path": "/meet-our-team.html",
+    "code": "tr",
+    "height": 142,
+    "labels": [
+      "Villalar",
+      "Getiri (30%–70%)",
+      "İletişim"
+    ]
+  },
+  {
+    "path": "/meet-our-team.html",
+    "code": "ar",
+    "height": 142,
+    "labels": [
+      "الفلل",
+      "العائد (30%–70%)",
+      "تواصل معنا"
+    ]
+  }
+]
