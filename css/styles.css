@@ -1664,12 +1664,14 @@
     }
 
     .turkluxx-sales-logo > span {
-        font-size: 38px;
+        font-size: clamp(44px, 13.33vw, 60px);
+        white-space: nowrap;
     }
 
     .turkluxx-sales-logo small {
-        font-size: 6px;
-        letter-spacing: 2px;
+        font-size: 11px;
+        letter-spacing: .8px;
+        line-height: 1.6;
     }
 
     .turkluxx-sales-language {
@@ -1678,20 +1680,29 @@
         margin-top: 2px;
     }
 
-    /* A compact two-row menu keeps all four existing links available without extra JS. */
+    /* Each mobile navigation item gets a full-width row, including wrapped translations. */
     .turkluxx-sales-nav {
         grid-area: nav;
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0 12px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+        padding: 12px;
         border-block: 1px solid #f3d99240;
         background: #071e3440;
         border-radius: 8px;
     }
 
     .turkluxx-sales-nav a {
-        font-size: 14px;
-        min-height: 44px;
+        width: 100%;
+        min-width: 0;
+        padding: 7.5px 0;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.35;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: normal;
+        min-height: 38px;
     }
 
     .turkluxx-sales-heading {
@@ -1779,7 +1790,7 @@
     }
 
     .turkluxx-sales-logo > span {
-        font-size: 34px;
+        font-size: 44px;
     }
 
     .turkluxx-sales-language {
@@ -2292,7 +2303,7 @@
     }
 }
 
-/* The primary mobile CTA retains the approved space below the hero text. */
+/* Primary mobile actions follow the heading with the hero's normal grid gap. */
 .turkluxx-mobile-primary-ctas {
     display: contents;
 }
@@ -2326,7 +2337,7 @@
         gap: 14px;
         justify-self: center;
         width: min(100%, 390px);
-        margin-top: 154px;
+        margin-top: 0;
     }
 
     .turkluxx-mobile-primary-ctas > * {

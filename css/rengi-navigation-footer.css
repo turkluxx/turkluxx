@@ -6,16 +6,9 @@
 @media (max-width: 767px) {
     .rengi-page .turkluxx-sales-nav .rengi-desktop-contact { display: flex; }
 
-    .rengi-page .rengi-header-shell .turkluxx-sales-nav {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    /* The homepage navigation's shared desktop type scale, with room for two columns. */
+    /* Keep project-page branding; layout and type size use the shared mobile rules. */
     .rengi-page .rengi-header-shell .turkluxx-sales-nav a {
         font-family: 'Manrope', sans-serif;
-        font-size: clamp(16px, 1.3vw, 20px);
-        font-weight: 600;
-        line-height: normal;
         letter-spacing: normal;
         text-shadow: 0 2px 6px #071e34;
     }

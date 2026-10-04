@@ -234,12 +234,11 @@
     }
 
     .turkluxx-homepage .turkluxx-home-desktop-nav {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
         align-items: center;
-        justify-content: space-evenly;
-        gap: 6px;
-        padding: 0 6px;
+        gap: 0;
+        padding: 12px;
         border: 1px solid #d8b66a66;
         border-radius: 10px;
         background: #071e34a6;
@@ -250,10 +249,11 @@
 
     .turkluxx-homepage .turkluxx-home-desktop-nav a {
         flex: 0 0 auto;
-        min-height: 44px;
-        font-size: clamp(9px, 2.55vw, 13px);
-        font-weight: 600;
-        white-space: nowrap;
+        min-height: 38px;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.35;
+        white-space: normal;
         text-transform: uppercase;
     }
 }

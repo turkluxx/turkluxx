@@ -130,8 +130,8 @@ html[lang="ar"] {
         min-inline-size: 0;
     }
 
-    html:not([lang="en"]) .turkluxx-sales-nav {
-        gap: 12px 16px;
+    html:not([lang="en"]) .turkluxx-sales-nav a {
+        overflow-wrap: normal;
     }
 
     html:not([lang="en"]) .rengi-villa-contact {

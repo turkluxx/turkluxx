@@ -1,0 +1,614 @@
+[
+  {
+    "lang": "en",
+    "overflow": false,
+    "logo": {
+      "x": 20,
+      "y": 20,
+      "width": 150.671875,
+      "height": 41.796875,
+      "font": "38px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 20,
+      "y": 67.796875,
+      "width": 150.671875,
+      "height": 21.59375,
+      "font": "6px",
+      "margin": "6px",
+      "text": "EXCEPTIONAL HOMES\nA BRIGHTER TOMORROW"
+    },
+    "heading": {
+      "x": 20,
+      "y": 307.390625,
+      "width": 350,
+      "height": 193.3125,
+      "font": "16px",
+      "margin": "0px",
+      "text": "LUXURY VILLAS\nIN ISTANBUL\n\nA PRESTIGIOUS HOME\nA BRIGHTER FUTURE\n\n◇"
+    },
+    "cta": {
+      "x": 20,
+      "y": 674.703125,
+      "width": 350,
+      "height": 142,
+      "font": "16px",
+      "margin": "154px",
+      "text": "REQUEST A CALLBACK\n+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 1435.09375,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nEXCEPTIONAL HOMES\nA BRIGHTER TOMORROW\nMEET OUR TEAM\nROI (30%–70%)\nEXPLORE PROPERTIES\nCONTACT US\nEN\nREQUEST A CALLBACK\n+1 (213) 732-2002\nLUXURY VILLAS\nIN ISTANBUL\n\nA PRESTIGIOUS HOME\nA BRIGHTER FUTURE\n\n◇\nTURKISH\nCITIZENSHIP\nBY INVESTMENT\n\nFOR YOU AND\nYOUR FAMILY\n\nSecure Your Future\nHigh-quality Education\nMore Opportunities\nA Second Home in a Global City\nLearn More\n⟶\nREQUEST A CALLBACK\n+1 (213) 732-2002"
+    },
+    "imageHeight": "650px",
+    "width": 390
+  },
+  {
+    "lang": "ru",
+    "overflow": false,
+    "logo": {
+      "x": 20,
+      "y": 20,
+      "width": 150.671875,
+      "height": 41.796875,
+      "font": "38px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 20,
+      "y": 67.796875,
+      "width": 150.671875,
+      "height": 21.59375,
+      "font": "6px",
+      "margin": "6px",
+      "text": "ИСКЛЮЧИТЕЛЬНЫЕ ДОМА\nСВЕТЛОЕ БУДУЩЕЕ"
+    },
+    "heading": {
+      "x": 20,
+      "y": 330.265625,
+      "width": 350,
+      "height": 193.3125,
+      "font": "16px",
+      "margin": "0px",
+      "text": "РОСКОШНЫЕ ВИЛЛЫ\nВ СТАМБУЛЕ\n\nПРЕСТИЖНЫЙ ДОМ\nСВЕТЛОЕ БУДУЩЕЕ\n\n◇"
+    },
+    "cta": {
+      "x": 20,
+      "y": 697.578125,
+      "width": 350,
+      "height": 142,
+      "font": "16px",
+      "margin": "154px",
+      "text": "ЗАКАЗАТЬ ЗВОНОК\n+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 1457.96875,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nИСКЛЮЧИТЕЛЬНЫЕ ДОМА\nСВЕТЛОЕ БУДУЩЕЕ\nНАША КОМАНДА\nДОХОДНОСТЬ ИНВЕСТИЦИЙ (30%–70%)\nПОСМОТРЕТЬ НЕДВИЖИМОСТЬ\nСВЯЗАТЬСЯ С НАМИ\nRU\nЗАКАЗАТЬ ЗВОНОК\n+1 (213) 732-2002\nРОСКОШНЫЕ ВИЛЛЫ\nВ СТАМБУЛЕ\n\nПРЕСТИЖНЫЙ ДОМ\nСВЕТЛОЕ БУДУЩЕЕ\n\n◇\nТУРЕЦКОЕ\nГРАЖДАНСТВО\nЗА ИНВЕСТИЦИИ\n\nДЛЯ ВАС И\nВАШЕЙ СЕМЬИ\n\nПозаботьтесь о будущем\nКачественное образование\nБольше возможностей\nВторой дом в мировом мегаполисе\nУзнать больше\n⟶\nЗАКАЗАТЬ ЗВОНОК\n+1 (213) 732-2002"
+    },
+    "imageHeight": "650px",
+    "width": 390
+  },
+  {
+    "lang": "es",
+    "overflow": false,
+    "logo": {
+      "x": 20,
+      "y": 20,
+      "width": 150.671875,
+      "height": 41.796875,
+      "font": "38px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 20,
+      "y": 67.796875,
+      "width": 150.671875,
+      "height": 21.59375,
+      "font": "6px",
+      "margin": "6px",
+      "text": "HOGARES EXCEPCIONALES\nUN MAÑANA MÁS BRILLANTE"
+    },
+    "heading": {
+      "x": 20,
+      "y": 307.390625,
+      "width": 350,
+      "height": 193.3125,
+      "font": "16px",
+      "margin": "0px",
+      "text": "VILLAS DE LUJO\nEN ESTAMBUL\n\nUN HOGAR PRESTIGIOSO\nUN FUTURO MÁS BRILLANTE\n\n◇"
+    },
+    "cta": {
+      "x": 20,
+      "y": 674.703125,
+      "width": 350,
+      "height": 142,
+      "font": "16px",
+      "margin": "154px",
+      "text": "SOLICITAR UNA LLAMADA\n+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 1459.09375,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nHOGARES EXCEPCIONALES\nUN MAÑANA MÁS BRILLANTE\nCONOZCA A NUESTRO EQUIPO\nRETORNO DE LA INVERSIÓN (30%–70%)\nDESCUBRA LAS PROPIEDADES\nCONTACTE CON NOSOTROS\nES\nSOLICITAR UNA LLAMADA\n+1 (213) 732-2002\nVILLAS DE LUJO\nEN ESTAMBUL\n\nUN HOGAR PRESTIGIOSO\nUN FUTURO MÁS BRILLANTE\n\n◇\nCIUDADANÍA\nTURCA\nPOR INVERSIÓN\n\nPARA USTED Y\nSU FAMILIA\n\nAsegure su futuro\nEducación de calidad\nMás oportunidades\nUn segundo hogar en una ciudad global\nMás información\n⟶\nSOLICITAR UNA LLAMADA\n+1 (213) 732-2002"
+    },
+    "imageHeight": "650px",
+    "width": 390
+  },
+  {
+    "lang": "ar",
+    "overflow": false,
+    "logo": {
+      "x": 20,
+      "y": 20,
+      "width": 150.671875,
+      "height": 41.796875,
+      "font": "38px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 20,
+      "y": 67.796875,
+      "width": 150.671875,
+      "height": 21.59375,
+      "font": "6px",
+      "margin": "6px",
+      "text": "منازل استثنائية\nغد أكثر إشراقًا"
+    },
+    "heading": {
+      "x": 20,
+      "y": 307.390625,
+      "width": 350,
+      "height": 193.3125,
+      "font": "16px",
+      "margin": "0px",
+      "text": "فلل فاخرة\nفي إسطنبول\n\nمنزل راقٍ\nمستقبل أكثر إشراقًا\n\n◇"
+    },
+    "cta": {
+      "x": 20,
+      "y": 674.703125,
+      "width": 350,
+      "height": 142,
+      "font": "16px",
+      "margin": "154px",
+      "text": "اطلب معاودة الاتصال\n+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 1435.09375,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nمنازل استثنائية\nغد أكثر إشراقًا\nتعرّف على فريقنا\nالعائد على الاستثمار (30%–70%)\nاستكشف العقارات\nتواصل معنا\nAR\nاطلب معاودة الاتصال\n+1 (213) 732-2002\nفلل فاخرة\nفي إسطنبول\n\nمنزل راقٍ\nمستقبل أكثر إشراقًا\n\n◇\nالجنسية\nالتركية\nعن طريق الاستثمار\n\nلك\nولعائلتك\n\nأمّن مستقبلك\nتعليم عالي الجودة\nفرص أكثر\nمنزل ثانٍ في مدينة عالمية\nاعرف المزيد\n⟶\nاطلب معاودة الاتصال\n+1 (213) 732-2002"
+    },
+    "imageHeight": "650px",
+    "width": 390
+  },
+  {
+    "lang": "tr",
+    "overflow": false,
+    "logo": {
+      "x": 20,
+      "y": 20,
+      "width": 150.671875,
+      "height": 41.796875,
+      "font": "38px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 20,
+      "y": 67.796875,
+      "width": 150.671875,
+      "height": 21.59375,
+      "font": "6px",
+      "margin": "6px",
+      "text": "SEÇKİN EVLER\nDAHA AYDINLIK BİR YARIN"
+    },
+    "heading": {
+      "x": 20,
+      "y": 307.390625,
+      "width": 350,
+      "height": 193.3125,
+      "font": "16px",
+      "margin": "0px",
+      "text": "LÜKS VİLLALAR\nİSTANBUL'DA\n\nPRESTİJLİ BİR EV\nDAHA AYDINLIK BİR GELECEK\n\n◇"
+    },
+    "cta": {
+      "x": 20,
+      "y": 674.703125,
+      "width": 350,
+      "height": 142,
+      "font": "16px",
+      "margin": "154px",
+      "text": "SİZİ ARAYALIM\n+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 1435.09375,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nSEÇKİN EVLER\nDAHA AYDINLIK BİR YARIN\nEKİBİMİZLE TANIŞIN\nYATIRIM GETİRİSİ (30%–70%)\nGAYRİMENKULLERİ KEŞFEDİN\nBİZE ULAŞIN\nTR\nSİZİ ARAYALIM\n+1 (213) 732-2002\nLÜKS VİLLALAR\nİSTANBUL'DA\n\nPRESTİJLİ BİR EV\nDAHA AYDINLIK BİR GELECEK\n\n◇\nTÜRK\nVATANDAŞLIĞI\nYATIRIM YOLUYLA\n\nSİZ VE\nAİLENİZ İÇİN\n\nGeleceğinizi güvenceye alın\nKaliteli eğitim\nDaha fazla fırsat\nDünya şehrinde ikinci bir ev\nDaha fazla bilgi\n⟶\nSİZİ ARAYALIM\n+1 (213) 732-2002"
+    },
+    "imageHeight": "650px",
+    "width": 390
+  },
+  {
+    "lang": "nl",
+    "overflow": false,
+    "logo": {
+      "x": 20,
+      "y": 20,
+      "width": 150.671875,
+      "height": 41.796875,
+      "font": "38px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 20,
+      "y": 67.796875,
+      "width": 150.671875,
+      "height": 21.59375,
+      "font": "6px",
+      "margin": "6px",
+      "text": "BIJZONDERE WONINGEN\nEEN MOOIERE TOEKOMST"
+    },
+    "heading": {
+      "x": 20,
+      "y": 330.265625,
+      "width": 350,
+      "height": 193.3125,
+      "font": "16px",
+      "margin": "0px",
+      "text": "LUXE VILLA'S\nIN ISTANBUL\n\nEEN PRESTIGIEUZE WONING\nEEN MOOIERE TOEKOMST\n\n◇"
+    },
+    "cta": {
+      "x": 20,
+      "y": 697.578125,
+      "width": 350,
+      "height": 142,
+      "font": "16px",
+      "margin": "154px",
+      "text": "VRAAG EEN TERUGBELGESPREK AAN\n+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 1457.96875,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nBIJZONDERE WONINGEN\nEEN MOOIERE TOEKOMST\nMAAK KENNIS MET ONS TEAM\nRENDEMENT OP INVESTERING (30%–70%)\nONTDEK HET VASTGOED\nNEEM CONTACT OP\nNL\nVRAAG EEN TERUGBELGESPREK AAN\n+1 (213) 732-2002\nLUXE VILLA'S\nIN ISTANBUL\n\nEEN PRESTIGIEUZE WONING\nEEN MOOIERE TOEKOMST\n\n◇\nTURKS\nSTAATSBURGERSCHAP\nDOOR INVESTERING\n\nVOOR U EN\nUW GEZIN\n\nStel uw toekomst veilig\nHoogwaardig onderwijs\nMeer mogelijkheden\nEen tweede thuis in een wereldstad\nMeer informatie\n⟶\nVRAAG EEN TERUGBELGESPREK AAN\n+1 (213) 732-2002"
+    },
+    "imageHeight": "650px",
+    "width": 390
+  },
+  {
+    "lang": "en",
+    "overflow": false,
+    "logo": {
+      "x": 45.234375,
+      "y": 32.59375,
+      "width": 273.6875,
+      "height": 70.296875,
+      "font": "66.96px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 45.234375,
+      "y": 111.890625,
+      "width": 273.6875,
+      "height": 28.78125,
+      "font": "8px",
+      "margin": "9px",
+      "text": "EXCEPTIONAL HOMES\nA BRIGHTER TOMORROW"
+    },
+    "heading": {
+      "x": 399,
+      "y": 128.6875,
+      "width": 726.75,
+      "height": 281.0625,
+      "font": "16px",
+      "margin": "0px",
+      "text": "LUXURY VILLAS\nIN ISTANBUL\n\nA PRESTIGIOUS HOME\nA BRIGHTER FUTURE\n\n◇"
+    },
+    "cta": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "font": "16px",
+      "margin": "0px",
+      "text": "+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 1425,
+      "height": 900,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nEXCEPTIONAL HOMES\nA BRIGHTER TOMORROW\nMeet Our Team\nROI (30%–70%)\nExplore Properties\nContact Us\nEN\n+1 (213) 732-2002\nLUXURY VILLAS\nIN ISTANBUL\n\nA PRESTIGIOUS HOME\nA BRIGHTER FUTURE\n\n◇\nTURKISH\nCITIZENSHIP\nBY INVESTMENT\n\nFOR YOU AND\nYOUR FAMILY\n\nSecure Your Future\nHigh-quality Education\nMore Opportunities\nA Second Home in a Global City\nLearn More\n⟶\nREQUEST A CALLBACK\n+1 (213) 732-2002\n\nWONDERFUL CLIMATE\nALL YEAR ROUND\n\nMILD WINTERSSUNNY SUMMERS\nPERFECT FOR FAMILY LIFE\n\nBREATHTAKING\nSEA VIEWS\nGREEN & SAFE\nNEIGHBORHOODS\nSPACIOUS\nLUXURY VILLAS\nIDEAL FOR\nFAMILIES\nPRIVACY\n& SECURITY\nHIGH INVESTMENT\nVALUE\nCLOSE TO TOP SCHOOLS,\nSHOPPING & CITY CENTER"
+    },
+    "imageHeight": "900px",
+    "width": 1440
+  },
+  {
+    "lang": "ru",
+    "overflow": false,
+    "logo": {
+      "x": 45.234375,
+      "y": 32.59375,
+      "width": 273.6875,
+      "height": 70.296875,
+      "font": "66.96px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 45.234375,
+      "y": 111.890625,
+      "width": 273.6875,
+      "height": 28.78125,
+      "font": "8px",
+      "margin": "9px",
+      "text": "ИСКЛЮЧИТЕЛЬНЫЕ ДОМА\nСВЕТЛОЕ БУДУЩЕЕ"
+    },
+    "heading": {
+      "x": 399,
+      "y": 128.6875,
+      "width": 726.75,
+      "height": 281.0625,
+      "font": "16px",
+      "margin": "0px",
+      "text": "РОСКОШНЫЕ ВИЛЛЫ\nВ СТАМБУЛЕ\n\nПРЕСТИЖНЫЙ ДОМ\nСВЕТЛОЕ БУДУЩЕЕ\n\n◇"
+    },
+    "cta": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "font": "16px",
+      "margin": "0px",
+      "text": "+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 1425,
+      "height": 900,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nИСКЛЮЧИТЕЛЬНЫЕ ДОМА\nСВЕТЛОЕ БУДУЩЕЕ\nНаша команда\nДоходность инвестиций (30%–70%)\nПосмотреть недвижимость\nСвязаться с нами\nRU\n+1 (213) 732-2002\nРОСКОШНЫЕ ВИЛЛЫ\nВ СТАМБУЛЕ\n\nПРЕСТИЖНЫЙ ДОМ\nСВЕТЛОЕ БУДУЩЕЕ\n\n◇\nТУРЕЦКОЕ\nГРАЖДАНСТВО\nЗА ИНВЕСТИЦИИ\n\nДЛЯ ВАС И\nВАШЕЙ СЕМЬИ\n\nПозаботьтесь о будущем\nКачественное образование\nБольше возможностей\nВторой дом в мировом мегаполисе\nУзнать больше\n⟶\nЗАКАЗАТЬ ЗВОНОК\n+1 (213) 732-2002\n\nПРЕКРАСНЫЙ КЛИМАТ\nКРУГЛЫЙ ГОД\n\nМЯГКАЯ ЗИМАСОЛНЕЧНОЕ ЛЕТО\nИДЕАЛЬНО ДЛЯ СЕМЕЙНОЙ ЖИЗНИ\n\nЗАХВАТЫВАЮЩИЕ\nВИДЫ НА МОРЕ\nЗЕЛЁНЫЕ И БЕЗОПАСНЫЕ\nРАЙОНЫ\nПРОСТОРНЫЕ\nРОСКОШНЫЕ ВИЛЛЫ\nИДЕАЛЬНО ДЛЯ\nСЕМЕЙ\nПРИВАТНОСТЬ\nИ БЕЗОПАСНОСТЬ\nВЫСОКАЯ ИНВЕСТИЦИОННАЯ\nЦЕННОСТЬ\nРЯДОМ С ЛУЧШИМИ ШКОЛАМИ,\nМАГАЗИНАМИ И ЦЕНТРОМ ГОРОДА"
+    },
+    "imageHeight": "900px",
+    "width": 1440
+  },
+  {
+    "lang": "es",
+    "overflow": false,
+    "logo": {
+      "x": 45.234375,
+      "y": 32.59375,
+      "width": 273.6875,
+      "height": 70.296875,
+      "font": "66.96px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 45.234375,
+      "y": 111.890625,
+      "width": 273.6875,
+      "height": 28.78125,
+      "font": "8px",
+      "margin": "9px",
+      "text": "HOGARES EXCEPCIONALES\nUN MAÑANA MÁS BRILLANTE"
+    },
+    "heading": {
+      "x": 399,
+      "y": 128.6875,
+      "width": 726.75,
+      "height": 281.0625,
+      "font": "16px",
+      "margin": "0px",
+      "text": "VILLAS DE LUJO\nEN ESTAMBUL\n\nUN HOGAR PRESTIGIOSO\nUN FUTURO MÁS BRILLANTE\n\n◇"
+    },
+    "cta": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "font": "16px",
+      "margin": "0px",
+      "text": "+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 1425,
+      "height": 900,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nHOGARES EXCEPCIONALES\nUN MAÑANA MÁS BRILLANTE\nConozca a nuestro equipo\nRetorno de la inversión (30%–70%)\nDescubra las propiedades\nContacte con nosotros\nES\n+1 (213) 732-2002\nVILLAS DE LUJO\nEN ESTAMBUL\n\nUN HOGAR PRESTIGIOSO\nUN FUTURO MÁS BRILLANTE\n\n◇\nCIUDADANÍA\nTURCA\nPOR INVERSIÓN\n\nPARA USTED Y\nSU FAMILIA\n\nAsegure su futuro\nEducación de calidad\nMás oportunidades\nUn segundo hogar en una ciudad global\nMás información\n⟶\nSOLICITAR UNA LLAMADA\n+1 (213) 732-2002\n\nUN CLIMA MARAVILLOSO\nTODO EL AÑO\n\nINVIERNOS SUAVESVERANOS SOLEADOS\nIDEAL PARA LA VIDA EN FAMILIA\n\nIMPRESIONANTES\nVISTAS AL MAR\nVERDES Y SEGUROS\nBARRIOS\nESPACIOSAS\nVILLAS DE LUJO\nIDEALES PARA\nFAMILIAS\nPRIVACIDAD\nY SEGURIDAD\nALTO VALOR\nDE INVERSIÓN\nCERCA DE EXCELENTES COLEGIOS,\nTIENDAS Y EL CENTRO"
+    },
+    "imageHeight": "900px",
+    "width": 1440
+  },
+  {
+    "lang": "ar",
+    "overflow": false,
+    "logo": {
+      "x": 45.234375,
+      "y": 32.59375,
+      "width": 273.6875,
+      "height": 70.296875,
+      "font": "66.96px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 45.234375,
+      "y": 111.890625,
+      "width": 273.6875,
+      "height": 28.78125,
+      "font": "8px",
+      "margin": "9px",
+      "text": "منازل استثنائية\nغد أكثر إشراقًا"
+    },
+    "heading": {
+      "x": 399,
+      "y": 128.6875,
+      "width": 726.75,
+      "height": 281.0625,
+      "font": "16px",
+      "margin": "0px",
+      "text": "فلل فاخرة\nفي إسطنبول\n\nمنزل راقٍ\nمستقبل أكثر إشراقًا\n\n◇"
+    },
+    "cta": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "font": "16px",
+      "margin": "0px",
+      "text": "+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 1425,
+      "height": 900,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nمنازل استثنائية\nغد أكثر إشراقًا\nتعرّف على فريقنا\nالعائد على الاستثمار (30%–70%)\nاستكشف العقارات\nتواصل معنا\nAR\n+1 (213) 732-2002\nفلل فاخرة\nفي إسطنبول\n\nمنزل راقٍ\nمستقبل أكثر إشراقًا\n\n◇\nالجنسية\nالتركية\nعن طريق الاستثمار\n\nلك\nولعائلتك\n\nأمّن مستقبلك\nتعليم عالي الجودة\nفرص أكثر\nمنزل ثانٍ في مدينة عالمية\nاعرف المزيد\n⟶\nاطلب معاودة الاتصال\n+1 (213) 732-2002\n\nمناخ رائع\nطوال العام\n\nشتاء معتدلصيف مشمس\nمثالي للحياة العائلية\n\nإطلالات على البحر\nخلابة\nأحياء\nخضراء وآمنة\nفلل فاخرة\nواسعة\nمثالية لـ\nالعائلات\nخصوصية\nوأمان\nاستثمار ذو\nقيمة عالية\nبالقرب من أفضل المدارس،\nوالتسوق ومركز المدينة"
+    },
+    "imageHeight": "900px",
+    "width": 1440
+  },
+  {
+    "lang": "tr",
+    "overflow": false,
+    "logo": {
+      "x": 45.234375,
+      "y": 32.59375,
+      "width": 273.6875,
+      "height": 70.296875,
+      "font": "66.96px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 45.234375,
+      "y": 111.890625,
+      "width": 273.6875,
+      "height": 28.78125,
+      "font": "8px",
+      "margin": "9px",
+      "text": "SEÇKİN EVLER\nDAHA AYDINLIK BİR YARIN"
+    },
+    "heading": {
+      "x": 399,
+      "y": 128.6875,
+      "width": 726.75,
+      "height": 281.0625,
+      "font": "16px",
+      "margin": "0px",
+      "text": "LÜKS VİLLALAR\nİSTANBUL'DA\n\nPRESTİJLİ BİR EV\nDAHA AYDINLIK BİR GELECEK\n\n◇"
+    },
+    "cta": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "font": "16px",
+      "margin": "0px",
+      "text": "+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 1425,
+      "height": 900,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nSEÇKİN EVLER\nDAHA AYDINLIK BİR YARIN\nEkibimizle Tanışın\nYatırım Getirisi (30%–70%)\nGayrimenkulleri keşfedin\nBize ulaşın\nTR\n+1 (213) 732-2002\nLÜKS VİLLALAR\nİSTANBUL'DA\n\nPRESTİJLİ BİR EV\nDAHA AYDINLIK BİR GELECEK\n\n◇\nTÜRK\nVATANDAŞLIĞI\nYATIRIM YOLUYLA\n\nSİZ VE\nAİLENİZ İÇİN\n\nGeleceğinizi güvenceye alın\nKaliteli eğitim\nDaha fazla fırsat\nDünya şehrinde ikinci bir ev\nDaha fazla bilgi\n⟶\nSİZİ ARAYALIM\n+1 (213) 732-2002\n\nHARİKA BİR İKLİM\nYIL BOYUNCA\n\nILIMAN KIŞLARGÜNEŞLİ YAZLAR\nAİLE YAŞAMI İÇİN İDEAL\n\nNEFES KESEN\nDENİZ MANZARALARI\nYEŞİL VE GÜVENLİ\nSEMTLER\nFERAH\nLÜKS VİLLALAR\nİDEAL\nAİLELER İÇİN\nMAHREMİYET\nVE GÜVENLİK\nYÜKSEK YATIRIM\nDEĞERİ\nSEÇKİN OKULLARA,\nALIŞVERİŞE VE ŞEHİR MERKEZİNE YAKIN"
+    },
+    "imageHeight": "900px",
+    "width": 1440
+  },
+  {
+    "lang": "nl",
+    "overflow": false,
+    "logo": {
+      "x": 45.234375,
+      "y": 32.59375,
+      "width": 273.6875,
+      "height": 70.296875,
+      "font": "66.96px",
+      "margin": "0px",
+      "text": "TurkLuxx"
+    },
+    "tagline": {
+      "x": 45.234375,
+      "y": 111.890625,
+      "width": 273.6875,
+      "height": 28.78125,
+      "font": "8px",
+      "margin": "9px",
+      "text": "BIJZONDERE WONINGEN\nEEN MOOIERE TOEKOMST"
+    },
+    "heading": {
+      "x": 399,
+      "y": 128.6875,
+      "width": 726.75,
+      "height": 281.0625,
+      "font": "16px",
+      "margin": "0px",
+      "text": "LUXE VILLA'S\nIN ISTANBUL\n\nEEN PRESTIGIEUZE WONING\nEEN MOOIERE TOEKOMST\n\n◇"
+    },
+    "cta": {
+      "x": 0,
+      "y": 0,
+      "width": 0,
+      "height": 0,
+      "font": "16px",
+      "margin": "0px",
+      "text": "+1 (213) 732-2002"
+    },
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 1425,
+      "height": 900,
+      "font": "16px",
+      "margin": "0px",
+      "text": "TurkLuxx\nBIJZONDERE WONINGEN\nEEN MOOIERE TOEKOMST\nMaak kennis met ons team\nRendement op investering (30%–70%)\nOntdek het vastgoed\nNeem contact op\nNL\n+1 (213) 732-2002\nLUXE VILLA'S\nIN ISTANBUL\n\nEEN PRESTIGIEUZE WONING\nEEN MOOIERE TOEKOMST\n\n◇\nTURKS\nSTAATSBURGERSCHAP\nDOOR INVESTERING\n\nVOOR U EN\nUW GEZIN\n\nStel uw toekomst veilig\nHoogwaardig onderwijs\nMeer mogelijkheden\nEen tweede thuis in een wereldstad\nMeer informatie\n⟶\nVRAAG EEN TERUGBELGESPREK AAN\n+1 (213) 732-2002\n\nHEERLIJK KLIMAAT\nHET HELE JAAR DOOR\n\nZACHTE WINTERSZONNIGE ZOMERS\nIDEAAL VOOR HET GEZINSLEVEN\n\nADEMBENEMENDE\nUITZICHTEN OP ZEE\nGROENE EN VEILIGE\nBUURTEN\nRUIME\nLUXE VILLA'S\nIDEAAL VOOR\nGEZINNEN\nPRIVACY\nEN VEILIGHEID\nHOGE INVESTERINGS-\nWAARDE\nDICHT BIJ UITSTEKENDE SCHOLEN,\nWINKELS EN HET STADSCENTRUM"
+    },
+    "imageHeight": "900px",
+    "width": 1440
+  }
+]
