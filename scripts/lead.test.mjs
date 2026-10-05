@@ -15,6 +15,7 @@ function environment() {
 }
 for (const [label, fields, subject] of [
   ['A/I DIRECT generic and null optionals', {}, 'General Enquiry'],
+  ['Citizenship information enquiry', { property: 'Turkish Citizenship Through Real Estate Investment' }, 'Turkish Citizenship Through Real Estate Investment'],
   ['B ALMA Istanbul', { referral: 'ALMA', project: 'Rengi Istanbul', property: 'Zümrüt (Emerald)', propertyCode: 'B3-AG' }, 'Zümrüt (Emerald)'],
   ['C MUHAMED Antalya', { referral: 'MUHAMED', project: 'Rengi Antalya', property: 'GreenLife' }, 'GreenLife'],
   ['D VLAD Istanbul', { referral: 'VLAD', project: 'Rengi Istanbul', property: 'Elmas (Diamond)', propertyCode: 'A1-ÜG' }, 'Elmas (Diamond)'],

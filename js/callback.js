@@ -14,6 +14,12 @@
   window.registerTurkLuxxLeadContext = (trigger, resolveContext) => {
     leadResolvers.set(trigger, resolveContext);
   };
+  // Citizenship enquiries use the same contextual lead fields and delivery flow.
+  triggers.forEach(trigger => {
+    if (trigger.dataset.enquiryInterest) {
+      window.registerTurkLuxxLeadContext(trigger, () => ({ property: trigger.dataset.enquiryInterest }));
+    }
+  });
   window.buildTurkLuxxLeadPayload = sourceForm => {
     const fields = new FormData(sourceForm);
     const value = key => String(fields.get(key) || '').trim();

@@ -1359,3 +1359,27 @@
         line-height: 1.75;
     }
 }
+
+/* A compact enquiry card, sized to its content in every language. */
+.turkluxx-citizenship-modal {
+    width: min(680px, calc(100% - 32px));
+    height: fit-content;
+    min-height: 0;
+    padding: 32px;
+}
+.turkluxx-citizenship-modal h2 {
+    font-size: clamp(32px, 4.5vw, 48px);
+    line-height: 1.1;
+    text-wrap: balance;
+}
+.turkluxx-citizenship-modal .turkluxx-info-intro { margin: 0 0 24px; }
+.turkluxx-citizenship-modal .turkluxx-info-label { margin-inline: 0 32px; }
+.turkluxx-citizenship-modal .turkluxx-final-button {
+    width: 100%;
+    white-space: normal;
+}
+.turkluxx-citizenship-modal .turkluxx-info-source { margin-top: 12px; }
+.turkluxx-citizenship-modal .turkluxx-info-note { margin-top: 16px; }
+@media (max-width: 767px) {
+    .turkluxx-citizenship-modal { padding: 28px 24px 24px; }
+}

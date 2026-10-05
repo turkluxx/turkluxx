@@ -62,6 +62,18 @@
         applyBinding(element, record);
     }
     function setTranslatedText(element, value) {
+        // Preserve semantic emphasis within the complete translated sentence.
+        if (element.dataset.i18nEmphasis) {
+            const phrase = t(element.dataset.i18nEmphasis);
+            const position = phrase ? value.indexOf(phrase) : -1;
+            if (position !== -1) {
+                if (element.textContent === value && element.querySelector('strong')?.textContent === phrase) return;
+                const emphasis = document.createElement('strong');
+                emphasis.textContent = phrase;
+                element.replaceChildren(value.slice(0, position), emphasis, value.slice(position + phrase.length));
+                return;
+            }
+        }
         // Keep the full section heading, but treat its range as one unit.
         if (element.id === 'rengi-roi-title') {
             if (element.textContent === value && element.querySelector('.rengi-roi-percentage')) return;
