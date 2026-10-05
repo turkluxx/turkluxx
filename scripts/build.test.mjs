@@ -42,12 +42,16 @@ test('bundles production pages, copies only allowlisted assets, and cleans stale
     const html = readFileSync(join(f.root, 'dist', file), 'utf8');
     assert.match(html, /css\/turkluxx.min.css/); assert.match(html, /js\/turkluxx.min.js/);
     assert.doesNotMatch(html, /css\/site.css|js\/i18n.js/);
+    for (const url of ['/favicon.ico', '/img/favicon/favicon-16x16.png', '/img/favicon/favicon-32x32.png', '/img/favicon/apple-touch-icon.png', '/site.webmanifest']) {
+      assert.equal(html.split(`href="${url}"`).length - 1, 1, `${file}: one reference to ${url}`);
+    }
   }
   assert.match(readFileSync(join(f.root, 'dist/css/turkluxx.min.css'), 'utf8'), /font-weight:600/);
   assert.match(readFileSync(join(f.root, 'dist/js/turkluxx.min.js'), 'utf8'), /Русский العربية Türkçe/);
   assert.equal(existsSync(join(f.root, 'dist/css/site.css')), false);
   assert.deepEqual(readdirSync(join(f.root, 'dist')).sort(), ['css', 'img', 'index.html', 'js', 'meet-our-team.html', 'rengi-antalya.html', 'rengi-istanbul.html']);
   assert.equal(f.run().status, 0);
+  assert.equal(readFileSync(join(f.root, 'dist/index.html'), 'utf8').split('rel="manifest"').length - 1, 1, 'Repeated builds do not duplicate favicon links');
 });
 
 test('Privacy Policy inherits the current Team shell without translating its legal content', t => {

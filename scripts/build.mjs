@@ -23,7 +23,20 @@ function footerPolicies(html, file) {
     return open + body + close;
   });
 }
+// One favicon configuration for production and synchronized source previews.
+function faviconHead(html) {
+  const links = `    <!-- TurkLuxx favicon package: managed by scripts/build.mjs -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" type="image/x-icon">
+    <link rel="icon" href="/img/favicon/favicon-16x16.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="/img/favicon/favicon-32x32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" href="/img/favicon/apple-touch-icon.png" sizes="180x180">
+    <link rel="manifest" href="/site.webmanifest">
+    <!-- End TurkLuxx favicon package -->`;
+  return html.replace(/    <!-- TurkLuxx favicon package:[\s\S]*?<!-- End TurkLuxx favicon package -->\r?\n?/g, '')
+    .replace(/<\/head>/i, `${links}\n</head>`);
+}
 function syncPage(file, html) {
+  html = faviconHead(html);
   if (read(file) !== html) writeFileSync(join(root, file), html, 'utf8');
   return html;
 }
@@ -143,6 +156,7 @@ try {
   for (const file of files) {
     const parts = file.split('/');
     const allowed = /^(?:index\.html|rengi-istanbul\.html|rengi-antalya\.html|meet-our-team\.html|privacy-policy\.html|cookie-policy\.html|terms-and-conditions\.html|disclaimer\.html)$/.test(file)
+      || /^(?:favicon\.ico|site\.webmanifest)$/.test(file)
       || (/^locales\/(?:en|ru|es|ar|tr|nl)\.json$/.test(file))
       || (/^(?:css|js|img|assets)\//.test(file) && /^(?:\.css|\.js|\.png|\.jpg|\.jpeg|\.svg|\.webp|\.avif|\.gif|\.ico|\.woff2?)$/i.test(extname(file)));
     if (!allowed || file.includes('\\') || parts.some(part => !part || forbidden.test(part))) {

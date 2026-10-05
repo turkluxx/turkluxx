@@ -1,0 +1,22 @@
+{
+  "name": "TurkLuxx",
+  "short_name": "TurkLuxx",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#071e34",
+  "background_color": "#071e34",
+  "icons": [
+    {
+      "src": "/img/favicon/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/favicon/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
