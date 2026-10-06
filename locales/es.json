@@ -416,5 +416,18 @@
   "mobile.nav.primary_roi": "Rentabilidad (30%–70%)",
   "mobile.nav.primary_properties": "Ver Propiedades",
   "mobile.nav.open": "Abrir menú",
-  "mobile.nav.close": "Cerrar menú"
+  "mobile.nav.close": "Cerrar menú",
+  "contact.title": "Contáctenos",
+  "contact.name": "Nombre",
+  "contact.email": "Correo electrónico",
+  "contact.message": "Mensaje",
+  "contact.submit": "ENVIAR MENSAJE",
+  "contact.close": "Cerrar formulario de contacto",
+  "contact.requiredName": "Introduzca su nombre.",
+  "contact.requiredEmail": "Introduzca su correo electrónico.",
+  "contact.invalidEmail": "Introduzca una dirección de correo electrónico válida.",
+  "contact.requiredMessage": "Escriba su mensaje.",
+  "contact.sending": "Enviando su mensaje…",
+  "contact.success": "Gracias. Su mensaje se ha enviado. Nuestro equipo se pondrá en contacto con usted.",
+  "contact.error": "No pudimos confirmar el envío de su mensaje. Inténtelo de nuevo."
 }

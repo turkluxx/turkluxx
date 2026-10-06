@@ -416,5 +416,18 @@
   "mobile.nav.primary_roi": "ROI (30%–70%)",
   "mobile.nav.primary_properties": "Ontdek Vastgoed",
   "mobile.nav.open": "Menu openen",
-  "mobile.nav.close": "Menu sluiten"
+  "mobile.nav.close": "Menu sluiten",
+  "contact.title": "Neem contact op",
+  "contact.name": "Naam",
+  "contact.email": "E-mail",
+  "contact.message": "Bericht",
+  "contact.submit": "BERICHT VERSTUREN",
+  "contact.close": "Contactformulier sluiten",
+  "contact.requiredName": "Vul uw naam in.",
+  "contact.requiredEmail": "Vul uw e-mailadres in.",
+  "contact.invalidEmail": "Vul een geldig e-mailadres in.",
+  "contact.requiredMessage": "Vul uw bericht in.",
+  "contact.sending": "Uw bericht wordt verstuurd…",
+  "contact.success": "Bedankt. Uw bericht is verstuurd. Ons team neemt contact met u op.",
+  "contact.error": "We konden niet bevestigen dat uw bericht is verstuurd. Probeer het opnieuw."
 }

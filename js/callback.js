@@ -92,6 +92,88 @@
   }
 
   const callback = modalController(dialog);
+  // One general contact form shares the existing enquiry modal controller.
+  const contactDialog = document.createElement('dialog');
+  contactDialog.id = 'turkluxx-contact';
+  contactDialog.className = 'turkluxx-callback turkluxx-contact';
+  contactDialog.setAttribute('aria-labelledby', 'turkluxx-contact-title');
+  contactDialog.innerHTML = `
+    <button class="turkluxx-callback-close" type="button" aria-label="Close contact form">&times;</button>
+    <h2 id="turkluxx-contact-title" data-i18n="contact.title">Contact Us</h2>
+    <form>
+      <div class="turkluxx-callback-field"><label for="contact-name" data-i18n="contact.name">Name</label><input id="contact-name" name="name" autocomplete="name" maxlength="120" required autofocus></div>
+      <div class="turkluxx-callback-field"><label for="contact-email" data-i18n="contact.email">Email</label><input id="contact-email" name="email" type="email" dir="ltr" autocomplete="email" maxlength="254" required></div>
+      <div class="turkluxx-callback-field"><label for="contact-message" data-i18n="contact.message">Message</label><textarea id="contact-message" name="message" rows="4" maxlength="2000" required></textarea></div>
+      <button class="turkluxx-callback-submit" type="submit" data-i18n="contact.submit">SEND MESSAGE</button>
+      <p class="turkluxx-callback-status" role="status" aria-live="polite"></p>
+    </form>`;
+  document.body.append(contactDialog);
+  const contact = modalController(contactDialog);
+  const contactForm = contactDialog.querySelector('form');
+  const contactStatus = contactDialog.querySelector('[role="status"]');
+  const contactSubmit = contactForm.querySelector('[type="submit"]');
+  let contactPending = false;
+  let contactOpening = 0;
+  contactDialog.addEventListener('close', () => { contactOpening += 1; });
+  window.TurkLuxxI18n.ready.then(() => {
+    contactDialog.querySelectorAll('[data-i18n]').forEach(element => window.TurkLuxxI18n.bind(element, element.dataset.i18n));
+    window.TurkLuxxI18n.bind(contactDialog.querySelector('.turkluxx-callback-close'), 'contact.close', {}, 'aria-label');
+  });
+  document.querySelectorAll('[data-home-scroll="contact"]').forEach(trigger => {
+    trigger.addEventListener('click', event => {
+      event.preventDefault();
+      contactOpening += 1;
+      window.TurkLuxxI18n.bind(contactStatus, contactPending ? 'contact.sending' : '');
+      const opener = trigger.getClientRects().length ? trigger : document.querySelector('.turkluxx-mobile-menu-toggle') || trigger;
+      contact.open(opener);
+    });
+  });
+  const contactValidators = [...contactForm.querySelectorAll('input, textarea')].map(input => {
+    const validate = () => {
+      const key = !input.value.trim() ? { name: 'requiredName', email: 'requiredEmail', message: 'requiredMessage' }[input.name]
+        : input.type === 'email' && (input.validity.typeMismatch || !/^[^\s<>(),;:"\\@]+@[^\s<>(),;:"\\@]+\.[^\s<>(),;:"\\@]+$/u.test(input.value.trim())) ? 'invalidEmail' : null;
+      input.setCustomValidity(key ? window.TurkLuxxI18n.t(`contact.${key}`) : '');
+    };
+    input.addEventListener('input', validate);
+    input.addEventListener('invalid', validate);
+    return validate;
+  });
+  window.addEventListener('turkluxx:language-change', () => contactValidators.forEach(validate => validate()));
+  contactForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (contactPending) return;
+    contactValidators.forEach(validate => validate());
+    if (!contactForm.reportValidity()) return;
+    const fields = new FormData(contactForm);
+    const payload = {
+      referral: window.getTurkLuxxReferral(), name: fields.get('name').trim(), email: fields.get('email').trim(),
+      message: fields.get('message').trim(), language: window.TurkLuxxI18n.language,
+      source: 'general-contact', page: window.location.href
+    };
+    const submittedOpening = contactOpening;
+    contactPending = true;
+    contactSubmit.disabled = true;
+    contactForm.setAttribute('aria-busy', 'true');
+    window.TurkLuxxI18n.bind(contactStatus, 'contact.sending');
+    try {
+      contactForm.dispatchEvent(new CustomEvent('turkluxx:lead-ready', { detail: payload, bubbles: true }));
+      const response = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin', body: JSON.stringify(payload), signal: AbortSignal.timeout(30000) });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || result?.ok !== true) throw new Error('Contact request failed');
+      if (contactOpening === submittedOpening && contactDialog.open) {
+        contactForm.reset();
+        contactValidators.forEach(validate => validate());
+        window.TurkLuxxI18n.bind(contactStatus, 'contact.success');
+      }
+    } catch {
+      if (contactOpening === submittedOpening && contactDialog.open) window.TurkLuxxI18n.bind(contactStatus, 'contact.error');
+    } finally {
+      contactPending = false;
+      contactSubmit.disabled = false;
+      contactForm.removeAttribute('aria-busy');
+    }
+  });
   const informationModals = new Map(
     [...document.querySelectorAll('.turkluxx-roi-modal, .turkluxx-info-modal')]
       .map(modal => [modal, modalController(modal)])

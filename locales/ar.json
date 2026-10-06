@@ -416,5 +416,18 @@
   "mobile.nav.primary_roi": "العائد (30%–70%)",
   "mobile.nav.primary_properties": "استكشف العقارات",
   "mobile.nav.open": "فتح القائمة",
-  "mobile.nav.close": "إغلاق القائمة"
+  "mobile.nav.close": "إغلاق القائمة",
+  "contact.title": "تواصل معنا",
+  "contact.name": "الاسم",
+  "contact.email": "البريد الإلكتروني",
+  "contact.message": "الرسالة",
+  "contact.submit": "إرسال الرسالة",
+  "contact.close": "إغلاق نموذج التواصل",
+  "contact.requiredName": "يرجى إدخال اسمك.",
+  "contact.requiredEmail": "يرجى إدخال بريدك الإلكتروني.",
+  "contact.invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+  "contact.requiredMessage": "يرجى كتابة رسالتك.",
+  "contact.sending": "جارٍ إرسال رسالتك…",
+  "contact.success": "شكرًا لك. تم إرسال رسالتك. سيتواصل معك فريقنا.",
+  "contact.error": "تعذر تأكيد إرسال رسالتك. يرجى المحاولة مرة أخرى."
 }

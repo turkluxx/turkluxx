@@ -2201,7 +2201,8 @@
     font-size: 13px;
 }
 
-.turkluxx-callback input {
+.turkluxx-callback input,
+.turkluxx-contact textarea {
     display: block;
     width: 100%;
     min-height: 50px;
@@ -2213,6 +2214,18 @@
     font: 400 16px/1.4 'Manrope', sans-serif;
     color-scheme: dark;
 }
+
+.turkluxx-contact {
+    box-sizing: border-box;
+    scroll-padding-block: 60px 24px;
+}
+
+.turkluxx-contact h2 { margin-inline: 0 36px; margin-bottom: 24px; overflow-wrap: anywhere; }
+.turkluxx-contact textarea { box-sizing: border-box; resize: vertical; max-width: 100%; }
+.turkluxx-contact .turkluxx-callback-close { position: sticky; top: 0; float: right; margin: -24px -24px 0 0; background: #10243b; z-index: 1; }
+[dir="rtl"] .turkluxx-contact .turkluxx-callback-close { float: left; margin: -24px 0 0 -24px; }
+.turkluxx-footer [data-company-field="address"] { line-height: 1.4; }
+.turkluxx-footer [data-company-field="address"] p { margin: 0; line-height: 1.4; }
 
 .turkluxx-callback input:user-invalid {
     border-color: #f3a995;

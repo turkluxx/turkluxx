@@ -416,5 +416,18 @@
   "mobile.nav.primary_roi": "Getiri (30%–70%)",
   "mobile.nav.primary_properties": "Villaları Keşfet",
   "mobile.nav.open": "Menüyü aç",
-  "mobile.nav.close": "Menüyü kapat"
+  "mobile.nav.close": "Menüyü kapat",
+  "contact.title": "Bize Ulaşın",
+  "contact.name": "Adınız",
+  "contact.email": "E-posta",
+  "contact.message": "Mesaj",
+  "contact.submit": "MESAJ GÖNDER",
+  "contact.close": "İletişim formunu kapat",
+  "contact.requiredName": "Lütfen adınızı girin.",
+  "contact.requiredEmail": "Lütfen e-posta adresinizi girin.",
+  "contact.invalidEmail": "Lütfen geçerli bir e-posta adresi girin.",
+  "contact.requiredMessage": "Lütfen mesajınızı girin.",
+  "contact.sending": "Mesajınız gönderiliyor…",
+  "contact.success": "Teşekkür ederiz. Mesajınız gönderildi. Ekibimiz sizinle iletişime geçecek.",
+  "contact.error": "Mesajınızın gönderildiğini doğrulayamadık. Lütfen tekrar deneyin."
 }

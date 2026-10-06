@@ -416,5 +416,18 @@
   "mobile.nav.primary_roi": "Доходность (30%–70%)",
   "mobile.nav.primary_properties": "Виллы",
   "mobile.nav.open": "Открыть меню",
-  "mobile.nav.close": "Закрыть меню"
+  "mobile.nav.close": "Закрыть меню",
+  "contact.title": "Свяжитесь с нами",
+  "contact.name": "Имя",
+  "contact.email": "Электронная почта",
+  "contact.message": "Сообщение",
+  "contact.submit": "ОТПРАВИТЬ СООБЩЕНИЕ",
+  "contact.close": "Закрыть форму связи",
+  "contact.requiredName": "Введите ваше имя.",
+  "contact.requiredEmail": "Введите адрес электронной почты.",
+  "contact.invalidEmail": "Введите корректный адрес электронной почты.",
+  "contact.requiredMessage": "Введите ваше сообщение.",
+  "contact.sending": "Отправляем ваше сообщение…",
+  "contact.success": "Спасибо. Ваше сообщение отправлено. Наша команда свяжется с вами.",
+  "contact.error": "Не удалось подтвердить отправку сообщения. Попробуйте ещё раз."
 }

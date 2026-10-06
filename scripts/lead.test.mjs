@@ -3,6 +3,25 @@ import assert from 'node:assert/strict';
 import worker from '../worker/index.mjs';
 
 const generic = { referral: 'DIRECT', name: 'Sarah Williams', phone: '+44 20 1234 5678', email: 'sarah@example.com', project: null, property: null, propertyCode: null, page: 'https://turkluxx.com/' };
+test('General contact sends multiline message and language without requiring a phone', async () => {
+  for (const language of ['en', 'nl', 'es', 'ru', 'tr', 'ar']) {
+    const env = environment();
+    const lead = { ...generic, phone: undefined, source: 'general-contact', language, message: 'Interested in your services.\nPlease contact me.', property: 'ignored' };
+    assert.equal((await worker.fetch(request(lead), env)).status, 200);
+    assert.ok(env.messages[0].subject.endsWith('Contact Us'));
+    assert.ok(env.messages[0].text.includes(lead.message));
+    assert.ok(env.messages[0].text.includes(`Language: ${language}`));
+    assert.ok(env.messages[0].text.includes('Source: general-contact'));
+    assert.ok(!env.messages[0].text.includes('Property:'));
+  }
+});
+test('General contact rejects missing message, unsupported language and excessive message length', async () => {
+  for (const patch of [{ message: '' }, { message: '  ' }, { message: null }, { message: 42 }, { message: 'x'.repeat(2001) }, { language: 'de' }]) {
+    const env = environment();
+    assert.equal((await worker.fetch(request({ ...generic, source: 'general-contact', language: 'en', message: 'Hello', ...patch }), env)).status, 400);
+    assert.equal(env.messages.length, 0);
+  }
+});
 function request(data = generic, options = {}) {
   return new Request('https://turkluxx.com/api/lead', {
     method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://turkluxx.com' },
