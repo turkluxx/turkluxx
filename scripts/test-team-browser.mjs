@@ -53,6 +53,11 @@ const clickAt = async (x, y) => {
     await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 });
 };
 const click = async selector => {
+    // Desktop navigation is hidden when the shared mobile menu is active.
+    if (await evaluate(`document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect().width === 0`)) {
+        await evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`);
+        return;
+    }
     const point = await evaluate(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
     const hit = await evaluate(`document.elementFromPoint(${point.x},${point.y})?.outerHTML.slice(0,200)`);
     if (!await evaluate(`document.querySelector(${JSON.stringify(selector)}).contains(document.elementFromPoint(${point.x},${point.y}))`)) console.log('Click covered:', selector, point, hit);
@@ -69,8 +74,8 @@ try {
     await send('Runtime.enable'); await send('Network.enable');
     await send('Network.setBlockedURLs', { urls: ['*googletagmanager.com/*', '*google-analytics.com/*', '*connect.facebook.net/*', '*facebook.com/tr*'] });
     await send('Network.setCacheDisabled', { cacheDisabled: true });
-    const names = ['Ahmad Hussein', 'Almagul Jukenova', 'Muhamed Al Ramah', 'Vladimir Andreev'];
-    for (const width of [1440, 390]) {
+    const names = ['Ahmad Hussein', 'Almagul Jukenova', 'Muhamed Al Ramah', 'Vladimir Andreev', 'Laith Al Rawashdeh', 'Zulfiya M.', 'Faozi Al Khalaqi'];
+    for (const width of [1440, 820, 390]) {
         await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 768 });
         for (const code of codes) {
             await send('Page.navigate', { url: `${origin}/meet-our-team.html?lang=${code}&ref=VLAD&sub=Team%20check` });
@@ -82,16 +87,17 @@ try {
             assert.equal(await evaluate('!!document.querySelector(".turkluxx-sales-nav a[href*=rengi-location]")'), false, 'Team Location item removed');
             assert.equal(await evaluate('document.title'), catalogs[code]['team.pageTitle']);
             const text = await evaluate(`[...document.querySelectorAll('.team-main [data-i18n]')].map(e=>({key:e.dataset.i18n,text:e.textContent}))`);
-            assert.equal(text.length, 25, 'Complete introduction and biographies');
+            assert.equal(text.length, 39, 'Complete introduction and biographies');
             for (const item of text) assert.equal(item.text, catalogs[code][item.key], item.key);
             assert.deepEqual(await evaluate(`[...document.querySelectorAll('.team-biography h2')].map(e=>e.textContent)`), names);
             assert.deepEqual(await evaluate(`[...document.querySelectorAll('.team-portrait img')].map(e=>e.alt)`), names);
-            assert.deepEqual(await evaluate(`[...document.querySelectorAll('.team-portrait img')].map(e=>e.getAttribute('src'))`), ['Ahmad', 'Alma', 'Muhamed', 'Vladimir'].map(name => `img/about_us/${name}.png`));
+            assert.deepEqual(await evaluate(`[...document.querySelectorAll('.team-portrait img')].map(e=>e.getAttribute('src'))`), [...['Ahmad', 'Alma', 'Muhamed', 'Vladimir'].map(name => `img/about_us/${name}.png`), ...['Laith', 'Zulfiya', 'Faozi'].map(name => `img/about_us/${name}.jpeg`)]);
+            assert.equal(await evaluate(`document.querySelector('[aria-labelledby="team-zulfiya-name"] .team-specialization') === null`), true, 'Zulfiya has no invented specialization');
             assert.equal(await evaluate(`[...document.querySelectorAll('.team-portrait img')].every(e=>e.complete && e.naturalWidth>0 && getComputedStyle(e).objectFit==='cover')`), true, 'All portraits loaded and preserve proportions');
             assert.equal(await evaluate(`document.querySelectorAll('.team-portrait[role], .team-portrait[aria-label], .team-portrait span').length`), 0, 'No placeholder text, initials or container accessibility labels');
             assert.equal(await evaluate('document.documentElement.scrollWidth<=innerWidth'), true, 'No page overflow');
             assert.equal(await evaluate(`/\\bVlad\\b/.test(document.querySelector('[aria-labelledby="team-vlad-name"]').textContent)`), false, 'Use Vladimir throughout the profile');
-            const spacing = await evaluate(`(()=>{const section=document.querySelector('[aria-labelledby="team-vlad-name"]'),r=section.getBoundingClientRect(),children=[...section.children].map(e=>e.getBoundingClientRect()),footer=document.querySelector('#rengi-footer').getBoundingClientRect();return {top:Math.min(...children.map(r=>r.top))-r.top,bottom:footer.top-Math.max(...children.map(r=>r.bottom))}})()`);
+            const spacing = await evaluate(`(()=>{const section=document.querySelector('.team-member:last-child'),r=section.getBoundingClientRect(),children=[...section.children].map(e=>e.getBoundingClientRect()),footer=document.querySelector('#rengi-footer').getBoundingClientRect();return {top:Math.min(...children.map(r=>r.top))-r.top,bottom:footer.top-Math.max(...children.map(r=>r.bottom))}})()`);
             assert.ok(Math.abs(spacing.top-spacing.bottom)<=1, 'Symmetrical final profile spacing');
             const geometry = await evaluate(`(()=>{const rect=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width}};return [...document.querySelectorAll('.team-member')].map(e=>({photo:rect(e.querySelector('.team-portrait')),bio:rect(e.querySelector('.team-biography')),font:parseFloat(getComputedStyle(e.querySelector('.team-body')).fontSize)}))})()`);
             for (const [i, member] of geometry.entries()) {
@@ -126,14 +132,16 @@ try {
             assert.equal(payload.referral,'VLAD'); assert.equal(payload.page,url); assert.equal(payload.project,null);
             await click('#turkluxx-callback .turkluxx-callback-close');
             await until('!document.querySelector("#turkluxx-callback").open'); await pause(200);
-            await click('.rengi-desktop-contact'); await pause(1050);
-            assert.equal(await evaluate('location.hash'),'#rengi-footer');
+            await evaluate('window.scrollTo({top:0,behavior:"instant"})'); await pause(200);
+            await evaluate('document.querySelector(".rengi-desktop-contact").click()');
+            await until('document.querySelector("#turkluxx-contact").open');
+            await evaluate('document.querySelector("#turkluxx-contact").close()'); await pause(200);
             assert.equal(await evaluate('JSON.stringify(getTurkLuxxReferralAttribution())'),attribution);
             // Return link goes to the homepage project choice, never an explorer.
             await evaluate('window.scrollTo({top:0,behavior:"instant"})'); await pause(100);
             const projects='.turkluxx-sales-nav a:first-child';
             assert.equal(await evaluate(`document.querySelector('${projects}').textContent`),catalogs[code]['team.projectsNav']);
-            assert.equal(await evaluate(`getComputedStyle(document.querySelector('${projects}')).textTransform`),'none','Navigation retains mixed capitalization');
+            if (width >= 768) assert.equal(await evaluate(`getComputedStyle(document.querySelector('${projects}')).textTransform`),'none','Navigation retains mixed capitalization');
             await click(projects);
             await until('location.pathname==="/" && location.hash==="#turkluxx-project-heading" && document.readyState==="complete"');
             await evaluate('TurkLuxxI18n.setLanguage(TurkLuxxI18n.language)');

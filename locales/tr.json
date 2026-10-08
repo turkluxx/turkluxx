@@ -429,5 +429,19 @@
   "contact.requiredMessage": "Lütfen mesajınızı girin.",
   "contact.sending": "Mesajınız gönderiliyor…",
   "contact.success": "Teşekkür ederiz. Mesajınız gönderildi. Ekibimiz sizinle iletişime geçecek.",
-  "contact.error": "Mesajınızın gönderildiğini doğrulayamadık. Lütfen tekrar deneyin."
+  "contact.error": "Mesajınızın gönderildiğini doğrulayamadık. Lütfen tekrar deneyin.",
+  "team.laith.title": "Uluslararası Müşteri Danışmanı",
+  "team.laith.specialization": "Özel Müşteri İlişkileri • Ürdün ve Orta Doğu",
+  "team.laith.bio1": "Ürdün’de yaşayan Laith Al-Rawashdeh, Ürdün ve daha geniş Orta Doğu pazarında kapsamlı deneyime sahip, güvenilir bir danışmandır. Bölgesel eğilimleri, gelişen fırsatları ve iş ilişkileri ile kişisel ilişkileri şekillendiren kültürel değerleri derinlemesine anlar.",
+  "team.laith.bio2": "Samimi kişiliği, dürüstlüğü ve şeffaf yaklaşımıyla tanınan Laith, içten iletişim kurarak ve her müşterinin ihtiyaçlarını özenle anlayarak güçlü ilişkiler geliştirir.",
+  "team.laith.bio3": "Cana yakın yapısı ve kültürel farkındalığı, güvene, açıklığa ve kişisel ilgiye dayanan profesyonel bir deneyim sunmasını sağlar.",
+  "team.zulfiya.title": "Muhasebe ve Finans Müdürü",
+  "team.zulfiya.bio1": "Muhasebe ve finansal yönetimde güçlü bir geçmişe sahip olan Zulfiya, finansal operasyonların her alanına titizlik, dürüstlük ve ayrıntılara önem veren bir yaklaşım getirir.",
+  "team.zulfiya.bio2": "Doğru kayıtlar tutmaya ve sağlam finansal uygulamaları desteklemeye kendini adayarak şirket genelinde verimliliğin, şeffaflığın ve düzenin korunmasına yardımcı olur.",
+  "team.zulfiya.bio3": "Profesyonelliği ve güvenilirliğiyle tanınan Zulfiya, ekibi desteklemede ve şirketin sürekli büyümesine ve başarısına katkıda bulunmada önemli bir rol oynar.",
+  "team.faozi.title": "Uluslararası Müşteri Danışmanı",
+  "team.faozi.specialization": "Özel Müşteri İlişkileri • ABD ve Orta Doğu",
+  "team.faozi.bio1": "Faozi, insanlarla bağ kurma, onlar için neyin önemli olduğunu anlama ve görüşmeleri anlamlı fırsatlara dönüştürme konusunda başarılıdır.",
+  "team.faozi.bio2": "ABD ve Orta Doğu’daki deneyimi, kişisel ve açık bir yaklaşımı korurken farklı iş kültürlerine doğal bir şekilde uyum sağlamasına olanak tanır.",
+  "team.faozi.bio3": "Cana yakın ve ilgili olan Faozi, en iyi müşteri ilişkilerinin yalnızca işlemlerle değil, samimi iletişim, hızlı geri dönüş ve anlayışla kurulduğuna inanır."
 }

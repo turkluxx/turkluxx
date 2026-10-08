@@ -429,5 +429,19 @@
   "contact.requiredMessage": "Please enter your message.",
   "contact.sending": "Sending your message…",
   "contact.success": "Thank you. Your message has been sent. Our team will be in touch.",
-  "contact.error": "We could not confirm your message was sent. Please try again."
+  "contact.error": "We could not confirm your message was sent. Please try again.",
+  "team.laith.title": "Global Client Consultant",
+  "team.laith.specialization": "Private Client Relations • Jordan & Middle East",
+  "team.laith.bio1": "Based in Jordan, Laith Al-Rawashdeh is a trusted consultant with extensive experience across Jordan and the broader Middle Eastern market, with a strong understanding of regional trends, emerging opportunities, and the cultural values that shape business and personal relationships.",
+  "team.laith.bio2": "Known for his genuine character, honesty, and transparent approach, he builds strong relationships through sincere communication and a thoughtful understanding of each client’s needs.",
+  "team.laith.bio3": "His approachable nature and cultural awareness allow him to create a professional experience grounded in trust, clarity, and personal attention.",
+  "team.zulfiya.title": "Accounting & Finance Manager",
+  "team.zulfiya.bio1": "With a strong background in accounting and financial management, Zulfiya brings precision, integrity, and a detail-oriented approach to every aspect of financial operations.",
+  "team.zulfiya.bio2": "Dedicated to maintaining accurate records and supporting sound financial practices, she helps ensure efficiency, transparency, and organization across the company.",
+  "team.zulfiya.bio3": "Known for professionalism and reliability, Zulfiya plays an important role in supporting the team and contributing to the company’s continued growth and success.",
+  "team.faozi.title": "Global Client Consultant",
+  "team.faozi.specialization": "Private Client Relations • USA & Middle East",
+  "team.faozi.bio1": "Faozi excels at connecting with people, understanding what matters to them, and turning conversations into meaningful opportunities.",
+  "team.faozi.bio2": "His experience across the USA and Middle East gives him a natural ability to navigate different business cultures while maintaining a personal, straightforward approach.",
+  "team.faozi.bio3": "Approachable and attentive, Faozi believes the best client relationships are built through genuine communication, responsiveness, and understanding—not simply transactions."
 }

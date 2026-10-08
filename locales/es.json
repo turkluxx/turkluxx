@@ -429,5 +429,19 @@
   "contact.requiredMessage": "Escriba su mensaje.",
   "contact.sending": "Enviando su mensaje…",
   "contact.success": "Gracias. Su mensaje se ha enviado. Nuestro equipo se pondrá en contacto con usted.",
-  "contact.error": "No pudimos confirmar el envío de su mensaje. Inténtelo de nuevo."
+  "contact.error": "No pudimos confirmar el envío de su mensaje. Inténtelo de nuevo.",
+  "team.laith.title": "Consultor de clientes internacionales",
+  "team.laith.specialization": "Relaciones con clientes privados • Jordania y Oriente Medio",
+  "team.laith.bio1": "Radicado en Jordania, Laith Al-Rawashdeh es un consultor de confianza con amplia experiencia en Jordania y en el mercado de Oriente Medio en su conjunto, y un profundo conocimiento de las tendencias regionales, las oportunidades emergentes y los valores culturales que dan forma a las relaciones empresariales y personales.",
+  "team.laith.bio2": "Conocido por su carácter sincero, su honestidad y su enfoque transparente, construye relaciones sólidas mediante una comunicación genuina y una comprensión cuidadosa de las necesidades de cada cliente.",
+  "team.laith.bio3": "Su cercanía y su sensibilidad cultural le permiten ofrecer una experiencia profesional basada en la confianza, la claridad y la atención personal.",
+  "team.zulfiya.title": "Responsable de Contabilidad y Finanzas",
+  "team.zulfiya.bio1": "Con una sólida trayectoria en contabilidad y gestión financiera, Zulfiya aporta precisión, integridad y atención al detalle a todos los aspectos de las operaciones financieras.",
+  "team.zulfiya.bio2": "Comprometida con mantener registros exactos y respaldar buenas prácticas financieras, contribuye a garantizar la eficiencia, la transparencia y la organización en toda la empresa.",
+  "team.zulfiya.bio3": "Conocida por su profesionalidad y fiabilidad, Zulfiya desempeña un papel importante en el apoyo al equipo y en el crecimiento y éxito continuos de la empresa.",
+  "team.faozi.title": "Consultor de clientes internacionales",
+  "team.faozi.specialization": "Relaciones con clientes privados • EE. UU. y Oriente Medio",
+  "team.faozi.bio1": "Faozi destaca por conectar con las personas, comprender lo que les importa y convertir las conversaciones en oportunidades significativas.",
+  "team.faozi.bio2": "Su experiencia en Estados Unidos y Oriente Medio le confiere una capacidad natural para desenvolverse en distintas culturas empresariales, manteniendo un enfoque personal y directo.",
+  "team.faozi.bio3": "Cercano y atento, Faozi cree que las mejores relaciones con los clientes se construyen mediante una comunicación genuina, una respuesta ágil y la comprensión, y no solo a través de transacciones."
 }
