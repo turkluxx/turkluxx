@@ -322,5 +322,5 @@
     });
     window.TurkLuxxI18n = { t, text, bind, setLanguage, get language() { return language; }, ready };
     selectors();
-    setLanguage(language);
+    setLanguage(language).finally(() => window.turkLuxxRevealLanguage?.());
 })();

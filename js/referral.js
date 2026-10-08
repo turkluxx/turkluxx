@@ -1,7 +1,7 @@
 (() => {
     'use strict';
 
-    const validCodes = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD']);
+    const validCodes = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'LAITH', 'FAOZI']);
 
     const keys = {
         referral: 'turkluxx_referral',
@@ -21,6 +21,7 @@
             if (referral) {
                 return {
                     referral,
+                    ...(['LAITH', 'FAOZI'].includes(referral) ? { parentConsultant: 'AHMAD' } : {}),
                     createdAt: localStorage.getItem(keys.createdAt),
                     landingPage: localStorage.getItem(keys.landingPage)
                 };

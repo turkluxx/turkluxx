@@ -20,12 +20,16 @@
       window.registerTurkLuxxLeadContext(trigger, () => ({ property: trigger.dataset.enquiryInterest }));
     }
   });
+  const referralFields = () => {
+    const { referral, parentConsultant } = window.getTurkLuxxReferralAttribution();
+    return { referral, ...(parentConsultant ? { parentConsultant } : {}) };
+  };
   window.buildTurkLuxxLeadPayload = sourceForm => {
     const fields = new FormData(sourceForm);
     const value = key => String(fields.get(key) || '').trim();
     const context = sourceForm === form ? leadContext : null;
     return {
-      referral: window.getTurkLuxxReferral(),
+      ...referralFields(),
       name: value('name'),
       phone: value('phone'),
       email: value('email'),
@@ -146,7 +150,8 @@
     if (!contactForm.reportValidity()) return;
     const fields = new FormData(contactForm);
     const payload = {
-      referral: window.getTurkLuxxReferral(), name: fields.get('name').trim(), email: fields.get('email').trim(),
+      ...referralFields(),
+      name: fields.get('name').trim(), email: fields.get('email').trim(),
       message: fields.get('message').trim(), language: window.TurkLuxxI18n.language,
       source: 'general-contact', page: window.location.href
     };

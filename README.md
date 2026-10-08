@@ -21,7 +21,7 @@ The fixed sender is `TurkLuxx Leads <leads@turkluxx.com>`; validated customer em
 is Reply-To only. Neither recipient nor sender is client-controlled.
 
 Validation requires JSON with non-empty name, phone and email, and an exact
-ALMA/AHMAD/MUHAMED/VLAD/DIRECT referral. Limits (characters): name 120, phone 80,
+ALMA/AHMAD/MUHAMED/VLAD/LAITH/FAOZI/DIRECT referral. Limits (characters): name 120, phone 80,
 email 254, project 120, property 180, propertyCode 80, page 2048. Optional values
 may be null or absent. Control characters are rejected; email format and
 HTTP(S) page URLs are checked. Bodies over 8 KiB are rejected even without
@@ -137,3 +137,34 @@ Checked in headless Chrome at 1366x768, 1440x900 and 1920x1080. Hero height equa
 ## Tilda
 
 Upload the stylesheet and assets, update their URLs, include the font link and copy the `.turkluxx-sales-hero` section into an HTML block. The new styles are scoped to the desktop hero.
+
+## Laith and Faozi referrals
+
+- Laith Al Rawashdeh: https://turkluxx.com/?ref=LAITH&lang=ar
+- Faozi Al Khalaqi: https://turkluxx.com/?ref=FAOZI&lang=ar
+
+`referral` remains the direct referrer. Both new IDs have the permanent
+`parentConsultant: "AHMAD"` association in browser attribution, callback and
+contact payloads, validated leads and lead email content. The Worker derives
+this association from the direct ID rather than trusting a submitted parent.
+Existing IDs and lead email subjects retain their behavior. The existing
+Muhamed ID is `MUHAMED`; `MUHHAMED` remains invalid as before. Exactly two IDs
+were added; no QR images were created.
+
+Attribution keeps the existing first valid touch, its timestamp and landing URL
+in localStorage across normal navigation and browser sessions. A later referral
+cannot replace it. There is no server-side attribution database: the existing
+Worker sends lead emails but does not store attribution or leads. Clearing or
+blocking localStorage loses attribution, and it does not follow visitors across
+browsers/devices. The parent is derived on each read, including existing storage.
+
+The explicit `lang=ar` hint selects Arabic independently of referral attribution.
+The landing page applies RTL before painting and waits for initial translation
+before revealing content (with a five-second failure fallback). Manual language
+selection updates only `lang` in the current URL and saves the existing language
+preference. Subsequent navigation without a language hint uses that preference;
+referral IDs never force a language. Revisiting an explicit `lang=ar` URL selects
+Arabic again, consistent with the existing URL language priority.
+
+Verification: `npm test`, `npm run build`, and
+`node scripts/test-referral-browser.mjs` (Chrome debugging on port 9227).

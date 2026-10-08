@@ -16,6 +16,20 @@
     <link rel="stylesheet" href="css/rengi-navigation-footer.css">
     <link rel="stylesheet" href="css/team.css">
     <link rel="stylesheet" href="css/i18n.css">
+    <script>
+        // Apply the explicit Arabic landing hint before any content is painted.
+        if (new URLSearchParams(location.search).get('lang') === 'ar') {
+            document.documentElement.lang = 'ar';
+            document.documentElement.dir = 'rtl';
+            document.documentElement.style.visibility = 'hidden';
+            window.turkLuxxRevealLanguage = () => {
+                document.documentElement.style.visibility = '';
+                clearTimeout(window.turkLuxxLanguageTimeout);
+            };
+            // Keep the site usable if scripts or locale requests fail.
+            window.turkLuxxLanguageTimeout = setTimeout(window.turkLuxxRevealLanguage, 5000);
+        }
+    </script>
     <script src="js/i18n.js" defer></script>
     <script src="js/mobile-header.js" defer></script>
     <script src="js/referral.js" defer></script>

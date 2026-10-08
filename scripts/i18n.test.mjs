@@ -190,3 +190,19 @@ test('Arabic isolates configurations and measurements without changing their val
     await api.setLanguage('en');
     assert.equal(api.t('istanbul.villas.jade.description2'), catalogs.en['istanbul.villas.jade.description2']);
 });
+
+for (const code of ['LAITH', 'FAOZI']) {
+    test(`${code}: Arabic landing, manual switching and navigation keep language independent`, async () => {
+        const result = runtime({ search: `?ref=${code}&lang=ar`, stored: 'en' });
+        await result.api.ready; await new Promise(resolve => setImmediate(resolve));
+        assert.equal(result.api.language, 'ar');
+        assert.equal(result.document.documentElement.dir, 'rtl');
+        assert.equal(result.api.t('home.turkish'), catalogs.ar['home.turkish']);
+        await result.api.setLanguage('en');
+        const changed = new URL(result.urls.at(-1));
+        assert.equal(changed.searchParams.get('ref'), code);
+        assert.equal(changed.searchParams.get('lang'), 'en');
+        assert.equal(result.document.documentElement.dir, 'ltr');
+        assert.equal(runtime({ stored: result.storage.get('turkluxx_language') }).api.language, 'en');
+    });
+}
