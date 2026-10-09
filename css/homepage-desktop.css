@@ -1411,3 +1411,25 @@
         padding-bottom: 24px;
     }
 }
+
+/* A faint glass layer improves desktop title contrast without moving its text. */
+@media (min-width: 1200px) {
+    .turkluxx-homepage .turkluxx-sales-heading h1 {
+        position: relative;
+        isolation: isolate;
+        width: fit-content;
+        max-width: 100%;
+        margin-inline: auto;
+    }
+    .turkluxx-homepage .turkluxx-sales-heading h1::before {
+        content: '';
+        position: absolute;
+        inset: -12px -24px -8px;
+        z-index: -1;
+        border-radius: 6px;
+        background: rgb(7 30 52 / 8%);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        pointer-events: none;
+    }
+}

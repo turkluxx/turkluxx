@@ -3234,3 +3234,29 @@ footer a[href^="https://wa.me/"]:hover {
 @media (max-width: 767px) {
     .turkluxx-footer-columns { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Shared text branding; the wordmark retains its existing dimensions and type. */
+@media (min-width: 768px) {
+    .turkluxx-sales-logo .turkluxx-brand-tagline {
+        contain: inline-size;
+        width: 100%;
+        margin-top: 6px;
+        color: #fffdf7;
+        font: 600 clamp(7px, .5vw, 8px)/1.8 'Manrope', sans-serif;
+        letter-spacing: clamp(1.1px, .11vw, 1.7px);
+        text-align: center;
+        white-space: nowrap;
+    }
+}
+@media (min-width: 1200px) {
+    .turkluxx-sales-logo .turkluxx-brand-tagline {
+        margin-top: 9px;
+        color: var(--turkluxx-gold, #d8b66a);
+        font: 600 clamp(10.92px, .8736vw, 13.104px)/1.4 'Cormorant Garamond', Georgia, serif;
+        letter-spacing: clamp(.8px, .07vw, 1.1px);
+        background: linear-gradient(175deg, #fff1bf 12%, #d8b66a 50%, #b78a40 79%, #f3d992);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}

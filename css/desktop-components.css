@@ -114,3 +114,59 @@
         font-size: 16px;
     }
 }
+
+/* Desktop navigation shares a restrained glass button treatment on every page. */
+@media (min-width: 1200px) {
+    html .turkluxx-page .turkluxx-sales-header {
+        gap: clamp(24px, 2vw, 32px);
+    }
+
+    html .turkluxx-page .turkluxx-sales-header > .turkluxx-sales-nav {
+        flex-wrap: nowrap;
+        gap: clamp(8px, .8vw, 14px);
+        align-items: stretch;
+        min-width: 0;
+    }
+
+    html .turkluxx-page .turkluxx-sales-header > .turkluxx-sales-nav a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        flex: 1 1 0;
+        min-height: 44px;
+        padding: 9px clamp(10px, 1vw, 16px);
+        border: 1px solid rgb(216 182 106 / 36%);
+        border-radius: 5px;
+        background: rgb(7 30 52 / 34%);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        color: #fffdf7;
+        font-size: clamp(14px, 1.15vw, 18px);
+        line-height: 1.35;
+        text-align: center;
+        white-space: normal;
+        overflow-wrap: normal;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color .18s ease, border-color .18s ease;
+    }
+
+    html .turkluxx-page .turkluxx-sales-header > .turkluxx-sales-nav a:hover {
+        background: rgb(7 30 52 / 54%);
+        border-color: rgb(216 182 106 / 72%);
+        text-decoration: none;
+    }
+
+    html .turkluxx-page .turkluxx-sales-header > .turkluxx-sales-nav a:focus-visible {
+        outline: 2px solid #d8b66a;
+        outline-offset: 3px;
+        background: rgb(7 30 52 / 54%);
+    }
+
+    html .turkluxx-page .turkluxx-sales-header > .turkluxx-sales-nav a:active,
+    html .turkluxx-page .turkluxx-sales-header > .turkluxx-sales-nav a[aria-current='page'] {
+        background: rgb(7 30 52 / 68%);
+        border-color: #d8b66a;
+    }
+}
