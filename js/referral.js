@@ -1,7 +1,7 @@
 (() => {
     'use strict';
 
-    const validCodes = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'MUHHAMED', 'VLAD', 'LAITH', 'FAOZI']);
+    const validCodes = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'LAITH', 'FAOZI']);
 
     const keys = {
         referral: 'turkluxx_referral',
@@ -20,13 +20,21 @@
     // Always read storage so navigation and other tabs see the same attribution.
     window.getTurkLuxxReferralAttribution = () => {
         try {
+            let storedReferral = localStorage.getItem(keys.referral);
+            // Migrate only saved attribution; the misspelling is invalid in new URLs.
+            if ((storedReferral || '').trim().toUpperCase() === 'MUHHAMED') {
+                storedReferral = 'MUHAMED';
+                try { localStorage.setItem(keys.referral, storedReferral); } catch {
+                    // Readable attribution remains canonical even if writes are blocked.
+                }
+            }
             let pair;
             try { pair = JSON.parse(localStorage.getItem(keys.pair)); } catch { /* Ignore malformed stored records. */ }
             if (pair && validPair(pair.referral, pair.subref)) {
                 return { referral: pair.referral, subref: pair.subref, directReferrer: pair.subref,
                     parentConsultant: pair.referral, createdAt: pair.createdAt, landingPage: pair.landingPage };
             }
-            const referral = normalize(localStorage.getItem(keys.referral));
+            const referral = normalize(storedReferral);
             if (referral) {
                 return {
                     referral,
@@ -41,6 +49,9 @@
         return { referral: 'DIRECT', createdAt: null, landingPage: null };
     };
     window.getTurkLuxxReferral = () => window.getTurkLuxxReferralAttribution().referral;
+
+    // Run storage migration even on clean visits or rejected incoming links.
+    window.getTurkLuxxReferralAttribution();
 
     const params = new URLSearchParams(window.location.search);
     const incoming = normalize(params.get('ref'));

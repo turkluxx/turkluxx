@@ -21,7 +21,7 @@ The fixed sender is `TurkLuxx Leads <leads@turkluxx.com>`; validated customer em
 is Reply-To only. Neither recipient nor sender is client-controlled.
 
 Validation requires JSON with non-empty name, phone and email, and an exact
-ALMA/AHMAD/MUHAMED/MUHHAMED/VLAD/LAITH/FAOZI/DIRECT referral. Limits (characters): name 120, phone 80,
+ALMA/AHMAD/MUHAMED/VLAD/LAITH/FAOZI/DIRECT referral. Limits (characters): name 120, phone 80,
 email 254, project 120, property 180, propertyCode 80, page 2048. Optional values
 may be null or absent. Control characters are rejected; email format and
 HTTP(S) page URLs are checked. Bodies over 8 KiB are rejected even without
@@ -161,9 +161,13 @@ never establish either level. Attribution survives clean internal navigation;
 referral parameters need not be appended to every internal URL.
 
 Existing single-level URLs (including `?ref=LAITH` and `?ref=FAOZI`) retain their
-previous meaning and parent association. `MUHAMED` remains valid; `MUHHAMED` is
-also accepted as requested, preserving the submitted spelling. Single-level
-lead structures and email subjects retain their behavior.
+previous meaning and parent association. Muhamed's only valid ID is `MUHAMED`;
+`MUHHAMED` is rejected in new links and lead submissions. Existing localStorage
+attribution using the old misspelling is migrated to `MUHAMED` without changing
+its first-touch timestamp or original landing URL. If storage writes are blocked,
+readable saved attribution still uses the canonical ID for lead submission and
+migration is retried on later reads. Single-level lead structures and email
+subjects retain their behavior.
 
 There is no server-side attribution database. The existing Worker sends lead
 emails but does not persist attribution or leads. Clearing or blocking
