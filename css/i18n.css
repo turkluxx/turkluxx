@@ -575,14 +575,14 @@ html[lang="ar"] {
         gap: 8px;
     }
 
-    .turkluxx-mobile-primary-nav a,
-    .turkluxx-mobile-menu a {
+    .turkluxx-sales-header .turkluxx-mobile-primary-nav > a,
+    .turkluxx-sales-header .turkluxx-mobile-menu > a {
         box-sizing: border-box;
         min-height: 44px;
         padding: 8px 10px;
-        border: 1px solid rgb(216 182 106 / 36%);
+        border: 1px solid rgb(216 182 106 / 65%);
         border-radius: 5px;
-        background: rgb(7 30 52 / 34%);
+        background: rgb(7 30 52 / 55%);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
         color: #fffdf7;
@@ -600,22 +600,22 @@ html[lang="ar"] {
 
     .turkluxx-mobile-menu a + a {
         margin-top: 8px;
-        border-top: 1px solid rgb(216 182 106 / 36%);
+        border-top: 1px solid rgb(216 182 106 / 65%);
     }
 
-    :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) a:hover {
-        background: rgb(7 30 52 / 54%);
-        border-color: rgb(216 182 106 / 72%);
+    .turkluxx-sales-header :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) > a:hover {
+        background: rgb(7 30 52 / 68%);
+        border-color: rgb(216 182 106 / 88%);
     }
 
-    :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) a:focus-visible {
+    .turkluxx-sales-header :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) > a:focus-visible {
         outline: 2px solid #d8b66a;
         outline-offset: 3px;
-        background: rgb(7 30 52 / 54%);
+        background: rgb(7 30 52 / 68%);
     }
 
-    :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) a:active {
-        background: rgb(7 30 52 / 68%);
+    .turkluxx-sales-header :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) > a:active {
+        background: rgb(7 30 52 / 78%);
         border-color: #d8b66a;
     }
 }
@@ -624,5 +624,41 @@ html[lang="ar"] {
     .turkluxx-mobile-primary-nav a {
         padding-inline: 6px;
         font-size: 12px;
+    }
+}
+
+/* Keep the full mobile brand line below the wordmark and above quick links. */
+@media (max-width: 767px) {
+    .turkluxx-sales-header > .turkluxx-sales-logo {
+        position: relative;
+    }
+
+    .turkluxx-sales-header > .turkluxx-sales-logo .turkluxx-brand-tagline {
+        display: block;
+        position: absolute;
+        inset-block-start: 100%;
+        inset-inline-start: 0;
+        width: max-content;
+        margin-top: 4px;
+        color: #f3d992;
+        font: 700 12.21px/1.4 'Cormorant Garamond', Georgia, serif;
+        letter-spacing: .4px;
+        text-align: start;
+        white-space: nowrap;
+        text-shadow: 0 1px 2px rgb(7 30 52 / 90%);
+        -webkit-text-fill-color: currentColor;
+    }
+
+    html[dir='rtl'] .turkluxx-sales-header > .turkluxx-sales-logo .turkluxx-brand-tagline {
+        left: auto;
+        right: 0;
+    }
+
+    .turkluxx-brand-tagline br {
+        display: none;
+    }
+
+    .turkluxx-mobile-primary-nav {
+        margin-block-start: 30px;
     }
 }
