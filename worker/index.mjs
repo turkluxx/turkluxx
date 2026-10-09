@@ -1,4 +1,4 @@
-const REFERRALS = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'DIRECT', 'LAITH', 'FAOZI']);
+const REFERRALS = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'MUHHAMED', 'VLAD', 'DIRECT', 'LAITH', 'FAOZI']);
 const MAX_BYTES = 8192;
 const RECIPIENT = 'turkluxx101@gmail.com';
 
@@ -51,9 +51,14 @@ export function validateLead(data) {
   };
   // Attribution is an untrusted label: accept only exact allowlisted values.
   if (!REFERRALS.has(data.referral)) throw new InputError(400, 'Invalid referral.');
+  const hasSubref = Object.hasOwn(data, 'subref');
+  if (hasSubref && !(data.referral === 'AHMAD' && ['LAITH', 'FAOZI'].includes(data.subref))) {
+    throw new InputError(400, 'Invalid referral pair.');
+  }
   const generalContact = data.source === 'general-contact';
   const lead = {
     referral: data.referral,
+    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: 'AHMAD' } : {}),
     ...(['LAITH', 'FAOZI'].includes(data.referral) ? { parentConsultant: 'AHMAD' } : {}),
     name: field('name', 120, true), phone: field('phone', 80, !generalContact), email: field('email', 254, true),
     project: field('project', 120), property: field('property', 180), propertyCode: field('propertyCode', 80),
@@ -82,7 +87,7 @@ export function validateLead(data) {
 export function createLeadEmail(lead, leadId, submittedAt) {
   const context = lead.source === 'general-contact' ? 'Contact Us' : lead.property || lead.project || 'General Enquiry';
   const lines = [
-    'NEW TURKLUXX LEAD', '', `Lead ID: ${leadId}`, `Referral: ${lead.referral}`, ...(lead.parentConsultant ? [`Parent Consultant: ${lead.parentConsultant}`] : []), '',
+    'NEW TURKLUXX LEAD', '', `Lead ID: ${leadId}`, `Referral: ${lead.referral}`, ...(lead.subref ? [`Sub-referrer: ${lead.subref}`, `Direct Referrer: ${lead.directReferrer}`] : []), ...(lead.parentConsultant ? [`Parent Consultant: ${lead.parentConsultant}`] : []), '',
     `Name: ${lead.name}`, ...(lead.phone ? [`Phone: ${lead.phone}`] : []), `Email: ${lead.email}`, ''
   ];
   for (const [key, label] of [['project', 'Project'], ['property', 'Property'], ['propertyCode', 'Property Code'], ['page', 'Page']]) {

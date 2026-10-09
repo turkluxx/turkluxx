@@ -21,7 +21,7 @@ The fixed sender is `TurkLuxx Leads <leads@turkluxx.com>`; validated customer em
 is Reply-To only. Neither recipient nor sender is client-controlled.
 
 Validation requires JSON with non-empty name, phone and email, and an exact
-ALMA/AHMAD/MUHAMED/VLAD/LAITH/FAOZI/DIRECT referral. Limits (characters): name 120, phone 80,
+ALMA/AHMAD/MUHAMED/MUHHAMED/VLAD/LAITH/FAOZI/DIRECT referral. Limits (characters): name 120, phone 80,
 email 254, project 120, property 180, propertyCode 80, page 2048. Optional values
 may be null or absent. Control characters are rejected; email format and
 HTTP(S) page URLs are checked. Bodies over 8 KiB are rejected even without
@@ -138,33 +138,48 @@ Checked in headless Chrome at 1366x768, 1440x900 and 1920x1080. Hero height equa
 
 Upload the stylesheet and assets, update their URLs, include the font link and copy the `.turkluxx-sales-hero` section into an HTML block. The new styles are scoped to the desktop hero.
 
-## Laith and Faozi referrals
+## Two-level referral attribution
 
-- Laith Al Rawashdeh: https://turkluxx.com/?ref=LAITH&lang=ar
-- Faozi Al Khalaqi: https://turkluxx.com/?ref=FAOZI&lang=ar
+- Laith Al Rawashdeh: https://turkluxx.com/?ref=AHMAD&subref=LAITH&lang=ar
+- Faozi Al Khalaqi: https://turkluxx.com/?ref=AHMAD&subref=FAOZI&lang=ar
 
-`referral` remains the direct referrer. Both new IDs have the permanent
-`parentConsultant: "AHMAD"` association in browser attribution, callback and
-contact payloads, validated leads and lead email content. The Worker derives
-this association from the direct ID rather than trusting a submitted parent.
-Existing IDs and lead email subjects retain their behavior. The existing
-Muhamed ID is `MUHAMED`; `MUHHAMED` remains invalid as before. Exactly two IDs
-were added; no QR images were created.
+For these links, `referral: "AHMAD"` identifies the primary consultant and
+`subref: "LAITH"` or `"FAOZI"` identifies the direct referrer. Attribution and
+both existing forms also retain `directReferrer` and `parentConsultant` explicitly.
+The existing Worker validates the complete pair, derives these labels from it,
+and includes both levels in lead email content. Only AHMAD/LAITH and AHMAD/FAOZI
+are authorized pairs. Unknown, empty, orphaned, mismatched or duplicated URL
+parameters use the existing invalid-referral screen without changing storage.
+The endpoint rejects invalid submitted pairs, including null or empty subref.
 
-Attribution keeps the existing first valid touch, its timestamp and landing URL
-in localStorage across normal navigation and browser sessions. A later referral
-cannot replace it. There is no server-side attribution database: the existing
-Worker sends lead emails but does not store attribution or leads. Clearing or
-blocking localStorage loses attribution, and it does not follow visitors across
-browsers/devices. The parent is derived on each read, including existing storage.
+The complete pair, timestamp and original landing URL are established by one
+atomic localStorage write to `turkluxx_referral_pair`. The existing first valid
+touch wins: neither later pairs nor individual referral links replace it. Legacy
+single-referral storage remains readable and blocks later pair attribution; a
+saved AHMAD touch cannot acquire a sub-referrer on a later visit. Invalid links
+never establish either level. Attribution survives clean internal navigation;
+referral parameters need not be appended to every internal URL.
 
-The explicit `lang=ar` hint selects Arabic independently of referral attribution.
-The landing page applies RTL before painting and waits for initial translation
-before revealing content (with a five-second failure fallback). Manual language
-selection updates only `lang` in the current URL and saves the existing language
-preference. Subsequent navigation without a language hint uses that preference;
-referral IDs never force a language. Revisiting an explicit `lang=ar` URL selects
-Arabic again, consistent with the existing URL language priority.
+Existing single-level URLs (including `?ref=LAITH` and `?ref=FAOZI`) retain their
+previous meaning and parent association. `MUHAMED` remains valid; `MUHHAMED` is
+also accepted as requested, preserving the submitted spelling. Single-level
+lead structures and email subjects retain their behavior.
+
+There is no server-side attribution database. The existing Worker sends lead
+emails but does not persist attribution or leads. Clearing or blocking
+localStorage loses attribution, and it does not follow visitors across browsers
+or devices. No backend, CRM, dependencies or QR images were added.
+
+The existing `lang=ar` hint selects Arabic and RTL independently of attribution.
+The landing page waits for initial translation before revealing content (with a
+five-second failure fallback). Manual language selection changes only `lang` in
+the current URL, leaving `ref` and `subref` intact, and saves the existing language
+preference. Clean subsequent navigation uses that preference. Revisiting an
+explicit `lang=ar` URL selects Arabic again, consistent with existing priority.
 
 Verification: `npm test`, `npm run build`, and
 `node scripts/test-referral-browser.mjs` (Chrome debugging on port 9227).
+The browser suite checks legacy and paired links, Arabic content/initial paint,
+RTL, both form payloads, language changes, navigation and first-touch precedence.
+Lead validation/email tests use synthetic data; browser API requests are stubbed
+and send no email. No production deployment is performed.

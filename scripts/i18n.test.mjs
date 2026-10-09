@@ -206,3 +206,18 @@ for (const code of ['LAITH', 'FAOZI']) {
         assert.equal(runtime({ stored: result.storage.get('turkluxx_language') }).api.language, 'en');
     });
 }
+
+for (const subref of ['LAITH', 'FAOZI']) {
+    test(`${subref}: two-level URL retains both parameters during language switching`, async () => {
+        const result = runtime({ search: `?ref=AHMAD&subref=${subref}&lang=ar` });
+        await result.api.ready; await new Promise(resolve => setImmediate(resolve));
+        assert.equal(result.document.documentElement.dir, 'rtl');
+        await result.api.setLanguage('nl');
+        const url = new URL(result.urls.at(-1));
+        assert.equal(url.searchParams.get('ref'), 'AHMAD');
+        assert.equal(url.searchParams.get('subref'), subref);
+        assert.equal(url.searchParams.get('lang'), 'nl');
+        assert.equal(result.document.documentElement.dir, 'ltr');
+        assert.equal(runtime({ stored: result.storage.get('turkluxx_language') }).api.language, 'nl');
+    });
+}

@@ -1,10 +1,11 @@
 (() => {
     'use strict';
 
-    const validCodes = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'LAITH', 'FAOZI']);
+    const validCodes = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'MUHHAMED', 'VLAD', 'LAITH', 'FAOZI']);
 
     const keys = {
         referral: 'turkluxx_referral',
+        pair: 'turkluxx_referral_pair',
         createdAt: 'turkluxx_referral_created_at',
         landingPage: 'turkluxx_referral_landing_page'
     };
@@ -14,9 +15,17 @@
         return validCodes.has(code) ? code : null;
     };
 
+    const validPair = (referral, subref) => referral === 'AHMAD' && ['LAITH', 'FAOZI'].includes(subref);
+
     // Always read storage so navigation and other tabs see the same attribution.
     window.getTurkLuxxReferralAttribution = () => {
         try {
+            let pair;
+            try { pair = JSON.parse(localStorage.getItem(keys.pair)); } catch { /* Ignore malformed stored records. */ }
+            if (pair && validPair(pair.referral, pair.subref)) {
+                return { referral: pair.referral, subref: pair.subref, directReferrer: pair.subref,
+                    parentConsultant: pair.referral, createdAt: pair.createdAt, landingPage: pair.landingPage };
+            }
             const referral = normalize(localStorage.getItem(keys.referral));
             if (referral) {
                 return {
@@ -35,7 +44,11 @@
 
     const params = new URLSearchParams(window.location.search);
     const incoming = normalize(params.get('ref'));
-    if (params.has('ref') && !incoming) {
+    const hasSubref = params.has('subref');
+    const subref = normalize(params.get('subref'));
+    const invalidPair = hasSubref && !validPair(incoming, subref);
+    const duplicate = params.getAll('ref').length > 1 || params.getAll('subref').length > 1;
+    if ((params.has('ref') && !incoming) || invalidPair || duplicate) {
         // Reject the URL without touching any existing first-touch attribution.
         const style = document.createElement('style');
         style.textContent = `
@@ -71,7 +84,13 @@
     if (!incoming) return;
 
     try {
-        if (normalize(localStorage.getItem(keys.referral))) return;
+        if (window.getTurkLuxxReferral() !== 'DIRECT') return;
+        if (hasSubref) {
+            // One atomic storage write establishes both levels and their metadata.
+            localStorage.setItem(keys.pair, JSON.stringify({ referral: incoming, subref,
+                createdAt: new Date().toISOString(), landingPage: window.location.href }));
+            return;
+        }
         // Write the valid code last; incomplete metadata alone is not attribution.
         localStorage.setItem(keys.createdAt, new Date().toISOString());
         localStorage.setItem(keys.landingPage, window.location.href);

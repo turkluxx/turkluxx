@@ -21,8 +21,8 @@
     }
   });
   const referralFields = () => {
-    const { referral, parentConsultant } = window.getTurkLuxxReferralAttribution();
-    return { referral, ...(parentConsultant ? { parentConsultant } : {}) };
+    const { referral, subref, directReferrer, parentConsultant } = window.getTurkLuxxReferralAttribution();
+    return { referral, ...(subref ? { subref, directReferrer } : {}), ...(parentConsultant ? { parentConsultant } : {}) };
   };
   window.buildTurkLuxxLeadPayload = sourceForm => {
     const fields = new FormData(sourceForm);
