@@ -568,3 +568,61 @@ html[lang="ar"] {
         outline-offset: 3px;
     }
 }
+
+/* Compact glass buttons for the existing mobile quick links and dropdown. */
+@media (max-width: 767px) {
+    .turkluxx-mobile-primary-nav {
+        gap: 8px;
+    }
+
+    .turkluxx-mobile-primary-nav a,
+    .turkluxx-mobile-menu a {
+        box-sizing: border-box;
+        min-height: 44px;
+        padding: 8px 10px;
+        border: 1px solid rgb(216 182 106 / 36%);
+        border-radius: 5px;
+        background: rgb(7 30 52 / 34%);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        color: #fffdf7;
+        font-size: 14px;
+        line-height: 1.35;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color .18s ease, border-color .18s ease;
+    }
+
+    .turkluxx-mobile-primary-nav a {
+        min-width: 0;
+        white-space: nowrap;
+    }
+
+    .turkluxx-mobile-menu a + a {
+        margin-top: 8px;
+        border-top: 1px solid rgb(216 182 106 / 36%);
+    }
+
+    :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) a:hover {
+        background: rgb(7 30 52 / 54%);
+        border-color: rgb(216 182 106 / 72%);
+    }
+
+    :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) a:focus-visible {
+        outline: 2px solid #d8b66a;
+        outline-offset: 3px;
+        background: rgb(7 30 52 / 54%);
+    }
+
+    :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) a:active {
+        background: rgb(7 30 52 / 68%);
+        border-color: #d8b66a;
+    }
+}
+
+@media (max-width: 359px) {
+    .turkluxx-mobile-primary-nav a {
+        padding-inline: 6px;
+        font-size: 12px;
+    }
+}
