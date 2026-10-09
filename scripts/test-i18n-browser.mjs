@@ -229,13 +229,11 @@ try {
                     paragraphs.forEach((p, i) => { assert.equal(p.text, catalogs[code][p.key]); assert.equal(p.lead, i === 0); });
                     await noOverflow(`${width} ${code} ${variant}`);
                     for (const mode of ['photos', 'plans', 'location']) {
-                        await evaluate(`document.querySelector('[data-view="${mode}"]').click()`); await pause(20);
                         await evaluate(`TurkLuxxI18n.setLanguage('${code}')`);
-                        assert.equal(await evaluate('document.querySelector(".rengi-view-tabs [aria-selected=true]").dataset.view'), mode);
+                        assert.equal(await evaluate('document.querySelectorAll(".rengi-view-tabs").length'), 0);
                         if (mode === 'plans') {
-                            const floorIndices = await evaluate('[...document.querySelectorAll("input[name=rengi-villa-floor]")].map(input=>input.value)');
+                            const floorIndices = await evaluate('[...document.querySelectorAll(".rengi-floor-card")].map((card,index)=>index)');
                             for (const floorIndex of floorIndices) {
-                                await evaluate(`{const input=document.querySelector('input[name=rengi-villa-floor][value="${floorIndex}"]');input.checked=true;input.dispatchEvent(new Event('change'));}`);
                                 await pause(20);
                                 const roomNames = await evaluate(`villaData['${category}']['${variant}'].floors[${floorIndex}].rooms.map(room=>room.name)`);
                                 const expected = roomNames.map(label => {
@@ -243,7 +241,7 @@ try {
                                     assert.ok(key, `Room label cataloged: ${label}`);
                                     return catalogs[code][key];
                                 });
-                                assert.deepEqual(await evaluate('[...document.querySelectorAll(".rengi-floor-card dt")].map(node=>node.textContent)'), expected);
+                                assert.deepEqual(await evaluate(`[...document.querySelectorAll(".rengi-floor-card")[${floorIndex}].querySelectorAll("dt")].map(node=>node.textContent)`), expected);
                                 await noOverflow(`${width} ${code} ${variant} floor ${floorIndex}`);
                             }
                         }
@@ -319,7 +317,7 @@ try {
         await navigate('/rengi-istanbul.html?ref=VLAD');
         await evaluate("TurkLuxxI18n.setLanguage('ar')");
         assert.equal(await evaluate('getTurkLuxxReferral()'), 'VLAD');
-        await evaluate('document.querySelector("#rengi-master-fullscreen").click()');
+        await evaluate('document.querySelector(".rengi-master-preview").click()');
         await until('document.querySelector("#rengi-plan-lightbox").open');
         assert.equal(await evaluate('document.querySelector("#rengi-lightbox-title").textContent'), catalogs.ar['istanbul.master_plan_186']);
         for (const code of codes) {

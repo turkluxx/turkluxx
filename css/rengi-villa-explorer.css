@@ -356,32 +356,25 @@
     }
 }
 
-/* Content modes share the existing villa data and lightbox. */
-.rengi-explorer .rengi-view-tabs {
-    display: flex;
-    gap: 28px;
-    margin-bottom: 28px;
-    border-bottom: 1px solid #212c6c26;
+/* Continuous villa content uses the existing media and floor-card components. */
+.rengi-explorer .rengi-villa-content {
+    margin-top: clamp(32px, 4vw, 56px);
 }
-
-.rengi-explorer .rengi-view-tabs button {
-    padding: 12px 0;
-    min-height: 44px;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    color: #212c6cb3;
-    background: transparent;
-    font: 600 12px/1.5 'Inter', sans-serif;
+.rengi-explorer .rengi-villa-content + .rengi-villa-content {
+    padding-top: 24px;
+    border-top: 1px solid #212c6c26;
+}
+.rengi-explorer .rengi-villa-content-heading {
+    margin: 0 0 24px;
+    color: #8c6b30;
+    font: 600 14px/1.6 'Manrope', sans-serif;
     letter-spacing: .08em;
-    cursor: pointer;
 }
-
-.rengi-explorer .rengi-view-tabs button[aria-selected="true"] {
-    color: #212c6c;
-    border-bottom-color: #8c6b30;
+.rengi-explorer .rengi-floor-list {
+    display: grid;
+    gap: clamp(32px, 4vw, 56px);
 }
-
-.rengi-explorer .rengi-view-tabs:not(#rengi-floor-plans) button:focus-visible, .rengi-explorer .rengi-villa-plan-preview:focus-visible {
+.rengi-explorer .rengi-villa-plan-preview:focus-visible {
     outline: 2px solid #8c6b30;
     outline-offset: 3px;
 }
@@ -435,69 +428,6 @@
     }
 }
 
-/* Compact desktop previews; full-size detail remains in the existing lightbox. */
-@media (min-width: 1200px) {
-    .rengi-explorer #rengi-villa-plans {
-        --rengi-preview-height: 540px;
-    }
-
-    .rengi-explorer #rengi-villa-plans .rengi-variant-selector {
-        margin-bottom: 16px;
-    }
-
-    .rengi-explorer .rengi-villa-plan-layout {
-        grid-template-columns: minmax(0, 57fr) minmax(0, 43fr);
-    }
-
-    .rengi-explorer .rengi-villa-plan-preview {
-        height: var(--rengi-preview-height);
-    }
-
-    .rengi-explorer .rengi-villa-plan-preview img {
-        height: 100%;
-        object-fit: contain;
-        object-position: center;
-    }
-
-    .rengi-explorer #rengi-villa-plans .rengi-floor-card {
-        display: flex;
-        flex-direction: column;
-        max-height: var(--rengi-preview-height);
-        padding: 20px;
-    }
-
-    .rengi-explorer #rengi-villa-plans .rengi-floor-card header {
-        flex: 0 0 auto;
-        padding-bottom: 12px;
-    }
-
-    .rengi-explorer #rengi-villa-plans .rengi-floor-card h4 span {
-        margin: 2px 0 6px;
-    }
-
-    .rengi-explorer #rengi-villa-plans .rengi-floor-card dl {
-        min-height: 0;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: #b49860 #eee9df;
-    }
-
-    .rengi-explorer #rengi-villa-plans .rengi-floor-card dl > div {
-        padding-block: 7px;
-    }
-
-    .rengi-explorer #rengi-villa-plans .rengi-floor-card dl > div:last-child {
-        padding-bottom: 7px;
-    }
-}
-
-/* Villa tabs + specifications */
-.rengi-view-tabs {
-    display: flex;
-    align-items: center;
-    gap: 0;
-}
-
 .rengi-villa-specs {
     display: flex;
     align-items: center;
@@ -532,10 +462,6 @@
 
 /* Mobile */
 @media (max-width: 768px) {
-    .rengi-view-tabs {
-        flex-wrap: wrap;
-    }
-
     .rengi-villa-specs {
         order: 2;
         width: 100%;
@@ -569,8 +495,8 @@
         font-size: 12px;
     }
 }
-/* Location shares the Photos panel and its single Philosophy block. */
-.rengi-explorer .rengi-villa-media .rengi-villa-map {
+/* Villa-specific Location retains its existing image and lightbox. */
+.rengi-explorer .rengi-villa-map {
     display: block;
     width: 100%;
     height: auto;
@@ -582,17 +508,6 @@
 .rengi-explorer .rengi-floor-contact {
     display: inline-flex;
     margin-top: 20px;
-}
-
-/* Allow the third tab without compressing the existing area specifications. */
-.rengi-explorer .rengi-view-tabs {
-    flex-wrap: wrap;
-    row-gap: 12px;
-}
-
-.rengi-explorer .rengi-view-tabs button {
-    flex-shrink: 0;
-    white-space: nowrap;
 }
 
 /* Half-width Location preview; original image files and other media are unchanged. */
@@ -609,4 +524,70 @@
 .rengi-explorer .rengi-villa-map-preview:focus-visible {
     outline: 2px solid #8c6b30;
     outline-offset: 4px;
+}
+
+/* Type selectors remain the existing accessible tab controls, styled as buttons. */
+.rengi-explorer .rengi-type-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    width: min(100%, 540px);
+    margin-block: 28px 20px;
+    padding: 3px;
+    border: 0;
+    overflow: visible;
+}
+.rengi-explorer .rengi-type-tabs button {
+    min-width: 0;
+    min-height: 48px;
+    padding: 12px 16px;
+    border: 1px solid #8c6b30;
+    border-radius: 3px;
+    background: #f7f5f1;
+    color: #212c6c;
+    font: 600 18px/1.3 'Manrope', sans-serif;
+    letter-spacing: .02em;
+    cursor: pointer;
+}
+.rengi-explorer .rengi-type-tabs button:hover {
+    background: #eee6d6;
+    border-color: #212c6c;
+}
+.rengi-explorer .rengi-type-tabs button[aria-selected="true"] {
+    background: #212c6c;
+    border-color: #212c6c;
+    color: #fffdf7;
+}
+.rengi-explorer .rengi-type-tabs button[aria-selected="true"]:hover {
+    background: #172154;
+    border-color: #8c6b30;
+}
+.rengi-explorer .rengi-type-tabs button:active {
+    background: #e1d5bd;
+    border-color: #212c6c;
+}
+.rengi-explorer .rengi-type-tabs button[aria-selected="true"]:active {
+    background: #071e34;
+    border-color: #d8b66a;
+}
+.rengi-explorer .rengi-type-tabs button:focus-visible {
+    outline: 2px solid #212c6c;
+    outline-offset: 3px;
+}
+.rengi-explorer .rengi-villa-specs {
+    flex-wrap: wrap;
+    gap: 16px 36px;
+    margin: 0;
+    padding: 0;
+}
+html[dir="rtl"] .rengi-explorer .rengi-villa-content-heading,
+html[dir="rtl"] .rengi-explorer .rengi-villa-philosophy {
+    text-align: start;
+}
+@media (max-width: 767px) {
+    .rengi-explorer .rengi-type-tabs { gap: 8px; }
+    .rengi-explorer .rengi-type-tabs button { padding-inline: 8px; font-size: 16px; }
+    .rengi-explorer .rengi-villa-specs { gap: 8px; }
+    .rengi-explorer .rengi-villa-spec { width: auto; flex: 1; }
+    .rengi-explorer .rengi-villa-map-preview { width: 100%; }
 }

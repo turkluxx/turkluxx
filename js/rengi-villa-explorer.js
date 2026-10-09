@@ -16,11 +16,8 @@
     let category = categories[0];
     let variant = Object.keys(villaData[category])[0];
     let slideIndex = 0;
-    let mode = 'photos';
-    let floorIndex = 0;
-    const viewTabs = [...viewer.querySelectorAll('.rengi-view-tabs button')];
-    const floorOptions = viewer.querySelector('.rengi-floor-options');
-    const planPreview = viewer.querySelector('.rengi-villa-plan-preview');
+    let lightboxMode = 'photos';
+    const floorList = viewer.querySelector('.rengi-floor-list');
     const villaCtas = [...viewer.querySelectorAll('.rengi-villa-contact')];
     const mapImage = viewer.querySelector('.rengi-villa-map');
     const mapPreview = viewer.querySelector('.rengi-villa-map-preview');
@@ -84,65 +81,38 @@
         if (callback.open) fitCallbackTitle();
     });
 
-    function renderFloor() {
-        const villa = villaData[category][variant];
-        const floor = (villa.floors || [])[floorIndex];
-        const card = viewer.querySelector('.rengi-floor-card');
-        card.replaceChildren();
-        floorOptions.querySelectorAll('input').forEach(input => { input.checked = Number(input.value) === floorIndex; });
-        if (!floor) {
-            planPreview.querySelector('img').removeAttribute('src');
-            return;
-        }
-        const image = planPreview.querySelector('img');
-        image.src = floor.image;
-        const planValues = () => ({ name: villa.name, floor: translated(floor.name || floor.code) });
-        bind(image, 'media.plan', planValues, 'alt');
-        bind(planPreview, 'media.planFullscreen', planValues, 'aria-label');
-        const header = element('header');
-        const heading = element('h4', floor.code);
-        if (floor.name) heading.append(element('span', floor.name));
-        const total = element('p');
-        const totalLabel = element('span');
-        bind(totalLabel, 'common.total');
-        total.append(totalLabel);
-        total.append(element('strong', floor.total));
-        header.append(heading, total);
-        const rooms = element('dl');
-        rooms.append(...floor.rooms.map(room => detailRow(room.name, room.area)));
-        card.append(header, rooms);
+    function renderFloors(villa) {
+        floorList.replaceChildren(...(villa.floors || []).map((floor, index) => {
+            const row = element('article', undefined, 'rengi-villa-plan-layout');
+            const preview = element('button', undefined, 'rengi-villa-plan-preview');
+            preview.type = 'button';
+            preview.setAttribute('aria-haspopup', 'dialog');
+            const image = element('img');
+            image.src = floor.image;
+            image.loading = 'lazy';
+            const planValues = () => ({ name: villa.name, floor: translated(floor.name || floor.code) });
+            bind(image, 'media.plan', planValues, 'alt');
+            bind(preview, 'media.planFullscreen', planValues, 'aria-label');
+            preview.append(image);
+            preview.addEventListener('click', () => openLightbox(index, preview, 'plans'));
+            const card = element('div', undefined, 'rengi-floor-card');
+            const header = element('header');
+            const heading = element('h4', floor.code);
+            if (floor.name) heading.append(element('span', floor.name));
+            const total = element('p');
+            const totalLabel = element('span');
+            bind(totalLabel, 'common.total');
+            total.append(totalLabel, element('strong', floor.total));
+            header.append(heading, total);
+            const rooms = element('dl');
+            rooms.append(...floor.rooms.map(room => detailRow(room.name, room.area)));
+            card.append(header, rooms);
+            row.append(preview, card);
+            return row;
+        }));
     }
 
-    function selectMode(next) {
-        if (dialog.open) dialog.close();
-        mode = next;
-        slideIndex = 0;
-        viewTabs.forEach(tab => {
-            const active = tab.dataset.view === mode;
-            tab.setAttribute('aria-selected', String(active));
-            tab.tabIndex = active ? 0 : -1;
-        });
-        viewer.querySelector('#rengi-villa-panel').hidden = mode === 'plans';
-        viewer.querySelector('#rengi-villa-panel').setAttribute('aria-labelledby', mode === 'location' ? 'rengi-location-tab' : 'rengi-photos-tab');
-        gallery.hidden = mode !== 'photos';
-        mapPreview.hidden = mode !== 'location';
-        viewer.querySelector('#rengi-villa-plans').hidden = mode !== 'plans';
-    }
-    viewTabs.forEach(tab => {
-        tab.addEventListener('click', () => selectMode(tab.dataset.view));
-        tab.addEventListener('keydown', event => {
-            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-            event.preventDefault();
-            const available = viewTabs.filter(item => !item.hidden);
-            const index = available.indexOf(tab);
-            const next = event.key === 'Home' ? 0 : event.key === 'End' ? available.length - 1
-                : (index + (event.key === 'ArrowLeft' ? -1 : 1) + available.length) % available.length;
-            available[next].focus();
-            selectMode(available[next].dataset.view);
-        });
-    });
-    planPreview.addEventListener('click', () => openLightbox(floorIndex, planPreview));
-    mapPreview.addEventListener('click', () => openLightbox(0, mapPreview));
+    mapPreview.addEventListener('click', () => openLightbox(0, mapPreview, 'location'));
     let gesture;
 
     function element(tag, text, className) {
@@ -160,27 +130,24 @@
 
     function showSlide(next) {
         const villa = villaData[category][variant];
-        const images = mode === 'location' ? [villa.map]
-            : mode === 'plans' ? villa.floors.map(floor => floor.image) : villa.photos;
+        const images = lightboxMode === 'location' ? [villa.map]
+            : lightboxMode === 'plans' ? villa.floors.map(floor => floor.image) : villa.photos;
         if (!images.length) return;
         slideIndex = (next + images.length) % images.length;
         fullImage.src = images[slideIndex];
-        bind(fullImage, mode === 'location' ? 'media.map' : mode === 'plans' ? 'media.plan' : 'media.villaView', () => ({
-            name: mode === 'location' ? displayName(villa) : villa.name,
+        bind(fullImage, lightboxMode === 'location' ? 'media.map' : lightboxMode === 'plans' ? 'media.plan' : 'media.villaView', () => ({
+            name: lightboxMode === 'location' ? displayName(villa) : villa.name,
             floor: translated(villa.floors?.[slideIndex]?.name || villa.floors?.[slideIndex]?.code || ''), number: slideIndex + 1
         }), 'alt');
-        if (mode === 'plans') {
-            floorIndex = slideIndex;
-            renderFloor();
-        }
         dialog.querySelector('.rengi-villa-counter').textContent = `${slideIndex + 1} / ${images.length}`;
         dialog.querySelectorAll('.rengi-villa-previous, .rengi-villa-next').forEach(button => {
             button.hidden = images.length < 2;
         });
     }
 
-    function openLightbox(index, thumbnail) {
+    function openLightbox(index, thumbnail, media = 'photos') {
         origin = thumbnail;
+        lightboxMode = media;
         showSlide(index);
         bind(dialog, 'media.viewer', { name: villaData[category][variant].name }, 'aria-label');
         previousOverflow = document.body.style.overflow;
@@ -236,32 +203,11 @@
                 return p;
             })
         );
-        floorIndex = 0;
-        const floors = villa.floors || [];
-        floorOptions.closest('fieldset').hidden = floors.length <= 1;
-        floorOptions.replaceChildren(...floors.map((floor, index) => {
-            const label = element('label', undefined, 'rengi-variant-option');
-            const input = element('input');
-            input.type = 'radio';
-            input.name = 'rengi-villa-floor';
-            input.value = index;
-            input.addEventListener('change', () => {
-                if (!input.checked) return;
-                if (dialog.open) dialog.close();
-                floorIndex = index;
-                renderFloor();
-            });
-            label.append(input, document.createTextNode(floor.name || floor.code));
-            return label;
-        }));
-        renderFloor();
-        viewTabs[1].hidden = !floors.length;
-        selectMode(floors.length ? mode : 'photos');
+        renderFloors(villa);
         if (announce) bind(status, 'villa.selected', { category: villa.category.replace('+', ' + '), name: villa.name, count: villa.photos.length });
     }
 
     function selectCategory(next, announce = true) {
-        mode = 'photos';
         category = next;
         variant = Object.keys(villaData[category])[0];
         [...tablist.children].forEach(tab => {

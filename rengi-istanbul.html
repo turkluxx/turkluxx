@@ -87,64 +87,55 @@
                 <legend class="rengi-sr-only">Villa variant</legend>
                 <div class="rengi-variant-options"></div>
             </fieldset>
-            <div id="rengi-floor-plans" class="rengi-view-tabs" role="tablist" aria-label="Villa content">
-                <button id="rengi-photos-tab" type="button" role="tab" aria-selected="true" aria-controls="rengi-villa-panel" data-view="photos">PHOTOS</button>
-                <button id="rengi-plans-tab" type="button" role="tab" aria-selected="false" aria-controls="rengi-villa-plans" data-view="plans" tabindex="-1">FLOOR PLANS</button>
-                <button id="rengi-location-tab" type="button" role="tab" aria-selected="false" aria-controls="rengi-villa-panel" data-view="location" tabindex="-1">LOCATION</button>
-                <div class="rengi-villa-specs" aria-label="Villa specifications">
-                    <div class="rengi-villa-spec">
-                        <span>Gross Area</span>
-                        <strong data-villa-spec="gross"></strong>
-                    </div>
+            <div class="rengi-villa-specs" aria-label="Villa specifications">
+                <div class="rengi-villa-spec">
+                    <span>Gross Area</span>
+                    <strong data-villa-spec="gross"></strong>
+                </div>
 
-                    <div class="rengi-villa-spec">
-                        <span>Net Area</span>
-                        <strong data-villa-spec="net"></strong>
-                    </div>
+                <div class="rengi-villa-spec">
+                    <span>Net Area</span>
+                    <strong data-villa-spec="net"></strong>
+                </div>
 
-                    <div class="rengi-villa-spec">
-                        <span>Land Share</span>
-                        <strong data-villa-spec="land"></strong>
-                    </div>
+                <div class="rengi-villa-spec">
+                    <span>Land Share</span>
+                    <strong data-villa-spec="land"></strong>
                 </div>
             </div>
-            <div class="rengi-villa-panel" id="rengi-villa-panel" role="tabpanel" aria-labelledby="rengi-photos-tab">
-                <figure class="rengi-villa-media">
-                    <div class="rengi-villa-grid" role="group" aria-label="Villa images"></div>
-                    <button class="rengi-villa-map-preview" type="button" aria-haspopup="dialog" aria-label="View villa location map fullscreen" hidden>
-                        <img class="rengi-villa-map" alt="" loading="lazy">
-                    </button>
-                </figure>
-                <section class="rengi-villa-philosophy" aria-labelledby="rengi-philosophy-title" hidden>
-                    <p class="rengi-section-eyebrow">THE PHILOSOPHY</p>
-                    <div class="rengi-philosophy-heading">
-                        <h3 id="rengi-philosophy-title"></h3>
-                        <button class="rengi-overview-cta turkluxx-reference-cta rengi-villa-contact turkluxx-callback-trigger" type="button"
-                                aria-haspopup="dialog" aria-controls="turkluxx-callback">
-                            <span></span> <span aria-hidden="true">&rarr;</span>
-                        </button>
-                    </div>
-                    <div class="rengi-philosophy-body"></div>
-                </section>
-            </div>
-        </div>
-        <div id="rengi-villa-plans" role="tabpanel" aria-labelledby="rengi-plans-tab" hidden>
-            <fieldset class="rengi-variant-selector">
-                <legend class="rengi-sr-only">Villa floor</legend>
-                <div class="rengi-variant-options rengi-floor-options"></div>
-            </fieldset>
-            <div class="rengi-villa-plan-layout">
-                <button class="rengi-villa-plan-preview" type="button" aria-haspopup="dialog">
-                    <img alt="" loading="lazy">
+            <section class="rengi-villa-content" aria-labelledby="rengi-photos-heading">
+                <h3 class="rengi-villa-content-heading" id="rengi-photos-heading" data-i18n="common.photos">PHOTOS</h3>
+                <div class="rengi-villa-panel" id="rengi-villa-panel">
+                    <figure class="rengi-villa-media">
+                        <div class="rengi-villa-grid" role="group" aria-label="Villa images"></div>
+                    </figure>
+                    <section class="rengi-villa-philosophy" aria-labelledby="rengi-philosophy-title" hidden>
+                        <p class="rengi-section-eyebrow">THE PHILOSOPHY</p>
+                        <div class="rengi-philosophy-heading">
+                            <h3 id="rengi-philosophy-title"></h3>
+                            <button class="rengi-overview-cta turkluxx-reference-cta rengi-villa-contact turkluxx-callback-trigger" type="button"
+                                    aria-haspopup="dialog" aria-controls="turkluxx-callback">
+                                <span></span> <span aria-hidden="true">&rarr;</span>
+                            </button>
+                        </div>
+                        <div class="rengi-philosophy-body"></div>
+                    </section>
+                </div>
+            </section>
+            <section id="rengi-villa-plans" class="rengi-villa-content" aria-labelledby="rengi-plans-heading">
+                <h3 class="rengi-villa-content-heading" id="rengi-plans-heading" data-i18n="common.floor_plans">FLOOR PLANS</h3>
+                <div class="rengi-floor-list"></div>
+                <button class="rengi-overview-cta turkluxx-reference-cta rengi-villa-contact rengi-floor-contact turkluxx-callback-trigger" type="button"
+                        aria-haspopup="dialog" aria-controls="turkluxx-callback">
+                    <span></span> <span aria-hidden="true">&rarr;</span>
                 </button>
-                <div class="rengi-floor-information">
-                    <article class="rengi-floor-card"></article>
-                    <button class="rengi-overview-cta turkluxx-reference-cta rengi-villa-contact rengi-floor-contact turkluxx-callback-trigger" type="button"
-                            aria-haspopup="dialog" aria-controls="turkluxx-callback">
-                        <span></span> <span aria-hidden="true">&rarr;</span>
-                    </button>
-                </div>
-            </div>
+            </section>
+            <section id="rengi-villa-location" class="rengi-villa-content" aria-labelledby="rengi-villa-location-heading">
+                <h3 class="rengi-villa-content-heading" id="rengi-villa-location-heading" data-i18n="istanbul.location">LOCATION</h3>
+                <button class="rengi-villa-map-preview" type="button" aria-haspopup="dialog" aria-label="View villa location map fullscreen">
+                    <img class="rengi-villa-map" alt="" loading="lazy">
+                </button>
+            </section>
         </div>
         <dialog class="rengi-villa-lightbox" aria-modal="true" aria-label="Villa image viewer">
             <button class="rengi-villa-close" type="button" aria-label="Close image viewer" autofocus>&times;</button>
