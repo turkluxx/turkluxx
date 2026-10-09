@@ -288,7 +288,7 @@ html[lang="ar"] {
 @media (max-width: 767px) {
     .turkluxx-homepage .turkluxx-sales-hero {
         grid-template-columns: minmax(0, 1fr) 88px 48px;
-        grid-template-areas: 'stage stage stage' 'citizenship citizenship citizenship' 'secondary secondary secondary' 'social social social' 'climate climate climate' 'benefits benefits benefits';
+        grid-template-areas: 'stage stage stage' 'citizenship citizenship citizenship' 'secondary secondary secondary' 'social social social';
         column-gap: 8px;
         row-gap: 20px;
     }

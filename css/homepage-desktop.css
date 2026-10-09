@@ -1383,3 +1383,31 @@
 @media (max-width: 767px) {
     .turkluxx-citizenship-modal { padding: 28px 24px 24px; }
 }
+
+/* Homepage hero cleanup: retain the primary mobile actions and their placement. */
+@media (min-width: 768px) {
+    .turkluxx-homepage .turkluxx-mobile-primary-ctas {
+        display: none;
+    }
+}
+
+@media (min-width: 1200px) {
+    .turkluxx-homepage .turkluxx-sales-hero {
+        --turkluxx-strip: 0px;
+    }
+
+    .turkluxx-homepage .turkluxx-hero-ctas {
+        bottom: clamp(24px, 4vh, 48px);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .turkluxx-homepage .turkluxx-sales-header {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .turkluxx-homepage .turkluxx-sales-hero {
+        grid-template-areas: 'header header' 'citizenship heading' 'secondary secondary';
+        padding-bottom: 24px;
+    }
+}
