@@ -1,6 +1,6 @@
 /* Homepage reference components, shared with selected Rengi Istanbul elements. */
 .rengi-page .turkluxx-sales-nav .rengi-desktop-contact { display: none; }
-.rengi-page .turkluxx-reference-cta > span:first-child { font: inherit; }
+:is(.rengi-page, .rengi-roi) .turkluxx-reference-cta > span:first-child { font: inherit; }
 .rengi-overview-cta > span:first-child { color: inherit; }
 
 @media (min-width: 1200px) {
@@ -31,16 +31,13 @@
     /* Match the homepage's 2fr / 4.6fr copy column, including its 40px gaps
        and capped 1440px layout. Page query units exclude the scrollbar. */
     .rengi-page { container-type: inline-size; }
-    .rengi-page .rengi-location {
-        grid-template-columns: minmax(400px, 1fr) minmax(0, 1.1fr) minmax(0, 1fr);
-    }
     .rengi-page .turkluxx-reference-heading {
         text-align: left;
         font-size: clamp(32px, calc(round(down, (min(100cqw - 2 * clamp(24px, 5vw, 96px), 1440px) - 80px) * 2 / 4.6, .015625px) * .085), 50px);
     }
 
     .turkluxx-developer .turkluxx-section-body,
-    .rengi-page .turkluxx-reference-body {
+    :is(.rengi-page, .rengi-roi) .turkluxx-reference-body {
         font-family: 'Manrope', sans-serif;
         font-size: 17px;
         font-weight: 500;
@@ -53,7 +50,7 @@
 
 @media (min-width: 1200px), (max-width: 767px) {
     .turkluxx-project .turkluxx-project-cta,
-    .rengi-page .turkluxx-reference-cta {
+    :is(.rengi-page, .rengi-roi) .turkluxx-reference-cta {
         display: inline-flex;
         align-items: center;
         justify-content: space-between;
@@ -76,16 +73,16 @@
         text-decoration: none;
         flex-shrink: 0;
     }
-    .rengi-page .turkluxx-reference-cta { gap: 0; }
+    :is(.rengi-page, .rengi-roi) .turkluxx-reference-cta { gap: 0; }
     .rengi-page .rengi-overview-cta > span:last-child { color: inherit; }
     .turkluxx-project--reverse .turkluxx-project-cta { max-width: 100%; }
     .turkluxx-project .turkluxx-project-cta > span:first-child,
-    .rengi-page .turkluxx-reference-cta > span:first-child {
+    :is(.rengi-page, .rengi-roi) .turkluxx-reference-cta > span:first-child {
         flex: 1;
         text-align: center;
     }
     .turkluxx-project .turkluxx-project-cta > span:last-child,
-    .rengi-page .turkluxx-reference-cta > span:last-child {
+    :is(.rengi-page, .rengi-roi) .turkluxx-reference-cta > span:last-child {
         flex: 0 0 auto;
         margin-left: 16px;
         font-size: 20px;
@@ -94,11 +91,12 @@
     }
     .turkluxx-project .turkluxx-project-cta:hover,
     .rengi-page .rengi-overview .turkluxx-reference-cta:hover,
-    .rengi-page .rengi-section .turkluxx-reference-cta:hover {
+    .rengi-page .rengi-section .turkluxx-reference-cta:hover,
+    .rengi-roi .turkluxx-reference-cta:hover {
         background: #172154;
         text-decoration: none;
     }
-    .rengi-page .turkluxx-reference-cta:focus-visible {
+    :is(.rengi-page, .rengi-roi) .turkluxx-reference-cta:focus-visible {
         outline: 2px solid #212c6c;
         outline-offset: 5px;
     }
@@ -106,7 +104,7 @@
 
 @media (max-width: 767px) {
     .turkluxx-homepage .turkluxx-project .turkluxx-project-cta,
-    .rengi-page .turkluxx-reference-cta {
+    :is(.rengi-page, .rengi-roi) .turkluxx-reference-cta {
         display: flex;
         width: 100%;
         min-width: 0;

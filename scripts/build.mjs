@@ -40,9 +40,30 @@ function syncPage(file, html) {
   if (read(file) !== html) writeFileSync(join(root, file), html, 'utf8');
   return html;
 }
+// The project page owns the reused sections. Synchronize source previews as well
+// as production so content, translations and viewer markup cannot drift.
+function homepageProjectSections(html) {
+  if (!html.includes('<!-- Shared Rengi sections:')) return html;
+  const project = read('rengi-istanbul.html');
+  const section = id => {
+    const match = project.match(new RegExp(`<section id="${id}"[\\s\\S]*?<\\/section>`));
+    if (!match) throw new Error(`Missing shared project section: ${id}`);
+    return match[0];
+  };
+  const viewer = project.match(/<dialog class="rengi-plan-lightbox"[\s\S]*?<\/dialog>/)?.[0];
+  if (!viewer) throw new Error('Missing shared Master Plan viewer');
+  return html
+    .replace(/(<!-- Shared Rengi sections: managed by scripts\/build.mjs -->)[\s\S]*?(<!-- End shared Rengi sections -->)/,
+      (_, open, close) => `${open}\n    ${section('rengi-location')}\n    ${section('rengi-roi')}\n    ${close}`)
+    .replace(/(<!-- Shared Rengi viewer: managed by scripts\/build.mjs -->)[\s\S]*?(<!-- End shared Rengi viewer -->)/,
+      (_, open, close) => `${open}\n${viewer}\n${close}`);
+}
 function pageHtml(file) {
   const legalPages = { 'privacy-policy.html': 'Privacy Policy', 'cookie-policy.html': 'Cookie Policy', 'terms-and-conditions.html': 'Terms &amp; Conditions', 'disclaimer.html': 'Property &amp; Website Disclaimer' };
-  if (!Object.hasOwn(legalPages, file)) return syncPage(file, footerPolicies(read(file), file));
+  if (!Object.hasOwn(legalPages, file)) {
+    const html = file === 'index.html' ? homepageProjectSections(read(file)) : read(file);
+    return syncPage(file, footerPolicies(html, file));
+  }
   // The Team page remains the single source for this page's complete shell.
   const template = read('meet-our-team.html');
   const content = read(file).match(/<main\b[\s\S]*?<\/main>/)?.[0];

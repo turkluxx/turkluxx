@@ -56,7 +56,8 @@ const click = async selector => {
     const point = await evaluate(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
     const hit = await evaluate(`document.elementFromPoint(${point.x},${point.y})?.outerHTML.slice(0,200)`);
     if (!await evaluate(`document.querySelector(${JSON.stringify(selector)}).contains(document.elementFromPoint(${point.x},${point.y}))`)) console.log('Click covered:', selector, point, hit);
-    await clickAt(point.x, point.y);
+    const viewport = await evaluate('({x:visualViewport.offsetLeft,y:visualViewport.offsetTop})');
+    await clickAt(point.x - viewport.x, point.y - viewport.y);
 };
 const roi = 'document.querySelector("#turkluxx-roi")';
 const screenshot = async name => {
@@ -76,7 +77,7 @@ try {
         await until('document.readyState === "complete" && !!window.TurkLuxxI18n && !!window.getTurkLuxxReferralAttribution');
         await evaluate('TurkLuxxI18n.ready'); await pause(100);
         const attribution = await evaluate('JSON.stringify(getTurkLuxxReferralAttribution())');
-        const trigger = width >= 1200 || width < 768 ? '.turkluxx-home-desktop-nav .turkluxx-roi-trigger' : '.turkluxx-home-narrow-nav .turkluxx-roi-trigger';
+        const trigger = width < 768 ? '.turkluxx-mobile-primary-nav .turkluxx-roi-trigger' : width >= 1200 ? '.turkluxx-home-desktop-nav .turkluxx-roi-trigger' : '.turkluxx-home-narrow-nav .turkluxx-roi-trigger';
         for (const code of codes) {
             await evaluate(`TurkLuxxI18n.setLanguage('${code}')`);
             await evaluate('window.scrollTo({top:0,behavior:"instant"})');
@@ -171,7 +172,7 @@ try {
                     assert.equal(buttons.learn.height, buttons.consult.height, 'Equal button heights');
                     assert.ok(buttons.learn.right < buttons.consult.x, 'Learn More on the left');
                 } else assert.ok(buttons.learn.bottom < buttons.consult.y, 'Mobile buttons stack');
-                for (const trigger of ['.turkluxx-sales-nav .turkluxx-roi-trigger', '.rengi-roi-learn']) {
+                for (const trigger of [width < 768 ? '.turkluxx-mobile-primary-nav .turkluxx-roi-trigger' : '.turkluxx-sales-nav .turkluxx-roi-trigger', '.rengi-roi-learn']) {
                     await evaluate(`document.querySelector('${trigger}').scrollIntoView({block:'center',behavior:'instant'})`);
                     await pause(150);
                     await click(trigger);

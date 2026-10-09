@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@500;600;700&family=Oooh+Baby&display=swap"
           rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/rengi-istanbul.css">
     <link rel="stylesheet" href="css/homepage-desktop.css">
     <link rel="stylesheet" href="css/desktop-components.css">
     <link rel="stylesheet" href="css/i18n.css">
@@ -268,6 +269,115 @@
             </div>
         </div>
     </section>
+    <!-- Shared Rengi sections: managed by scripts/build.mjs -->
+    <section id="rengi-location" class="rengi-location rengi-section" aria-labelledby="rengi-location-title">
+        <h2 class="rengi-location-heading rengi-section-eyebrow" id="rengi-location-title" data-i18n="istanbul.location">LOCATION</h2>
+        <figure class="rengi-master-media">
+                <button class="rengi-master-preview" type="button" aria-label="Open master plan fullscreen"
+                        aria-haspopup="dialog" aria-controls="rengi-plan-lightbox">
+                    <img id="rengi-master-image" src="assets/rengi/master-plan.jpg"
+                         alt="Rengi Istanbul overall site plan from the project brochure" width="1116" height="713"
+                         loading="lazy">
+                </button>
+            </figure>
+        <div class="rengi-map">
+            <iframe src="https://maps.google.com/maps?q=41.036278,28.614722&amp;ll=41.036278,28.614722&amp;z=13&amp;hl=en&amp;t=m&amp;output=embed"
+                    title="Rengi Istanbul location on Google Maps"
+                    loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="rengi-landmarks">
+            <ul>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m2 8 10-5 10 5-10 5L2 8Zm4 3v6q6 5 12 0v-6m4-3v10"/>
+                    </svg>
+                    <span>School</span><strong>~1.4 km</strong>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6M8 10h2m4 0h2"/>
+                    </svg>
+                    <span>University</span><strong>~4.2 km</strong>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 21V3h14v18M2 21h20M12 6v6m-3-3h6m-6 12v-5h6v5"/>
+                    </svg>
+                    <span>Hospital</span><strong>~4.2 km (9 min drive)</strong>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 21 9 3m10 18L15 3M8 8h8M7 13h10M6 18h12"/>
+                    </svg>
+                    <span>TEM Motorway</span><strong>~1.8 km</strong>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 21h16M7 21V9h7v12M14 21V5h4v16M16 5V2m-7 11h3m-3 4h3"/>
+                    </svg>
+                    <span>Tüyap Tower Minaret</span><strong>~3.2 km</strong>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 12l18-8-8 18-2-9-8-1Z"/>
+                    </svg>
+                    <span>Istanbul Airport</span><strong>~32 km (20 miles)</strong>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 8h14l1 13H4L5 8Zm3 0V6a4 4 0 0 1 8 0v2"/>
+                    </svg>
+                    <span>Mall of Istanbul</span><strong>~16 km (10 miles)</strong>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M2 17q5-4 10 0t10 0M3 12h18M6 12V4m12 8V4M6 6q6 6 12 0"/>
+                    </svg>
+                    <span>Bosphorus</span><strong>~33.5 km (20.5 miles)</strong>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3 21V9h7v12m0 0V3h10v18M6 12v2m8-7h2m-2 4h2m-2 4h2M2 21h20"/>
+                    </svg>
+                    <span>City Center</span><strong>~33.5 km (20.8 miles)</strong>
+                </li>
+            </ul>
+        </div>
+    </section>
+    <section id="rengi-roi" class="rengi-roi rengi-section" aria-labelledby="rengi-roi-title">
+        <div class="rengi-roi-copy">
+            <p class="rengi-section-eyebrow">INVESTMENT POTENTIAL</p>
+            <h2 id="rengi-roi-title" data-i18n="common.roi_30_70">ROI <span class="rengi-roi-percentage" dir="ltr">(30%&ndash;70%)</span></h2>
+            <!-- Keep this investment wording aligned with the homepage ROI information dialog. -->
+            <h3 class="rengi-roi-subheading">Enter Early. Benefit from the Growth.</h3>
+            <p class="rengi-section-body turkluxx-reference-body">Early-stage property investment can offer an opportunity to benefit from value appreciation as a development progresses toward completion.</p>
+            <dl class="rengi-roi-points">
+                <div>
+                    <dt>EARLY ENTRY</dt>
+                    <dd>Access the project at an earlier stage of development.</dd>
+                </div>
+                <div>
+                    <dt>VALUE APPRECIATION</dt>
+                    <dd>Potential property value growth as construction progresses and the project matures.</dd>
+                </div>
+                <div>
+                    <dt>FLEXIBLE STRATEGY</dt>
+                    <dd>Hold the property as a long-term asset or consider resale at a later stage.</dd>
+                </div>
+            </dl>
+            <div class="rengi-roi-actions">
+            <button class="rengi-roi-learn rengi-roi-cta turkluxx-reference-cta turkluxx-roi-trigger" type="button" aria-haspopup="dialog" aria-controls="turkluxx-roi"><span data-i18n="home.learn_more">Learn More</span><span aria-hidden="true">&rarr;</span></button>
+            <button class="rengi-roi-cta turkluxx-reference-cta turkluxx-callback-trigger" type="button" aria-haspopup="dialog" aria-controls="turkluxx-callback">
+                <span>Request a Private Consultation</span><span aria-hidden="true">&rarr;</span>
+            </button>
+            </div>
+            <p class="rengi-roi-note">Investment returns are not guaranteed and may vary depending on the selected property, purchase timing and market conditions.</p>
+        </div>
+        <div class="rengi-roi-media" aria-hidden="true">
+            <img src="img/ROI.png" alt="" width="1408" height="768" loading="lazy" decoding="async">
+        </div>
+    </section>
+    <!-- End shared Rengi sections -->
 <!--    <section class="turkluxx-project turkluxx-project&#45;&#45;reverse" aria-labelledby="turkluxx-antalya-heading">-->
 <!--        <div class="turkluxx-section-layout">-->
 <!--            <div class="turkluxx-project-media" data-project-gallery aria-label="Rengi Antalya images">-->
@@ -315,11 +425,6 @@
                 <a class="turkluxx-logo" href="./" aria-label="TurkLuxx home"><span
                         class="turkluxx-logo-word">TurkLuxx</span></a>
             </div>
-            <nav class="turkluxx-footer-nav" aria-label="Footer navigation">
-                <h2>Explore</h2>
-                <a href="#turkluxx-project-heading">Rengi Istanbul</a>
-                <a href="#turkluxx-antalya-heading">Rengi Antalya</a>
-            </nav>
             <div class="turkluxx-footer-contact">
                 <h2>Contact</h2>
                 <!-- Replace the bracketed values with client-approved details, then add mailto/tel links. -->
@@ -411,6 +516,21 @@
         <p class="turkluxx-callback-status" role="status" aria-live="polite"></p>
     </form>
 </dialog>
+<!-- Shared Rengi viewer: managed by scripts/build.mjs -->
+<dialog class="rengi-plan-lightbox" id="rengi-plan-lightbox" aria-labelledby="rengi-lightbox-title">
+    <div class="rengi-lightbox-toolbar">
+        <h2 id="rengi-lightbox-title">Plan</h2>
+        <div class="rengi-lightbox-actions">
+            <button type="button" id="rengi-plan-zoom-out" aria-label="Zoom out">&minus;</button>
+            <output id="rengi-plan-zoom" aria-live="polite">100%</output>
+            <button type="button" id="rengi-plan-zoom-in" aria-label="Zoom in">+</button>
+            <button type="button" id="rengi-plan-close" aria-label="Close fullscreen plan" autofocus>&times;</button>
+        </div>
+    </div>
+    <div class="rengi-lightbox-scroll" tabindex="0" aria-label="Plan image; zoom and scroll to inspect"><img
+            id="rengi-lightbox-image" alt=""></div>
+</dialog>
+<!-- End shared Rengi viewer -->
 <script src="js/callback.js" defer></script>
 <button class="turkluxx-back-to-top" type="button" aria-label="Back to top" hidden>
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -419,6 +539,7 @@
 </button>
 <script src="js/homepage-navigation.js" defer></script>
 <script src="js/homepage-galleries.js" defer></script>
+<script src="js/rengi-istanbul.js" defer></script>
 <script>function loadScript(a){var b=document.getElementsByTagName("head")[0],c=document.createElement("script");c.type="text/javascript",c.src="https://tracker.metricool.com/resources/be.js",c.onreadystatechange=a,c.onload=a,b.appendChild(c)}loadScript(function(){beTracker.t({hash:"e4f74be2b67b344dedf1c03c78d750e8"})});</script>
 <!-- Meta Pixel Code -->
 <script>

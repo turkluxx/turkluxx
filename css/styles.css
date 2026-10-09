@@ -3227,3 +3227,10 @@ footer a[href^="https://wa.me/"]:hover {
     color: #eeeeee !important;
     text-decoration: underline;
 }
+
+/* Footer navigation was removed; let the brand and contact details share the row. */
+.turkluxx-footer-columns { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+.turkluxx-footer-brand { grid-column: auto; }
+@media (max-width: 767px) {
+    .turkluxx-footer-columns { grid-template-columns: minmax(0, 1fr); }
+}

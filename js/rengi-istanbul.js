@@ -3,6 +3,7 @@
     // Existing Master Plan viewer; villa selection is handled by rengi-villa-explorer.js.
     const masterPlan = { units: [], src: 'assets/rengi/master-plan.jpg' };
     const dialog = document.querySelector('#rengi-plan-lightbox');
+    if (!dialog) return;
     const lightboxImage = dialog.querySelector('#rengi-lightbox-image');
     const scroll = dialog.querySelector('.rengi-lightbox-scroll');
     let zoom = 100;
@@ -36,7 +37,6 @@
         window.TurkLuxxI18n.bind(lightboxImage, 'istanbul.rengi_istanbul_overall_site_plan_from_the', {}, 'alt');
     }
     document.querySelector('.rengi-master-preview').addEventListener('click', openMaster);
-    document.querySelector('#rengi-master-fullscreen').addEventListener('click', openMaster);
     dialog.querySelector('#rengi-plan-close').addEventListener('click', () => dialog.close());
     dialog.addEventListener('close', () => { document.body.style.overflow = previousOverflow; });
     dialog.querySelector('#rengi-plan-zoom-in').addEventListener('click', () => setZoom(zoom + 25));

@@ -54,6 +54,38 @@ test('bundles production pages, copies only allowlisted assets, and cleans stale
   assert.equal(readFileSync(join(f.root, 'dist/index.html'), 'utf8').split('rel="manifest"').length - 1, 1, 'Repeated builds do not duplicate favicon links');
 });
 
+test('homepage reuse follows project content changes without duplicate sections or viewers', t => {
+  const f = fixture(t);
+  const shell = readFileSync(join(f.root, 'index.html'), 'utf8');
+  f.put('index.html', shell.replace('Original', `
+    <!-- Shared Rengi sections: managed by scripts/build.mjs -->
+    <!-- End shared Rengi sections -->
+    <!-- Shared Rengi viewer: managed by scripts/build.mjs -->
+    <!-- End shared Rengi viewer -->`));
+  const project = label => shell.replace('Original', `
+    <section id="rengi-location"><button aria-controls="rengi-plan-lightbox">${label}</button></section>
+    <section id="rengi-roi"><h2>Existing ROI content</h2></section>
+    <dialog class="rengi-plan-lightbox" id="rengi-plan-lightbox"><button>Close</button></dialog>`);
+  for (const label of ['Original location', 'Updated location', 'Updated location']) {
+    f.put('rengi-istanbul.html', project(label));
+    const result = f.run();
+    assert.equal(result.status, 0, result.stderr);
+    for (const file of ['index.html', 'dist/index.html']) {
+      const home = readFileSync(join(f.root, file), 'utf8');
+      assert.ok(home.includes(label));
+      for (const id of ['rengi-location', 'rengi-roi', 'rengi-plan-lightbox']) {
+        assert.equal(home.split(`id="${id}"`).length - 1, 1, `${file}: ${id}`);
+      }
+      assert.ok(home.indexOf('id="rengi-location"') < home.indexOf('id="rengi-roi"'));
+      assert.match(home, /Existing ROI content/);
+    }
+  }
+  f.put('rengi-istanbul.html', shell);
+  const missing = f.run();
+  assert.notEqual(missing.status, 0);
+  assert.match(missing.stderr, /Missing shared Master Plan viewer/);
+});
+
 test('Privacy Policy inherits the current Team shell without translating its legal content', t => {
   const f = fixture(t);
   const shell = '<html lang="en"><head><title data-i18n="team.pageTitle">Team</title><link rel="canonical" href="https://turkluxx.com/meet-our-team.html"><link rel="stylesheet" href="css/i18n.css"><script src="js/i18n.js" defer></script></head><body class="team-page"><header>Shared header</header><main>Team biographies</main><footer>Shared footer</footer></body></html>';

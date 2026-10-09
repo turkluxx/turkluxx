@@ -229,8 +229,8 @@
 
 .rengi-location {
     display: grid;
-    grid-template-columns: 1fr 1.1fr 1fr;
-    gap: clamp(28px, 3vw, 56px);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 24px clamp(28px, 3vw, 56px);
     align-items: center;
     border-top: 1px solid #eee9df;
 }
@@ -1003,7 +1003,7 @@ html:not([lang='en']) .rengi-roi h2 {
     gap: 12px;
     direction: ltr;
 }
-.rengi-page .rengi-roi-actions .rengi-roi-cta {
+.rengi-roi .rengi-roi-actions .rengi-roi-cta {
     width: 100%;
     min-width: 0;
     max-width: 100%;
@@ -1013,10 +1013,10 @@ html:not([lang='en']) .rengi-roi h2 {
     padding: 14px 12px;
     font-size: 14px;
 }
-html[dir="rtl"] .rengi-roi-actions .rengi-roi-cta { direction: rtl; }
+html[dir="rtl"] .rengi-roi .rengi-roi-actions .rengi-roi-cta { direction: rtl; }
 @media (max-width: 767px) {
     .rengi-roi-actions { grid-template-columns: minmax(0, 1fr); }
-    .rengi-page .rengi-roi-actions .rengi-roi-cta { font-size: 16px; }
+    .rengi-roi .rengi-roi-actions .rengi-roi-cta { font-size: 16px; }
 }
 html[dir="rtl"] .rengi-roi-learn > [aria-hidden="true"] { transform: scaleX(-1); }
 .rengi-roi .rengi-roi-cta {
@@ -1081,4 +1081,37 @@ html[dir="rtl"] .rengi-roi-learn > [aria-hidden="true"] { transform: scaleX(-1);
 }
 .rengi-philosophy-lead {
     font-weight: 700;
+}
+
+/* The relocated plan and map share the existing responsive Location grid. */
+.rengi-location .rengi-location-heading {
+    grid-column: 1 / -1;
+    margin: 0;
+    font: 700 11px/1.6 'Manrope', sans-serif;
+    letter-spacing: .18em;
+    color: #8c6b30;
+}
+.rengi-location .rengi-master-media {
+    grid-column: auto;
+    grid-row: auto;
+    width: 100%;
+    margin: 0;
+}
+.rengi-location .rengi-master-preview,
+.rengi-location .rengi-master-preview img {
+    width: 100%;
+}
+.rengi-master-preview { cursor: zoom-in; }
+.rengi-master-preview:focus-visible {
+    outline: 2px solid #212c6c;
+    outline-offset: 5px;
+}
+html[dir="rtl"] .rengi-location,
+html[dir="rtl"] .rengi-roi { direction: ltr; }
+html[dir="rtl"] .rengi-location-heading,
+html[dir="rtl"] .rengi-landmarks,
+html[dir="rtl"] .rengi-roi-copy { direction: rtl; }
+html[dir="rtl"] .rengi-landmarks strong {
+    direction: ltr;
+    unicode-bidi: isolate;
 }
