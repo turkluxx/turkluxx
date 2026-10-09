@@ -1385,7 +1385,7 @@
 }
 
 /* Homepage hero cleanup: retain the primary mobile actions and their placement. */
-@media (min-width: 768px) {
+@media (min-width: 1200px), (min-width: 768px) and ((orientation: portrait) or (min-height: 501px)) {
     .turkluxx-homepage .turkluxx-mobile-primary-ctas {
         display: none;
     }
@@ -1401,7 +1401,7 @@
     }
 }
 
-@media (min-width: 768px) and (max-width: 1199px) {
+@media (min-width: 768px) and (max-width: 1199px) and ((orientation: portrait) or (min-height: 501px)) {
     .turkluxx-homepage .turkluxx-sales-header {
         grid-template-columns: minmax(0, 1fr) auto;
     }

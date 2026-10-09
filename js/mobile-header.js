@@ -2,7 +2,11 @@
     'use strict';
     const header = document.querySelector('.turkluxx-sales-header');
     if (!header) return;
-    const mobile = matchMedia('(max-width: 767px)');
+    const isHomepage = document.body.classList.contains('turkluxx-homepage');
+    const landscape = matchMedia('(orientation: landscape) and (max-height: 500px) and (max-width: 1199px)');
+    const mobile = matchMedia(document.body.classList.contains('turkluxx-homepage')
+        ? '(max-width: 767px), (orientation: landscape) and (max-height: 500px) and (max-width: 1199px)'
+        : '(max-width: 767px)');
     const source = header.querySelector('.turkluxx-home-desktop-nav') || header.querySelector('.turkluxx-sales-nav');
     const controls = document.createElement('div');
     controls.className = 'turkluxx-mobile-menu-control';
@@ -78,8 +82,9 @@
     const ctasNext = ctas?.nextSibling;
     function positionHeaderActions() {
         if (!ctas) return;
-        if (mobile.matches) header.after(ctas);
-        else header.insertBefore(ctas, ctasNext);
+        const separate = mobile.matches && (isHomepage || !landscape.matches);
+        if (separate && ctas.parentElement === header) header.after(ctas);
+        else if (!separate && ctas.parentElement !== header) header.insertBefore(ctas, ctasNext);
     }
     positionHeaderActions();
     function label() {
@@ -126,4 +131,43 @@
     mobile.addEventListener('change', () => { close(); positionHeaderActions(); });
     window.addEventListener('turkluxx:language-change', () => close());
     window.TurkLuxxI18n?.ready.then(label);
+
+    {
+        const stage = header.closest('.turkluxx-mobile-hero-stage');
+        const hero = header.closest('.turkluxx-sales-hero');
+        let scheduled = false;
+        function updateLandscape() {
+            scheduled = false;
+            // Recheck after layout settles when rotation updates both media queries.
+            positionHeaderActions();
+            const links = [...source.querySelectorAll('a')];
+            const gap = parseFloat(getComputedStyle(source).columnGap) || 0;
+            const navigationWidth = links.reduce((width, link) => width + link.getBoundingClientRect().width, 0)
+                + gap * Math.max(0, links.length - 1);
+            const fits = landscape.matches && (!isHomepage || navigationWidth <= header.clientWidth);
+            header.classList.toggle('has-landscape-navigation', fits);
+            if (fits) close();
+            if (landscape.matches && stage) {
+                // Size the full-width photo to the actual content, including wrapped text.
+                const height = stage.getBoundingClientRect().bottom - hero.getBoundingClientRect().top;
+                hero.style.setProperty('--turkluxx-landscape-stage-height', `${height}px`);
+            } else {
+                hero.style.removeProperty('--turkluxx-landscape-stage-height');
+            }
+        }
+        function scheduleLandscape() {
+            if (scheduled) return;
+            scheduled = true;
+            requestAnimationFrame(updateLandscape);
+        }
+        const observer = new ResizeObserver(scheduleLandscape);
+        observer.observe(header);
+        observer.observe(source);
+        source.querySelectorAll('a').forEach(link => observer.observe(link));
+        if (stage) observer.observe(stage);
+        landscape.addEventListener('change', () => { close(); positionHeaderActions(); scheduleLandscape(); });
+        window.addEventListener('turkluxx:language-change', scheduleLandscape);
+        document.fonts.ready.then(scheduleLandscape);
+        scheduleLandscape();
+    }
 })();
