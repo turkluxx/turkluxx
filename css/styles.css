@@ -3249,11 +3249,19 @@ footer a[href^="https://wa.me/"]:hover {
     }
 }
 @media (min-width: 1200px) {
+    .turkluxx-sales-logo > span {
+        align-self: center;
+    }
+
     .turkluxx-sales-logo .turkluxx-brand-tagline {
+        contain: none;
+        width: max-content;
+        align-self: center;
         margin-top: 9px;
+        text-shadow: 0 1px 2px rgb(7 30 52 / 45%);
         color: var(--turkluxx-gold, #d8b66a);
-        font: 600 clamp(10.92px, .8736vw, 13.104px)/1.4 'Cormorant Garamond', Georgia, serif;
-        letter-spacing: clamp(.8px, .07vw, 1.1px);
+        font: 700 clamp(13.8684px, 1.109472vw, 16.64208px)/1.4 'Cormorant Garamond', Georgia, serif;
+        letter-spacing: clamp(.5px, .04vw, .65px);
         background: linear-gradient(175deg, #fff1bf 12%, #d8b66a 50%, #b78a40 79%, #f3d992);
         background-clip: text;
         -webkit-background-clip: text;
