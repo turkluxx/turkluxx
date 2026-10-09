@@ -580,9 +580,9 @@ html[lang="ar"] {
         box-sizing: border-box;
         min-height: 44px;
         padding: 8px 10px;
-        border: 1px solid rgb(216 182 106 / 65%);
+        border: 1px solid rgb(216 182 106 / 72%);
         border-radius: 5px;
-        background: rgb(7 30 52 / 55%);
+        background: rgb(33 44 108 / 62%);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
         color: #fffdf7;
@@ -600,22 +600,22 @@ html[lang="ar"] {
 
     .turkluxx-mobile-menu a + a {
         margin-top: 8px;
-        border-top: 1px solid rgb(216 182 106 / 65%);
+        border-top: 1px solid rgb(216 182 106 / 72%);
     }
 
     .turkluxx-sales-header :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) > a:hover {
-        background: rgb(7 30 52 / 68%);
-        border-color: rgb(216 182 106 / 88%);
+        background: rgb(33 44 108 / 74%);
+        border-color: rgb(216 182 106 / 94%);
     }
 
     .turkluxx-sales-header :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) > a:focus-visible {
         outline: 2px solid #d8b66a;
         outline-offset: 3px;
-        background: rgb(7 30 52 / 68%);
+        background: rgb(33 44 108 / 74%);
     }
 
     .turkluxx-sales-header :is(.turkluxx-mobile-primary-nav, .turkluxx-mobile-menu) > a:active {
-        background: rgb(7 30 52 / 78%);
+        background: rgb(33 44 108 / 84%);
         border-color: #d8b66a;
     }
 }
