@@ -1,3 +1,4 @@
+import '../js/referral-registry.js';
 const REFERRALS = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'DIRECT', 'LAITH', 'FAOZI']);
 const MAX_BYTES = 8192;
 const RECIPIENT = 'turkluxx101@gmail.com';
@@ -55,9 +56,16 @@ export function validateLead(data) {
   if (hasSubref && !(data.referral === 'AHMAD' && ['LAITH', 'FAOZI'].includes(data.subref))) {
     throw new InputError(400, 'Invalid referral pair.');
   }
+  const hasClient = Object.hasOwn(data, 'client');
+  if (hasClient && (hasSubref || typeof data.client !== 'string' ||
+      !Object.hasOwn(globalThis.TurkLuxxReferralRegistry, data.referral) ||
+      !Object.values(globalThis.TurkLuxxReferralRegistry[data.referral]).some(ids => ids.includes(data.client)))) {
+    throw new InputError(400, 'Invalid referral client.');
+  }
   const generalContact = data.source === 'general-contact';
   const lead = {
     referral: data.referral,
+    ...(hasClient ? { client: data.client } : {}),
     ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: 'AHMAD' } : {}),
     ...(['LAITH', 'FAOZI'].includes(data.referral) ? { parentConsultant: 'AHMAD' } : {}),
     name: field('name', 120, true), phone: field('phone', 80, !generalContact), email: field('email', 254, true),
@@ -87,7 +95,7 @@ export function validateLead(data) {
 export function createLeadEmail(lead, leadId, submittedAt) {
   const context = lead.source === 'general-contact' ? 'Contact Us' : lead.property || lead.project || 'General Enquiry';
   const lines = [
-    'NEW TURKLUXX LEAD', '', `Lead ID: ${leadId}`, `Referral: ${lead.referral}`, ...(lead.subref ? [`Sub-referrer: ${lead.subref}`, `Direct Referrer: ${lead.directReferrer}`] : []), ...(lead.parentConsultant ? [`Parent Consultant: ${lead.parentConsultant}`] : []), '',
+    'NEW TURKLUXX LEAD', '', `Lead ID: ${leadId}`, `Referral: ${lead.referral}`, ...(lead.client ? [`Participant: ${lead.client}`] : []), ...(lead.subref ? [`Sub-referrer: ${lead.subref}`, `Direct Referrer: ${lead.directReferrer}`] : []), ...(lead.parentConsultant ? [`Parent Consultant: ${lead.parentConsultant}`] : []), '',
     `Name: ${lead.name}`, ...(lead.phone ? [`Phone: ${lead.phone}`] : []), `Email: ${lead.email}`, ''
   ];
   for (const [key, label] of [['project', 'Project'], ['property', 'Property'], ['propertyCode', 'Property Code'], ['page', 'Page']]) {

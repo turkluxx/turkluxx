@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { validateLead, createLeadEmail } from '../worker/index.mjs';
 
+const registrySource = readFileSync(new URL('../js/referral-registry.js', import.meta.url), 'utf8');
 const source = readFileSync(new URL('../js/referral.js', import.meta.url), 'utf8');
 function visit(path = '/', storage = new Map(), blocked = false, writeBlocked = false) {
   const elements = [];
@@ -17,7 +18,7 @@ function visit(path = '/', storage = new Map(), blocked = false, writeBlocked = 
     getItem: key => { if (blocked) throw Error('blocked'); return storage.get(key) ?? null; },
     setItem: (key, value) => { if (blocked || writeBlocked) throw Error('blocked'); storage.set(key, value); }
   };
-  runInNewContext(source, { window, document, localStorage, URLSearchParams, Date });
+  runInNewContext(registrySource + source, { window, document, localStorage, sessionStorage: localStorage, URLSearchParams, Date });
   return { window, elements, storage };
 }
 for (const path of ['/', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-our-team.html']) {
@@ -35,11 +36,7 @@ for (const path of ['/', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-o
     for (const code of ['SHIT', 'UNKNOWN', 'MUHHAMED', 'muhhamed', '123', '', 'DIRECT']) {
       const result = visit(`${path}?ref=${code}`);
       assert.equal(result.storage.size, 0);
-      const screen = result.elements.find(element => element.id === 'turkluxx-referral-error');
-      assert.ok(screen);
-      assert.match(screen.innerHTML, /Invalid referral link/);
-      assert.match(screen.innerHTML, /href="\/"/);
-      assert.equal(new URL('/', result.window.location).href, 'https://turkluxx.com/');
+      assert.equal(result.elements.length, 0);
     }
   });
 }
@@ -54,9 +51,9 @@ for (const code of ['VLAD', 'ALMA', 'MUHAMED', 'AHMAD', 'LAITH', 'FAOZI']) {
     }
   });
 }
-test('Blocked storage does not prevent direct visits or invalid screen', () => {
+test('Blocked storage does not prevent direct visits or graceful invalid links', () => {
   assert.equal(visit('/', new Map(), true).window.getTurkLuxxReferral(), 'DIRECT');
-  assert.equal(visit('/?ref=SHIT', new Map(), true).elements.length, 2);
+  assert.equal(visit('/?ref=SHIT', new Map(), true).elements.length, 0);
   assert.equal(visit('/?ref=AHMAD', new Map(), true).elements.length, 0);
 });
 test('AHMAD client attribution reaches validated lead email', () => {
@@ -133,7 +130,7 @@ test('Reject invalid pairs and duplicate parameters without partial attribution'
   for (const query of ['subref=LAITH', 'ref=ALMA&subref=LAITH', 'ref=VLAD&subref=FAOZI', 'ref=AHMAD&subref=UNKNOWN', 'ref=AHMAD&subref=', 'ref=LAITH&subref=FAOZI', 'ref=AHMAD&subref=AHMAD', 'ref=AHMAD&subref=LAITH&subref=FAOZI', 'ref=AHMAD&ref=VLAD&subref=LAITH']) {
     const result = visit('/?' + query);
     assert.equal(result.storage.size, 0);
-    assert.ok(result.elements.some(element => element.id === 'turkluxx-referral-error'));
+    assert.equal(result.elements.length, 0);
   }
   for (const [referral, subref] of [['AHMAD', 'UNKNOWN'], ['AHMAD', ''], ['AHMAD', null], ['AHMAD', 1], ['AHMAD', 'laith'], ['ALMA', 'LAITH'], ['LAITH', 'FAOZI'], ['DIRECT', 'LAITH']]) {
     assert.throws(() => validateLead({ referral, subref, name: 'Test', phone: '123', email: 'test@example.com' }), /Invalid referral pair/);

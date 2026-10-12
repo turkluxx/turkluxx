@@ -85,7 +85,7 @@ async function bundle(files) {
     return { file, id: file === 'index.html' ? 'home' : file.replace('rengi-', '').replace('.html', ''),
       html, styles: localStyles(html), scripts: localScripts(html) };
   });
-  const shared = ['js/i18n.js', 'js/mobile-header.js', 'js/referral.js', 'js/callback.js', 'js/homepage-navigation.js', 'js/homepage-galleries.js'];
+  const shared = ['js/i18n.js', 'js/mobile-header.js', 'js/referral-registry.js', 'js/referral.js', 'js/callback.js', 'js/homepage-navigation.js', 'js/homepage-galleries.js'];
   const groups = new Map([['js/turkluxx.min.js', shared.filter(file => pages.some(page => page.scripts.includes(file)))]]);
   const cssOrder = [];
   // Stable topological order preserves every page's stylesheet sequence.

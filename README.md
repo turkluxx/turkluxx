@@ -149,7 +149,7 @@ both existing forms also retain `directReferrer` and `parentConsultant` explicit
 The existing Worker validates the complete pair, derives these labels from it,
 and includes both levels in lead email content. Only AHMAD/LAITH and AHMAD/FAOZI
 are authorized pairs. Unknown, empty, orphaned, mismatched or duplicated URL
-parameters use the existing invalid-referral screen without changing storage.
+parameters are ignored without changing storage or hiding the website.
 The endpoint rejects invalid submitted pairs, including null or empty subref.
 
 The complete pair, timestamp and original landing URL are established by one
@@ -187,3 +187,8 @@ The browser suite checks legacy and paired links, Arabic content/initial paint,
 RTL, both form payloads, language changes, navigation and first-touch precedence.
 Lead validation/email tests use synthetic data; browser API requests are stubbed
 and send no email. No production deployment is performed.
+
+
+## Participant referral links
+
+See [implementation, privacy, URL list and verification](docs/referrals.md).
