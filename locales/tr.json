@@ -449,7 +449,7 @@
   "videos.empty": "Video koleksiyonumuzu keşfedin — çok yakında.",
   "videos.pageTitle": "TurkLuxx Videoları — Türkiye’de Lüks Gayrimenkul",
   "videos.play": "Videoyu oynat: {title}",
-  "videos.fallback": "Video oynatılmıyor mu? Google Drive’da açın.",
-  "videos.open": "Google Drive’da aç",
+  "videos.fallback": "Video oynatılmıyor mu? {provider}’da açın.",
+  "videos.open": "{provider}’da aç",
   "videos.unavailable": "Bu video şu anda kullanılamıyor."
 }

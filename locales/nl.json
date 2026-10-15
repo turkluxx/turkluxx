@@ -449,7 +449,7 @@
   "videos.empty": "Ontdek onze videocollectie — binnenkort beschikbaar.",
   "videos.pageTitle": "TurkLuxx-video’s — Luxe vastgoed in Türkiye",
   "videos.play": "Video afspelen: {title}",
-  "videos.fallback": "Lukt het afspelen niet? Open de video in Google Drive.",
-  "videos.open": "Openen in Google Drive",
+  "videos.fallback": "Lukt het afspelen niet? Open de video in {provider}.",
+  "videos.open": "Openen in {provider}",
   "videos.unavailable": "Deze video is momenteel niet beschikbaar."
 }

@@ -449,7 +449,7 @@
   "videos.empty": "Descubra nuestra colección de vídeos — próximamente.",
   "videos.pageTitle": "Vídeos de TurkLuxx — Inmuebles de lujo en Türkiye",
   "videos.play": "Reproducir vídeo: {title}",
-  "videos.fallback": "¿Tiene problemas para reproducir este vídeo? Ábralo en Google Drive.",
-  "videos.open": "Abrir en Google Drive",
+  "videos.fallback": "¿Tiene problemas para reproducir este vídeo? Ábralo en {provider}.",
+  "videos.open": "Abrir en {provider}",
   "videos.unavailable": "Este vídeo no está disponible actualmente."
 }

@@ -449,7 +449,7 @@
   "videos.empty": "اكتشف مجموعة الفيديوهات لدينا — قريباً.",
   "videos.pageTitle": "فيديوهات TurkLuxx — عقارات فاخرة في تركيا",
   "videos.play": "تشغيل الفيديو: {title}",
-  "videos.fallback": "هل تواجه صعوبة في تشغيل هذا الفيديو؟ افتحه في Google Drive.",
-  "videos.open": "فتح في Google Drive",
+  "videos.fallback": "هل تواجه صعوبة في تشغيل هذا الفيديو؟ افتحه في {provider}.",
+  "videos.open": "فتح في {provider}",
   "videos.unavailable": "هذا الفيديو غير متاح حالياً."
 }

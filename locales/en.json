@@ -449,7 +449,7 @@
   "videos.empty": "Discover our video collection — coming soon.",
   "videos.pageTitle": "TurkLuxx Videos — Luxury Real Estate in Türkiye",
   "videos.play": "Play video: {title}",
-  "videos.fallback": "Having trouble playing this video? Open it in Google Drive.",
-  "videos.open": "Open in Google Drive",
+  "videos.fallback": "Having trouble playing this video? Open it in {provider}.",
+  "videos.open": "Open in {provider}",
   "videos.unavailable": "This video is currently unavailable."
 }

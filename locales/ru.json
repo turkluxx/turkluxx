@@ -449,7 +449,7 @@
   "videos.empty": "Наша видеоколлекция — скоро.",
   "videos.pageTitle": "Видео TurkLuxx — Элитная недвижимость в Турции",
   "videos.play": "Смотреть видео: {title}",
-  "videos.fallback": "Не удаётся воспроизвести видео? Откройте его в Google Drive.",
-  "videos.open": "Открыть в Google Drive",
+  "videos.fallback": "Не удаётся воспроизвести видео? Откройте его в {provider}.",
+  "videos.open": "Открыть в {provider}",
   "videos.unavailable": "Это видео сейчас недоступно."
 }
