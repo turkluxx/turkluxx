@@ -19,8 +19,26 @@
     const parents = { LAITH: 'AHMAD', FAOZI: 'AHMAD', MOHAMED_ABDO: 'MOHAMED' };
     const validPair = (referral, subref) => Object.hasOwn(parents, subref) && parents[subref] === referral;
 
-    // Always read storage so navigation and other tabs see the same attribution.
+    const sessionKey = 'turkluxx_participant_referral';
+    let memoryAttribution = null;
+    const privacyOptOut = typeof navigator !== 'undefined' &&
+        (navigator.globalPrivacyControl === true || navigator.doNotTrack === '1');
+    const registry = globalThis.TurkLuxxReferralRegistry || {};
+    const validClient = (referral, client) => typeof referral === 'string' && typeof client === 'string' &&
+        Object.hasOwn(registry, referral || '') && Object.values(registry[referral]).some(ids => ids.includes(client));
+    const readSession = () => {
+        if (privacyOptOut) return memoryAttribution;
+        try {
+            const record = JSON.parse(sessionStorage.getItem(sessionKey));
+            if (record && validClient(record.referral, record.client)) return record;
+        } catch { /* Blocked or malformed storage is harmless. */ }
+        return memoryAttribution;
+    };
+
+    // Read session attribution on navigation; retain established legacy attribution.
     window.getTurkLuxxReferralAttribution = () => {
+        const participant = readSession();
+        if (participant) return { referral: participant.referral, client: participant.client };
         try {
             let storedReferral = localStorage.getItem(keys.referral);
             // Preserve existing attribution while using the corrected canonical ID.
@@ -66,37 +84,19 @@
     const subref = normalize(params.get('subref'));
     const invalidPair = (hasSubref && !validPair(incoming, subref)) || (!hasSubref && incoming === 'MOHAMED_ABDO');
     const duplicate = params.getAll('ref').length > 1 || params.getAll('subref').length > 1;
-    if ((params.has('ref') && !incoming) || invalidPair || duplicate) {
-        // Reject the URL without touching any existing first-touch attribution.
-        const style = document.createElement('style');
-        style.textContent = `
-            body.turkluxx-invalid-referral { margin: 0; background: #f9f7f2; }
-            body.turkluxx-invalid-referral > :not(#turkluxx-referral-error) { display: none !important; }
-            #turkluxx-referral-error { box-sizing: border-box; min-height: 100vh; min-height: 100svh;
-                display: flex; flex-direction: column; align-items: center; justify-content: center;
-                padding: 40px 24px; text-align: center; color: #212c6c; font-family: 'Manrope', sans-serif; }
-            #turkluxx-referral-error .referral-brand { font-size: 44px; font-weight: 700; letter-spacing: -2px; }
-            #turkluxx-referral-error h1 { font-family: 'Cormorant Garamond', serif;
-                font-size: clamp(36px, 6vw, 64px); font-weight: 500; line-height: 1.1; margin: 40px 0 20px; }
-            #turkluxx-referral-error p { max-width: 520px; font-size: 16px; line-height: 1.7; margin: 0 0 16px; }
-            #turkluxx-referral-error a { box-sizing: border-box; max-width: 100%; margin-top: 16px;
-                padding: 18px 24px; background: #212c6c; color: #fff; text-decoration: none;
-                font-size: 13px; font-weight: 700; letter-spacing: 1px; }
-            #turkluxx-referral-error a:focus-visible { outline: 3px solid #212c6c; outline-offset: 5px; }
-        `;
-        document.head.append(style);
-        const screen = document.createElement('main');
-        screen.id = 'turkluxx-referral-error';
-        screen.setAttribute('aria-labelledby', 'turkluxx-referral-error-title');
-        screen.innerHTML = `<div class="referral-brand">TurkLuxx</div>
-            <h1 id="turkluxx-referral-error-title" data-i18n="referral.title" tabindex="-1">Invalid referral link</h1>
-            <p data-i18n="referral.invalid">This referral link is not valid.</p>
-            <p data-i18n="referral.explanation">Please check the link you received or continue to TurkLuxx without referral attribution.</p>
-            <a href="/" data-i18n="referral.continue">CONTINUE TO TURKLUXX</a>`;
-        document.body.classList.add('turkluxx-invalid-referral');
-        document.body.append(screen);
-        document.title = 'Invalid referral link — TurkLuxx';
-        screen.querySelector('h1').focus();
+    const hasClient = params.has('client');
+    const client = (params.get('client') || '').trim().toUpperCase().replace(/\s+/g, '_');
+    const language = params.get('lang');
+    const invalidClient = hasClient && (!validClient(incoming, client) || hasSubref || !['ar', 'en'].includes(language));
+    if ((params.has('ref') && !incoming) || invalidPair || duplicate || invalidClient ||
+        params.getAll('client').length > 1 || params.getAll('lang').length > 1) return;
+    if (hasClient) {
+        if (window.getTurkLuxxReferral() !== 'DIRECT') return;
+        // First valid attribution wins; keep only registered identifiers for this tab session.
+        memoryAttribution = { referral: incoming, client };
+        try {
+            if (!privacyOptOut) sessionStorage.setItem(sessionKey, JSON.stringify(memoryAttribution));
+        } catch { /* Current page still works. */ }
         return;
     }
     if (!incoming) return;

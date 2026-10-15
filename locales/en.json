@@ -443,5 +443,13 @@
   "team.faozi.specialization": "Private Client Relations • USA & Middle East",
   "team.faozi.bio1": "Faozi excels at connecting with people, understanding what matters to them, and turning conversations into meaningful opportunities.",
   "team.faozi.bio2": "His experience across the USA and Middle East gives him a natural ability to navigate different business cultures while maintaining a personal, straightforward approach.",
-  "team.faozi.bio3": "Approachable and attentive, Faozi believes the best client relationships are built through genuine communication, responsiveness, and understanding—not simply transactions."
+  "team.faozi.bio3": "Approachable and attentive, Faozi believes the best client relationships are built through genuine communication, responsiveness, and understanding—not simply transactions.",
+  "videos.heading": "TurkLuxx Videos",
+  "videos.subtitle": "Explore exceptional properties, inspiring interiors, and exclusive real estate opportunities in Türkiye.",
+  "videos.empty": "Discover our video collection — coming soon.",
+  "videos.pageTitle": "TurkLuxx Videos — Luxury Real Estate in Türkiye",
+  "videos.play": "Play video: {title}",
+  "videos.fallback": "Having trouble playing this video? Open it in {provider}.",
+  "videos.open": "Open in {provider}",
+  "videos.unavailable": "This video is currently unavailable."
 }

@@ -1,0 +1,25 @@
+.videos-main { max-width: 1200px; margin-inline: auto; padding: 64px 40px 80px; color: #212c6c; }
+.videos-main * { box-sizing: border-box; min-width: 0; }
+.videos-intro { max-width: 780px; padding-bottom: 48px; }
+.videos-intro h1 { margin: 0 0 24px; font: 500 clamp(38px, 4vw, 58px)/1.08 'Cormorant Garamond', Georgia, serif; }
+.videos-intro p { margin: 0; font-size: 16px; line-height: 1.85; }
+.videos-collection { border-top: 1px solid #d4c8b0; padding-top: 40px; }
+.videos-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; align-items: start; }
+.videos-empty { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 40px 24px; background: #f5f2ec; text-align: center; }
+.videos-empty[hidden] { display: none; }
+.videos-empty svg { color: #8c6b30; }
+.videos-empty p { max-width: 32ch; margin: 0; font: 500 clamp(26px, 3vw, 34px)/1.35 'Cormorant Garamond', Georgia, serif; }
+.video-card { border: 1px solid #d4c8b0; background: #fff; overflow: hidden; }
+.video-media { position: relative; aspect-ratio: 16 / 9; background: #eee9df; }
+.video-media.is-vertical { aspect-ratio: 9 / 16; }
+.video-media img, .video-media iframe { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; }
+.video-play { position: absolute; inset: 0; width: 100%; border: 0; cursor: pointer; background: transparent; color: #212c6c; }
+.video-play span { display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: #fff; box-shadow: 0 2px 20px #212c6c26; font-size: 24px; }
+.video-play:focus-visible, .video-card a:focus-visible { outline: 3px solid #8c6b30; outline-offset: -4px; }
+.video-copy { padding: 24px; overflow-wrap: anywhere; }
+.video-copy h2 { margin: 12px 0; font: 500 30px/1.2 'Cormorant Garamond', Georgia, serif; }
+.video-copy p { font-size: 14px; line-height: 1.8; }
+.video-language { color: #8c6b30; font-size: 12px; }
+.video-card a { color: #212c6c; text-underline-offset: 4px; }
+@media (max-width: 1023px) { .videos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .videos-main { padding: 40px 24px 56px; } .videos-intro { padding-bottom: 32px; } .videos-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; } }

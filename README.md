@@ -21,7 +21,7 @@ The fixed sender is `TurkLuxx Leads <leads@turkluxx.com>`; validated customer em
 is Reply-To only. Neither recipient nor sender is client-controlled.
 
 Validation requires JSON with non-empty name, phone and email, and an exact
-ALMA/AHMAD/MOHAMED/VLAD/LAITH/FAOZI/MOHAMED_ABDO/DIRECT referral. Limits (characters): name 120, phone 80,
+ALMA/AHMAD/MUHAMED/VLAD/LAITH/FAOZI/DIRECT referral. Limits (characters): name 120, phone 80,
 email 254, project 120, property 180, propertyCode 80, page 2048. Optional values
 may be null or absent. Control characters are rejected; email format and
 HTTP(S) page URLs are checked. Bodies over 8 KiB are rejected even without
@@ -147,9 +147,9 @@ For these links, `referral: "AHMAD"` identifies the primary consultant and
 `subref: "LAITH"` or `"FAOZI"` identifies the direct referrer. Attribution and
 both existing forms also retain `directReferrer` and `parentConsultant` explicitly.
 The existing Worker validates the complete pair, derives these labels from it,
-and includes both levels in lead email content. AHMAD/LAITH, AHMAD/FAOZI and MOHAMED/MOHAMED_ABDO
-are the authorized pairs. Unknown, empty, orphaned, mismatched or duplicated URL
-parameters use the existing invalid-referral screen without changing storage.
+and includes both levels in lead email content. Only AHMAD/LAITH and AHMAD/FAOZI
+are authorized pairs. Unknown, empty, orphaned, mismatched or duplicated URL
+parameters are ignored without changing storage or hiding the website.
 The endpoint rejects invalid submitted pairs, including null or empty subref.
 
 The complete pair, timestamp and original landing URL are established by one
@@ -161,9 +161,9 @@ never establish either level. Attribution survives clean internal navigation;
 referral parameters need not be appended to every internal URL.
 
 Existing single-level URLs (including `?ref=LAITH` and `?ref=FAOZI`) retain their
-previous meaning and parent association. Mohamed Salem's canonical referral ID is `MOHAMED`;
+previous meaning and parent association. Muhamed's only valid ID is `MUHAMED`;
 `MUHHAMED` is rejected in new links and lead submissions. Existing localStorage
-attribution using the old misspelling is migrated to `MOHAMED` without changing
+attribution using the old misspelling is migrated to `MUHAMED` without changing
 its first-touch timestamp or original landing URL. If storage writes are blocked,
 readable saved attribution still uses the canonical ID for lead submission and
 migration is retried on later reads. Single-level lead structures and email
@@ -172,7 +172,7 @@ subjects retain their behavior.
 There is no server-side attribution database. The existing Worker sends lead
 emails but does not persist attribution or leads. Clearing or blocking
 localStorage loses attribution, and it does not follow visitors across browsers
-or devices. No backend or CRM was added.
+or devices. No backend, CRM, dependencies or QR images were added.
 
 The existing `lang=ar` hint selects Arabic and RTL independently of attribution.
 The landing page waits for initial translation before revealing content (with a
@@ -189,22 +189,6 @@ Lead validation/email tests use synthetic data; browser API requests are stubbed
 and send no email. No production deployment is performed.
 
 
-## Mohamed Salem and Abdo
+## Participant referral links
 
-Mohamed Salem uses the canonical ID `MOHAMED`; legacy `MUHAMED` links and saved attribution normalize to this same referrer without duplication.
-Abdo is a second-level referrer whose permanent parent is Mohamed Salem (`MOHAMED`).
-
-- Mohamed Salem: https://turkluxx.com/?ref=MOHAMED&lang=ar
-- Abdo: https://turkluxx.com/?ref=MOHAMED&subref=MOHAMED_ABDO&lang=ar
-- QR files: `img/qr_codes/QR_MOHAMED_STATIC.png` and `img/qr_codes/QR_MOHAMED_ABDO_STATIC.png`.
-
-The paired Abdo link records `referral: "MOHAMED"`, `subref: "MOHAMED_ABDO"`,
-`directReferrer: "MOHAMED_ABDO"` and `parentConsultant: "MOHAMED"`. The child identifier `MOHAMED_ABDO` is accepted only with its parent in the paired URL; standalone child referrals are rejected.
-First-touch attribution and existing legacy links remain unchanged.
-
-Regenerate **both** static PNGs with `python scripts/generate-referral-qr.py`.
-Requires Python packages `qrcode==8.2`, `Pillow==12.1.1` and `zxing-cpp==3.1.1`.
-Generation uses fresh H-level QR matrices, integer-sized modules, at least four
-white quiet-zone modules, and the centered existing TurkLuxx favicon master logo.
-Each saved 1000 x 1000 image must decode to its exact URL before generation succeeds.
-The public build includes both PNGs. No deployment is performed by this script.
+See [implementation, privacy, URL list and verification](docs/referrals.md).

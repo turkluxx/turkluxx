@@ -108,6 +108,7 @@
     "img/ist_villas/turkluxx-villa-3.jpg",
     "img/ist_villas/turkluxx-villa-4.jpg",
     "index.html",
+    "js/referral-registry.js",
     "js/referral.js",
     "js/callback.js",
     "js/homepage-galleries.js",
@@ -134,5 +135,9 @@
     "terms-and-conditions.html",
     "css/privacy-policy.css",
     "css/team.css",
-    "js/mobile-header.js"
+    "js/mobile-header.js",
+    "videos.html",
+    "css/videos.css",
+    "js/videos-data.js",
+    "js/videos.js"
 ]

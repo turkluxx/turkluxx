@@ -8,7 +8,7 @@ const catalogs = Object.fromEntries(codes.map(code => [code, JSON.parse(readFile
 const source = readFileSync(new URL('../js/i18n.js', import.meta.url), 'utf8');
 const placeholders = s => [...s.matchAll(/\{([a-zA-Z]+)\}/g)].map(m => m[1]).sort();
 test('Six catalogs cover every English key with valid strings and matching parameters', () => {
-    assert.equal(Object.keys(catalogs.en).length, 445);
+    assert.equal(Object.keys(catalogs.en).length, 453);
     for (const key of ['istanbul.master_plan_186', 'istanbul.villa_types_188', 'antalya.explore_the_projects_199']) assert.ok(key in catalogs.en);
     for (const code of codes) {
         const bytes = readFileSync(new URL(`../locales/${code}.json`, import.meta.url));

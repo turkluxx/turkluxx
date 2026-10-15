@@ -1,5 +1,5 @@
-const REFERRALS = new Set(['ALMA', 'AHMAD', 'MOHAMED', 'VLAD', 'DIRECT', 'LAITH', 'FAOZI', 'MOHAMED_ABDO']);
-const REFERRAL_PARENTS = { LAITH: 'AHMAD', FAOZI: 'AHMAD', MOHAMED_ABDO: 'MOHAMED' };
+import '../js/referral-registry.js';
+const REFERRALS = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'DIRECT', 'LAITH', 'FAOZI']);
 const MAX_BYTES = 8192;
 const RECIPIENT = 'turkluxx101@gmail.com';
 
@@ -40,7 +40,6 @@ async function readJson(request) {
 
 export function validateLead(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw new InputError(400, 'Invalid lead.');
-  if (data.referral === 'MUHAMED') data = { ...data, referral: 'MOHAMED' };
   const field = (key, max, required = false) => {
     const value = data[key];
     if (value == null && !required) return null;
@@ -54,15 +53,21 @@ export function validateLead(data) {
   // Attribution is an untrusted label: accept only exact allowlisted values.
   if (!REFERRALS.has(data.referral)) throw new InputError(400, 'Invalid referral.');
   const hasSubref = Object.hasOwn(data, 'subref');
-  if (!hasSubref && data.referral === 'MOHAMED_ABDO') throw new InputError(400, 'Invalid referral pair.');
-  if (hasSubref && !(Object.hasOwn(REFERRAL_PARENTS, data.subref) && REFERRAL_PARENTS[data.subref] === data.referral)) {
+  if (hasSubref && !(data.referral === 'AHMAD' && ['LAITH', 'FAOZI'].includes(data.subref))) {
     throw new InputError(400, 'Invalid referral pair.');
+  }
+  const hasClient = Object.hasOwn(data, 'client');
+  if (hasClient && (hasSubref || typeof data.client !== 'string' ||
+      !Object.hasOwn(globalThis.TurkLuxxReferralRegistry, data.referral) ||
+      !Object.values(globalThis.TurkLuxxReferralRegistry[data.referral]).some(ids => ids.includes(data.client)))) {
+    throw new InputError(400, 'Invalid referral client.');
   }
   const generalContact = data.source === 'general-contact';
   const lead = {
     referral: data.referral,
-    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: data.referral } : {}),
-    ...(Object.hasOwn(REFERRAL_PARENTS, data.referral) ? { parentConsultant: REFERRAL_PARENTS[data.referral] } : {}),
+    ...(hasClient ? { client: data.client } : {}),
+    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: 'AHMAD' } : {}),
+    ...(['LAITH', 'FAOZI'].includes(data.referral) ? { parentConsultant: 'AHMAD' } : {}),
     name: field('name', 120, true), phone: field('phone', 80, !generalContact), email: field('email', 254, true),
     project: field('project', 120), property: field('property', 180), propertyCode: field('propertyCode', 80),
     page: field('page', 2048)
@@ -90,7 +95,7 @@ export function validateLead(data) {
 export function createLeadEmail(lead, leadId, submittedAt) {
   const context = lead.source === 'general-contact' ? 'Contact Us' : lead.property || lead.project || 'General Enquiry';
   const lines = [
-    'NEW TURKLUXX LEAD', '', `Lead ID: ${leadId}`, `Referral: ${lead.referral}`, ...(lead.subref ? [`Sub-referrer: ${lead.subref}`, `Direct Referrer: ${lead.directReferrer}`] : []), ...(lead.parentConsultant ? [`Parent Consultant: ${lead.parentConsultant}`] : []), '',
+    'NEW TURKLUXX LEAD', '', `Lead ID: ${leadId}`, `Referral: ${lead.referral}`, ...(lead.client ? [`Participant: ${lead.client}`] : []), ...(lead.subref ? [`Sub-referrer: ${lead.subref}`, `Direct Referrer: ${lead.directReferrer}`] : []), ...(lead.parentConsultant ? [`Parent Consultant: ${lead.parentConsultant}`] : []), '',
     `Name: ${lead.name}`, ...(lead.phone ? [`Phone: ${lead.phone}`] : []), `Email: ${lead.email}`, ''
   ];
   for (const [key, label] of [['project', 'Project'], ['property', 'Property'], ['propertyCode', 'Property Code'], ['page', 'Page']]) {
