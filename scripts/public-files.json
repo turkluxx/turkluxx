@@ -133,5 +133,9 @@
     "terms-and-conditions.html",
     "css/privacy-policy.css",
     "css/team.css",
-    "js/mobile-header.js"
+    "js/mobile-header.js",
+    "videos.html",
+    "css/videos.css",
+    "js/videos-data.js",
+    "js/videos.js"
 ]

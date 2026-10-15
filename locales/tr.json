@@ -443,5 +443,13 @@
   "team.faozi.specialization": "Özel Müşteri İlişkileri • ABD ve Orta Doğu",
   "team.faozi.bio1": "Faozi, insanlarla bağ kurma, onlar için neyin önemli olduğunu anlama ve görüşmeleri anlamlı fırsatlara dönüştürme konusunda başarılıdır.",
   "team.faozi.bio2": "ABD ve Orta Doğu’daki deneyimi, kişisel ve açık bir yaklaşımı korurken farklı iş kültürlerine doğal bir şekilde uyum sağlamasına olanak tanır.",
-  "team.faozi.bio3": "Cana yakın ve ilgili olan Faozi, en iyi müşteri ilişkilerinin yalnızca işlemlerle değil, samimi iletişim, hızlı geri dönüş ve anlayışla kurulduğuna inanır."
+  "team.faozi.bio3": "Cana yakın ve ilgili olan Faozi, en iyi müşteri ilişkilerinin yalnızca işlemlerle değil, samimi iletişim, hızlı geri dönüş ve anlayışla kurulduğuna inanır.",
+  "videos.heading": "TurkLuxx Videoları",
+  "videos.subtitle": "Türkiye’de seçkin gayrimenkulleri, ilham veren iç mekânları ve özel gayrimenkul fırsatlarını keşfedin.",
+  "videos.empty": "Video koleksiyonumuzu keşfedin — çok yakında.",
+  "videos.pageTitle": "TurkLuxx Videoları — Türkiye’de Lüks Gayrimenkul",
+  "videos.play": "Videoyu oynat: {title}",
+  "videos.fallback": "Video oynatılmıyor mu? Google Drive’da açın.",
+  "videos.open": "Google Drive’da aç",
+  "videos.unavailable": "Bu video şu anda kullanılamıyor."
 }

@@ -443,5 +443,13 @@
   "team.faozi.specialization": "Relaciones con clientes privados • EE. UU. y Oriente Medio",
   "team.faozi.bio1": "Faozi destaca por conectar con las personas, comprender lo que les importa y convertir las conversaciones en oportunidades significativas.",
   "team.faozi.bio2": "Su experiencia en Estados Unidos y Oriente Medio le confiere una capacidad natural para desenvolverse en distintas culturas empresariales, manteniendo un enfoque personal y directo.",
-  "team.faozi.bio3": "Cercano y atento, Faozi cree que las mejores relaciones con los clientes se construyen mediante una comunicación genuina, una respuesta ágil y la comprensión, y no solo a través de transacciones."
+  "team.faozi.bio3": "Cercano y atento, Faozi cree que las mejores relaciones con los clientes se construyen mediante una comunicación genuina, una respuesta ágil y la comprensión, y no solo a través de transacciones.",
+  "videos.heading": "Vídeos de TurkLuxx",
+  "videos.subtitle": "Descubra propiedades excepcionales, interiores inspiradores y oportunidades inmobiliarias exclusivas en Türkiye.",
+  "videos.empty": "Descubra nuestra colección de vídeos — próximamente.",
+  "videos.pageTitle": "Vídeos de TurkLuxx — Inmuebles de lujo en Türkiye",
+  "videos.play": "Reproducir vídeo: {title}",
+  "videos.fallback": "¿Tiene problemas para reproducir este vídeo? Ábralo en Google Drive.",
+  "videos.open": "Abrir en Google Drive",
+  "videos.unavailable": "Este vídeo no está disponible actualmente."
 }

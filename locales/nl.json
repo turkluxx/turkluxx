@@ -443,5 +443,13 @@
   "team.faozi.specialization": "Particuliere klantrelaties • VS & Midden-Oosten",
   "team.faozi.bio1": "Faozi is sterk in het contact leggen met mensen, begrijpen wat voor hen belangrijk is en gesprekken omzetten in betekenisvolle kansen.",
   "team.faozi.bio2": "Zijn ervaring in de VS en het Midden-Oosten geeft hem een natuurlijk vermogen om met verschillende zakelijke culturen om te gaan, met behoud van een persoonlijke en heldere aanpak.",
-  "team.faozi.bio3": "Faozi is toegankelijk en betrokken en gelooft dat de beste klantrelaties ontstaan door oprechte communicatie, snel reageren en begrip — en niet alleen door transacties."
+  "team.faozi.bio3": "Faozi is toegankelijk en betrokken en gelooft dat de beste klantrelaties ontstaan door oprechte communicatie, snel reageren en begrip — en niet alleen door transacties.",
+  "videos.heading": "TurkLuxx-video’s",
+  "videos.subtitle": "Ontdek uitzonderlijke woningen, inspirerende interieurs en exclusieve vastgoedmogelijkheden in Türkiye.",
+  "videos.empty": "Ontdek onze videocollectie — binnenkort beschikbaar.",
+  "videos.pageTitle": "TurkLuxx-video’s — Luxe vastgoed in Türkiye",
+  "videos.play": "Video afspelen: {title}",
+  "videos.fallback": "Lukt het afspelen niet? Open de video in Google Drive.",
+  "videos.open": "Openen in Google Drive",
+  "videos.unavailable": "Deze video is momenteel niet beschikbaar."
 }
