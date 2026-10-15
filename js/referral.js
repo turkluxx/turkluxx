@@ -1,7 +1,7 @@
 (() => {
     'use strict';
 
-    const validCodes = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'LAITH', 'FAOZI']);
+    const validCodes = new Set(['ALMA', 'AHMAD', 'MOHAMED', 'VLAD', 'LAITH', 'FAOZI', 'MOHAMED_ABDO']);
 
     const keys = {
         referral: 'turkluxx_referral',
@@ -11,25 +11,32 @@
     };
 
     const normalize = value => {
-        const code = (value || '').trim().toUpperCase();
+        const raw = (value || '').trim().toUpperCase();
+        const code = raw === 'MUHAMED' ? 'MOHAMED' : raw;
         return validCodes.has(code) ? code : null;
     };
 
-    const validPair = (referral, subref) => referral === 'AHMAD' && ['LAITH', 'FAOZI'].includes(subref);
+    const parents = { LAITH: 'AHMAD', FAOZI: 'AHMAD', MOHAMED_ABDO: 'MOHAMED' };
+    const validPair = (referral, subref) => Object.hasOwn(parents, subref) && parents[subref] === referral;
 
     // Always read storage so navigation and other tabs see the same attribution.
     window.getTurkLuxxReferralAttribution = () => {
         try {
             let storedReferral = localStorage.getItem(keys.referral);
-            // Migrate only saved attribution; the misspelling is invalid in new URLs.
-            if ((storedReferral || '').trim().toUpperCase() === 'MUHHAMED') {
-                storedReferral = 'MUHAMED';
+            // Preserve existing attribution while using the corrected canonical ID.
+            if (['MUHAMED', 'MUHHAMED'].includes((storedReferral || '').trim().toUpperCase())) {
+                storedReferral = 'MOHAMED';
                 try { localStorage.setItem(keys.referral, storedReferral); } catch {
                     // Readable attribution remains canonical even if writes are blocked.
                 }
             }
             let pair;
             try { pair = JSON.parse(localStorage.getItem(keys.pair)); } catch { /* Ignore malformed stored records. */ }
+            if (pair && pair.referral === 'MUHAMED') {
+                pair.referral = 'MOHAMED';
+                if (pair.subref === 'ABDO') pair.subref = 'MOHAMED_ABDO';
+                try { localStorage.setItem(keys.pair, JSON.stringify(pair)); } catch { /* Keep readable attribution. */ }
+            }
             if (pair && validPair(pair.referral, pair.subref)) {
                 return { referral: pair.referral, subref: pair.subref, directReferrer: pair.subref,
                     parentConsultant: pair.referral, createdAt: pair.createdAt, landingPage: pair.landingPage };
@@ -38,7 +45,7 @@
             if (referral) {
                 return {
                     referral,
-                    ...(['LAITH', 'FAOZI'].includes(referral) ? { parentConsultant: 'AHMAD' } : {}),
+                    ...(Object.hasOwn(parents, referral) ? { parentConsultant: parents[referral] } : {}),
                     createdAt: localStorage.getItem(keys.createdAt),
                     landingPage: localStorage.getItem(keys.landingPage)
                 };
@@ -57,7 +64,7 @@
     const incoming = normalize(params.get('ref'));
     const hasSubref = params.has('subref');
     const subref = normalize(params.get('subref'));
-    const invalidPair = hasSubref && !validPair(incoming, subref);
+    const invalidPair = (hasSubref && !validPair(incoming, subref)) || (!hasSubref && incoming === 'MOHAMED_ABDO');
     const duplicate = params.getAll('ref').length > 1 || params.getAll('subref').length > 1;
     if ((params.has('ref') && !incoming) || invalidPair || duplicate) {
         // Reject the URL without touching any existing first-touch attribution.

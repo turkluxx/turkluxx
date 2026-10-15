@@ -1,4 +1,5 @@
-const REFERRALS = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'DIRECT', 'LAITH', 'FAOZI']);
+const REFERRALS = new Set(['ALMA', 'AHMAD', 'MOHAMED', 'VLAD', 'DIRECT', 'LAITH', 'FAOZI', 'MOHAMED_ABDO']);
+const REFERRAL_PARENTS = { LAITH: 'AHMAD', FAOZI: 'AHMAD', MOHAMED_ABDO: 'MOHAMED' };
 const MAX_BYTES = 8192;
 const RECIPIENT = 'turkluxx101@gmail.com';
 
@@ -39,6 +40,7 @@ async function readJson(request) {
 
 export function validateLead(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw new InputError(400, 'Invalid lead.');
+  if (data.referral === 'MUHAMED') data = { ...data, referral: 'MOHAMED' };
   const field = (key, max, required = false) => {
     const value = data[key];
     if (value == null && !required) return null;
@@ -52,14 +54,15 @@ export function validateLead(data) {
   // Attribution is an untrusted label: accept only exact allowlisted values.
   if (!REFERRALS.has(data.referral)) throw new InputError(400, 'Invalid referral.');
   const hasSubref = Object.hasOwn(data, 'subref');
-  if (hasSubref && !(data.referral === 'AHMAD' && ['LAITH', 'FAOZI'].includes(data.subref))) {
+  if (!hasSubref && data.referral === 'MOHAMED_ABDO') throw new InputError(400, 'Invalid referral pair.');
+  if (hasSubref && !(Object.hasOwn(REFERRAL_PARENTS, data.subref) && REFERRAL_PARENTS[data.subref] === data.referral)) {
     throw new InputError(400, 'Invalid referral pair.');
   }
   const generalContact = data.source === 'general-contact';
   const lead = {
     referral: data.referral,
-    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: 'AHMAD' } : {}),
-    ...(['LAITH', 'FAOZI'].includes(data.referral) ? { parentConsultant: 'AHMAD' } : {}),
+    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: data.referral } : {}),
+    ...(Object.hasOwn(REFERRAL_PARENTS, data.referral) ? { parentConsultant: REFERRAL_PARENTS[data.referral] } : {}),
     name: field('name', 120, true), phone: field('phone', 80, !generalContact), email: field('email', 254, true),
     project: field('project', 120), property: field('property', 180), propertyCode: field('propertyCode', 80),
     page: field('page', 2048)

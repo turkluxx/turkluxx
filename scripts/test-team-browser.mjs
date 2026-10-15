@@ -74,7 +74,7 @@ try {
     await send('Runtime.enable'); await send('Network.enable');
     await send('Network.setBlockedURLs', { urls: ['*googletagmanager.com/*', '*google-analytics.com/*', '*connect.facebook.net/*', '*facebook.com/tr*'] });
     await send('Network.setCacheDisabled', { cacheDisabled: true });
-    const names = ['Ahmad Hussein', 'Almagul Jukenova', 'Muhamed Al Ramah', 'Vladimir Andreev', 'Laith Al Rawashdeh', 'Zulfiya M.', 'Faozi Al Khalaqi'];
+    const names = ['Ahmad Hussein', 'Almagul Jukenova', 'Mohamed Salem', 'Vladimir Andreev', 'Laith Al Rawashdeh', 'Zulfiya M.', 'Faozi Al Khalaqi'];
     for (const width of [1440, 820, 390]) {
         await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 768 });
         for (const code of codes) {

@@ -9,7 +9,7 @@ with sync_playwright() as pw:
     for referral, page_path, selection, expected in [
         ('DIRECT', '/', None, (None, None, None)),
         ('ALMA', '/rengi-istanbul.html', ('5+1', 'emerald'), ('Rengi Istanbul', 'Z\u00fcmr\u00fct (Emerald)', 'B3-AG')),
-        ('MUHAMED', '/rengi-antalya.html', 'greenlife', ('Rengi Antalya', 'GreenLife', None)),
+        ('MOHAMED', '/rengi-antalya.html', 'greenlife', ('Rengi Antalya', 'GreenLife', None)),
         ('VLAD', '/rengi-istanbul.html', ('5+1', 'emerald'), ('Rengi Istanbul', 'Z\u00fcmr\u00fct (Emerald)', 'B3-AG')),
     ]:
         context = browser.new_context(viewport={'width': 1440, 'height': 1000})
