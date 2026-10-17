@@ -1,5 +1,5 @@
 // Local CDP regression checks for every Istanbul villa and its continuous media sections. No submissions.
-// Start Chrome with --remote-debugging-port=9227, then run this script (--source optional).
+// Start Chrome with --remote-debugging-port=9227; --source tests source, --floor-ctas focuses on EN/AR floor CTAs.
 import http from 'node:http';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
@@ -7,7 +7,8 @@ import assert from 'node:assert/strict';
 const workspace = resolve(import.meta.dirname, '..');
 const root = process.argv.includes('--source') ? workspace : resolve(workspace, 'dist');
 const origin = 'http://127.0.0.1:8808';
-const codes = ['en', 'nl', 'es', 'ru', 'tr', 'ar'];
+const floorCtasOnly = process.argv.includes('--floor-ctas');
+const codes = floorCtasOnly ? ['en', 'ar'] : ['en', 'nl', 'es', 'ru', 'tr', 'ar'];
 const catalogs = Object.fromEntries(await Promise.all(codes.map(async code => [code, JSON.parse(await readFile(resolve(root, `locales/${code}.json`), 'utf8'))])));
 const server = http.createServer(async (req, res) => {
     try {
@@ -112,6 +113,31 @@ try {
                     assert.equal(content.buttons.filter(b=>b.active==='true').length,1);
                     assert.notEqual(content.buttons.find(b=>b.active==='true').bg,content.buttons.find(b=>b.active==='false').bg);
                     if(code==='ar')assert.equal(content.dir,'rtl');
+                    const ctas = await evaluate(`(()=>[...document.querySelectorAll('.rengi-villa-plan-layout')].map(row=>{
+                        const button=row.querySelector('.rengi-floor-contact'), details=row.querySelector('.rengi-floor-details');
+                        const card=details.querySelector('.rengi-floor-card'), style=getComputedStyle(card);
+                        const b=button.getBoundingClientRect(), d=details.getBoundingClientRect(), c=card.getBoundingClientRect();
+                        return {count:row.querySelectorAll('.rengi-floor-contact').length,bottom:b.bottom,blockBottom:d.bottom,
+                            rowBottom:row.getBoundingClientRect().bottom,previewBottom:row.querySelector('.rengi-villa-plan-preview').getBoundingClientRect().bottom,
+                            extraSpace:c.bottom-card.querySelector('dl').getBoundingClientRect().bottom-parseFloat(style.paddingBottom)-parseFloat(style.borderBottomWidth),
+                            edge:document.documentElement.dir==='rtl'?b.left-d.left:b.right-d.right,gap:b.top-c.bottom,
+                            label:button.textContent,arrow:getComputedStyle(button.querySelector('[aria-hidden]')).transform};
+                    }))()`);
+                    assert.equal(ctas.length,villa.floors.length);
+                    for(const cta of ctas){
+                        assert.equal(cta.count,1);assert(Math.abs(cta.bottom-cta.blockBottom)<1);assert(Math.abs(cta.bottom-cta.rowBottom)<1);assert(Math.abs(cta.edge)<1);assert(cta.gap>=-1);assert(Math.abs(cta.extraSpace)<1,'Specifications retain their natural content height');
+                        if(code==='ar'){assert(cta.label.includes(catalogs.ar['villa.cta'].split('{name}')[0]));assert.match(cta.arrow,/matrix\(-1/);}
+                    }
+                    assert.equal(await evaluate('document.querySelectorAll(".rengi-floor-contact").length'),villa.floors.length);
+                    if(code==='en'||code==='ar')for(let i=0;i<villa.floors.length;i++){
+                        await click(`.rengi-villa-plan-layout:nth-child(${i+1}) .rengi-floor-contact`);
+                        await until('document.querySelector("#turkluxx-callback").open');
+                        assert.equal(await evaluate('document.querySelector("#callback-villa").value'),villa.name);
+                        const payload=await evaluate('buildTurkLuxxLeadPayload(document.querySelector("#turkluxx-callback form"))');
+                        assert.equal(payload.propertyCode,villa.floors[i].code);assert.equal(payload.referral,'VLAD');
+                        await evaluate(`document.querySelector('#turkluxx-callback .turkluxx-callback-close').click()`);
+                        await until('!document.querySelector("#turkluxx-callback").open && document.body.style.position!=="fixed"');
+                    }
                     for(const [index,floor] of villa.floors.entries()) {
                         const expectedRooms=floor.rooms.map(room=>{
                             const key=Object.keys(catalogs.en).find(key=>catalogs.en[key].trim()===room.name.trim());
@@ -155,7 +181,7 @@ try {
                         }
                     }
                 }
-                console.log(`PASS ${width}px ${category} ${variant}: six languages, all media/rooms and lightboxes`);
+                console.log(`PASS ${width}px ${category} ${variant}: ${floorCtasOnly ? 'EN/AR floor CTAs, alignment and callback context' : 'six languages, all media/rooms, lightboxes and floor CTAs'}`);
             }
         }
         await evaluate(`document.querySelector('.rengi-type-tabs button').focus();document.querySelector('.rengi-type-tabs button').dispatchEvent(new KeyboardEvent('keydown',{key:'End',bubbles:true}))`);

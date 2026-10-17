@@ -507,7 +507,18 @@
 
 .rengi-explorer .rengi-floor-contact {
     display: inline-flex;
-    margin-top: 20px;
+    margin: auto 0 0;
+    align-self: flex-end;
+    flex: 0 0 auto;
+}
+.rengi-explorer .rengi-floor-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    align-self: stretch;
+}
+.rengi-explorer .rengi-floor-details .rengi-floor-card {
+    flex: 0 0 auto;
 }
 
 /* Half-width Location preview; original image files and other media are unchanged. */

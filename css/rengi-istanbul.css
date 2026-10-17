@@ -315,6 +315,10 @@
     font-size: 13px;
 }
 
+.rengi-location .rengi-landmarks li:last-child {
+    border-bottom: 0;
+}
+
 .rengi-landmarks svg {
     width: 24px;
     height: 24px;
@@ -971,6 +975,16 @@
     object-fit: contain;
 }
 .rengi-roi-copy { container-type: inline-size; }
+@media (min-width: 768px) {
+    .rengi-roi .rengi-roi-media { height: var(--roi-original-height, auto); }
+    .rengi-roi .rengi-roi-media img {
+        margin-left: auto;
+        margin-right: 0;
+        height: var(--roi-image-height, auto);
+        object-fit: contain;
+        object-position: right bottom;
+    }
+}
 .rengi-roi-percentage { display: inline-block; white-space: nowrap; }
 .rengi-roi-ending { white-space: nowrap; }
 html:not([lang='en']) .rengi-roi h2 {

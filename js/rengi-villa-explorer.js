@@ -107,7 +107,20 @@
             const rooms = element('dl');
             rooms.append(...floor.rooms.map(room => detailRow(room.name, room.area)));
             card.append(header, rooms);
-            row.append(preview, card);
+            const details = element('div', undefined, 'rengi-floor-details');
+            const cta = viewer.querySelector('#rengi-floor-contact-template').content.firstElementChild.cloneNode(true);
+            bind(cta.querySelector('span'), 'villa.cta', { name: villa.name });
+            window.registerTurkLuxxLeadContext(cta, () => ({
+                project: 'Rengi Istanbul',
+                property: translated(displayName(villa)),
+                propertyCode: floor.code || null
+            }));
+            cta.addEventListener('click', () => {
+                villaContext.value = villa.name;
+                fitCallbackTitle();
+            });
+            details.append(card, cta);
+            row.append(preview, details);
             return row;
         }));
     }

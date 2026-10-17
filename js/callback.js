@@ -7,12 +7,17 @@
   // Context exists only in memory for the current form opening. Resolvers read
   // the selected item from each page's existing data model at click time.
   const leadResolvers = new WeakMap();
+  const registeredTriggers = new WeakSet(triggers);
   let leadContext = null;
   let pending = false;
   let opening = 0;
   const submitButton = form.querySelector('[type="submit"]');
   window.registerTurkLuxxLeadContext = (trigger, resolveContext) => {
     leadResolvers.set(trigger, resolveContext);
+    if (!registeredTriggers.has(trigger)) {
+      trigger.addEventListener('click', openCallbackFromTrigger);
+      registeredTriggers.add(trigger);
+    }
   };
   // Citizenship enquiries use the same contextual lead fields and delivery flow.
   triggers.forEach(trigger => {
@@ -183,7 +188,8 @@
     [...document.querySelectorAll('.turkluxx-roi-modal, .turkluxx-info-modal')]
       .map(modal => [modal, modalController(modal)])
   );
-  triggers.forEach(button => button.addEventListener('click', () => {
+  function openCallbackFromTrigger(event) {
+    const button = event.currentTarget;
     opening += 1;
     const context = leadResolvers.get(button)?.();
     leadContext = context ? {
@@ -197,7 +203,8 @@
     const active = [...informationModals].find(([modal]) => modal.open);
     if (active) active[1].close(opener => callback.open(opener));
     else callback.open(button);
-  }));
+  }
+  triggers.forEach(button => button.addEventListener('click', openCallbackFromTrigger));
   // Project pages use the homepage's single ROI markup source and controller.
   let roiLoading;
   async function informationFor(button) {

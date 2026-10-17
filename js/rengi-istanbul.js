@@ -1,5 +1,31 @@
 (() => {
     'use strict';
+    const roi = document.querySelector('.rengi-roi');
+    if (roi) {
+        const media = roi.querySelector('.rengi-roi-media');
+        const image = media.querySelector('img');
+        const actions = roi.querySelector('.rengi-roi-actions');
+        const alignImage = () => {
+            if (!image.naturalWidth) return;
+            if (!window.matchMedia('(min-width: 768px)').matches) {
+                media.style.removeProperty('--roi-original-height');
+                media.style.removeProperty('--roi-image-height');
+                return;
+            }
+            // Retain the natural image's footprint so its centered top never moves.
+            const width = Math.min(media.clientWidth, 840);
+            media.style.setProperty('--roi-original-height', `${width * image.naturalHeight / image.naturalWidth}px`);
+            const height = actions.getBoundingClientRect().bottom - media.getBoundingClientRect().top;
+            if (height > 0) media.style.setProperty('--roi-image-height', `${height}px`);
+        };
+        const observer = new ResizeObserver(alignImage);
+        observer.observe(roi.querySelector('.rengi-roi-copy'));
+        observer.observe(roi);
+        image.addEventListener('load', alignImage);
+        window.addEventListener('resize', alignImage);
+        document.fonts.ready.then(alignImage);
+        alignImage();
+    }
     // Existing Master Plan viewer; villa selection is handled by rengi-villa-explorer.js.
     const masterPlan = { units: [], src: 'assets/rengi/master-plan.jpg' };
     const dialog = document.querySelector('#rengi-plan-lightbox');
