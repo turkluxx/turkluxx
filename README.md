@@ -4,6 +4,8 @@ Run `npm run build` after source changes or merges before packaging assets. The 
 
 `dist/` is generated and intentionally ignored by Git; merging source commits does not update an already deployed bundle. Wrangler's configured build hook runs the same build command and uses `./dist` as its asset directory. For local production verification, run `node scripts/test-referral-policy-browser.mjs --dist` with Chrome's CDP endpoint on port 9227. This does not deploy anything.
 
+QR images are external deliverables. Generate them manually with `python scripts/generate-referral-qr.py`; files are saved in the ignored `generated/qr_codes/` directory for downloading and external distribution. Website builds, core tests, and deployment do not invoke this utility, require its Python dependencies, or include its output. Optional utility-only tests: `python scripts/test-referral-qr.py` (uses temporary output, requiring no existing images).
+
 ## Lead email endpoint (implemented; not deployed)
 
 Use Node.js 22+ and the pinned Wrangler installation:

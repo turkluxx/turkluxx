@@ -4,16 +4,16 @@ Exact top-level links for `AHMAD`, `ALMA`, `VLAD`, and `MOHAMED` start in Englis
 
 The latest valid referral link selects the contact context, separately from first-touch lead attribution. Normalized exact `VLAD` or `ALMA` links use `+1 (949) 331-4195` and `tel:+19493314195` throughout the site, including lowercase incoming IDs. The separate `turkluxx_phone_referral` preference preserves this contact context on clean internal navigation and reloads; another valid referral link selects its own context. Other referrals and sub-referrals retain their existing numbers and links. No parent-based or prefix-based phone matching is used. Without storage, the incoming link still selects the correct number on the current page, but clean-URL navigation cannot retain that context.
 
-English QR links and files:
+Standalone English QR deliverables (not website assets):
 
 | Referral URL | File |
 | --- | --- |
-| `https://turkluxx.com/?ref=AHMAD&lang=en` | `img/qr_codes/QR_AHMAD_STATIC.png` |
-| `https://turkluxx.com/?ref=ALMA&lang=en` | `img/qr_codes/QR_ALMA_STATIC.png` |
-| `https://turkluxx.com/?ref=VLAD&lang=en` | `img/qr_codes/QR_VLAD_STATIC.png` |
-| `https://turkluxx.com/?ref=MOHAMED&lang=en` | `img/qr_codes/QR_MOHAMED_STATIC.png` |
+| `https://turkluxx.com/?ref=AHMAD&lang=en` | `generated/qr_codes/QR_AHMAD_STATIC.png` |
+| `https://turkluxx.com/?ref=ALMA&lang=en` | `generated/qr_codes/QR_ALMA_STATIC.png` |
+| `https://turkluxx.com/?ref=VLAD&lang=en` | `generated/qr_codes/QR_VLAD_STATIC.png` |
+| `https://turkluxx.com/?ref=MOHAMED&lang=en` | `generated/qr_codes/QR_MOHAMED_STATIC.png` |
 
-Run `python scripts/generate-referral-qr.py` to regenerate only these four images with the existing 1000px, centered-logo, high-error-correction design. It decodes every saved file before succeeding. Dependencies: Pillow, qrcode, zxing-cpp. Run `python scripts/test-referral-qr.py` to verify the saved artifacts and the unchanged Mohamed Abdo QR without regenerating anything. Browser integration: `node scripts/test-referral-policy-browser.mjs --dist` with headless Chrome's CDP endpoint on port 9227; omit `--dist` to check source pages.
+Run `python scripts/generate-referral-qr.py` manually to generate only these four external images with the existing 1000px, centered-logo, high-error-correction design. It decodes every saved file before succeeding. Optional utility dependencies: Pillow, qrcode, zxing-cpp. Output lives under `generated/qr_codes/`, is Git-ignored, and is never copied into `dist/`. The website build, core tests, and deployment work with no QR files or output directory. Run `python scripts/test-referral-qr.py` separately to test the utility using disposable temporary output; no existing deliverables are required. Browser integration: `node scripts/test-referral-policy-browser.mjs --dist` with headless Chrome's CDP endpoint on port 9227; omit `--dist` to check source pages.
 
 # Participant referrals
 

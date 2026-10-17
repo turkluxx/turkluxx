@@ -167,7 +167,9 @@ try {
   clean();
   const config = JSON.parse(readFileSync(join(root, 'wrangler.json'), 'utf8'));
   if (config.assets?.directory !== './dist') throw new Error('Wrangler assets.directory must be ./dist');
-  const files = JSON.parse(readFileSync(join(root, 'scripts/public-files.json'), 'utf8'));
+  // External deliverables are never website inputs, even in stale manifests.
+  const files = JSON.parse(readFileSync(join(root, 'scripts/public-files.json'), 'utf8'))
+    .filter(file => !/^(?:generated\/)|(?:^|\/)qr_codes\/|(?:^|\/)QR_[^/]*\.png$/i.test(file));
   if (existsSync(join(root, 'rengi-antalya.html'))) files.push('rengi-antalya.html');
   for (const required of ['index.html', 'rengi-istanbul.html']) {
     if (!files.includes(required)) throw new Error(`Missing required page in public manifest: ${required}`);

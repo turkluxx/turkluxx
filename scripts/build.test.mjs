@@ -54,6 +54,24 @@ test('bundles production pages, copies only allowlisted assets, and cleans stale
   assert.equal(readFileSync(join(f.root, 'dist/index.html'), 'utf8').split('rel="manifest"').length - 1, 1, 'Repeated builds do not duplicate favicon links');
 });
 
+test('external QR deliverables never affect builds or enter dist, whether absent or present', t => {
+  const f = fixture(t);
+  const external = ['generated/qr_codes/QR_TEST.png', 'img/qr_codes/QR_TEST.png', 'assets/QR_TEST.png'];
+  // Even an old asset list must not turn an external deliverable into a prerequisite.
+  f.put('scripts/public-files.json', JSON.stringify([...f.files, ...external]));
+  let result = f.run();
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(existsSync(join(f.root, 'generated')), false, 'Website build never generates QR output');
+  const bundle = readFileSync(join(f.root, 'dist/js/turkluxx.min.js'), 'utf8');
+  for (const file of external) f.put(file, 'standalone deliverable');
+  f.put('dist/img/qr_codes/QR_OLD.png', 'stale output');
+  result = f.run();
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(readFileSync(join(f.root, 'dist/js/turkluxx.min.js'), 'utf8'), bundle);
+  const output = readdirSync(join(f.root, 'dist'), { recursive: true }).map(file => file.replaceAll('\\', '/'));
+  assert.ok(output.every(file => !/(?:^|\/)(?:generated|qr_codes)(?:\/|$)|(?:^|\/)QR_[^/]*\.png$/i.test(file)));
+});
+
 test('rebuild replaces stale shared referral code with current source and keeps production HTML on that bundle', t => {
   const f = fixture(t);
   const source = readFileSync(new URL('../js/referral.js', import.meta.url), 'utf8');
