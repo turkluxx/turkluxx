@@ -1,5 +1,8 @@
 import '../js/referral-registry.js';
-const REFERRALS = new Set(['ALMA', 'AHMAD', 'MUHAMED', 'VLAD', 'DIRECT', 'LAITH', 'FAOZI']);
+const registry = globalThis.TurkLuxxReferralRegistry;
+const normalizeReferral = globalThis.normalizeTurkLuxxReferral;
+const parents = Object.fromEntries(Object.entries(registry)
+  .filter(([, record]) => record.parentConsultant).map(([code, record]) => [code, record.parentConsultant]));
 const MAX_BYTES = 8192;
 const RECIPIENT = 'turkluxx101@gmail.com';
 
@@ -51,23 +54,24 @@ export function validateLead(data) {
     return trimmed || null;
   };
   // Attribution is an untrusted label: accept only exact allowlisted values.
-  if (!REFERRALS.has(data.referral)) throw new InputError(400, 'Invalid referral.');
+  const referral = data.referral === 'DIRECT' ? 'DIRECT' : normalizeReferral(data.referral);
+  if (!referral || data.referral !== data.referral.trim().toUpperCase()) throw new InputError(400, 'Invalid referral.');
   const hasSubref = Object.hasOwn(data, 'subref');
-  if (hasSubref && !(data.referral === 'AHMAD' && ['LAITH', 'FAOZI'].includes(data.subref))) {
+  if (hasSubref && !(typeof data.subref === 'string' && Object.hasOwn(parents, data.subref) && parents[data.subref] === referral)) {
     throw new InputError(400, 'Invalid referral pair.');
   }
   const hasClient = Object.hasOwn(data, 'client');
   if (hasClient && (hasSubref || typeof data.client !== 'string' ||
-      !Object.hasOwn(globalThis.TurkLuxxReferralRegistry, data.referral) ||
-      !Object.values(globalThis.TurkLuxxReferralRegistry[data.referral]).some(ids => ids.includes(data.client)))) {
+      !Object.hasOwn(registry, referral) ||
+      ![registry[referral].ar, registry[referral].en].some(ids => Array.isArray(ids) && ids.includes(data.client)))) {
     throw new InputError(400, 'Invalid referral client.');
   }
   const generalContact = data.source === 'general-contact';
   const lead = {
-    referral: data.referral,
+    referral,
     ...(hasClient ? { client: data.client } : {}),
-    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: 'AHMAD' } : {}),
-    ...(['LAITH', 'FAOZI'].includes(data.referral) ? { parentConsultant: 'AHMAD' } : {}),
+    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: referral } : {}),
+    ...(Object.hasOwn(parents, referral) ? { parentConsultant: parents[referral] } : {}),
     name: field('name', 120, true), phone: field('phone', 80, !generalContact), email: field('email', 254, true),
     project: field('project', 120), property: field('property', 180), propertyCode: field('propertyCode', 80),
     page: field('page', 2048)
@@ -83,10 +87,20 @@ export function validateLead(data) {
     throw new InputError(400, 'Invalid email.');
   }
   if (lead.page) {
+    let url;
     try {
-      const url = new URL(lead.page);
+      url = new URL(lead.page);
       if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error();
     } catch { throw new InputError(400, 'Invalid page.'); }
+    const params = url.searchParams;
+    const incoming = normalizeReferral(params.get('ref'));
+    if (params.has('ref') && (params.getAll('ref').length !== 1 || !incoming)) {
+      throw new InputError(400, 'Invalid referral.');
+    }
+    const subref = normalizeReferral(params.get('subref'));
+    if (params.has('subref') && (params.getAll('subref').length !== 1 || !subref || parents[subref] !== incoming)) {
+      throw new InputError(400, 'Invalid referral pair.');
+    }
   }
   // Client-supplied leadId/submittedAt/from/to and other unknown keys are ignored.
   return lead;

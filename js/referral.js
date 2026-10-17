@@ -1,7 +1,9 @@
 (() => {
     'use strict';
 
-    const validCodes = new Set(['ALMA', 'AHMAD', 'MOHAMED', 'VLAD', 'LAITH', 'FAOZI', 'MOHAMED_ABDO']);
+    const registry = globalThis.TurkLuxxReferralRegistry;
+    const normalize = globalThis.normalizeTurkLuxxReferral;
+    let invalidReferralLink = false;
 
     const keys = {
         referral: 'turkluxx_referral',
@@ -10,22 +12,17 @@
         landingPage: 'turkluxx_referral_landing_page'
     };
 
-    const normalize = value => {
-        const raw = (value || '').trim().toUpperCase();
-        const code = raw === 'MUHAMED' ? 'MOHAMED' : raw;
-        return validCodes.has(code) ? code : null;
-    };
-
-    const parents = { LAITH: 'AHMAD', FAOZI: 'AHMAD', MOHAMED_ABDO: 'MOHAMED' };
+    const parents = Object.fromEntries(Object.entries(registry)
+        .filter(([, record]) => record.parentConsultant).map(([code, record]) => [code, record.parentConsultant]));
     const validPair = (referral, subref) => Object.hasOwn(parents, subref) && parents[subref] === referral;
 
     const sessionKey = 'turkluxx_participant_referral';
     let memoryAttribution = null;
     const privacyOptOut = typeof navigator !== 'undefined' &&
         (navigator.globalPrivacyControl === true || navigator.doNotTrack === '1');
-    const registry = globalThis.TurkLuxxReferralRegistry || {};
     const validClient = (referral, client) => typeof referral === 'string' && typeof client === 'string' &&
-        Object.hasOwn(registry, referral || '') && Object.values(registry[referral]).some(ids => ids.includes(client));
+        Object.hasOwn(registry, referral || '') && [registry[referral].ar, registry[referral].en]
+            .some(ids => Array.isArray(ids) && ids.includes(client));
     const readSession = () => {
         if (privacyOptOut) return memoryAttribution;
         try {
@@ -37,6 +34,7 @@
 
     // Read session attribution on navigation; retain established legacy attribution.
     window.getTurkLuxxReferralAttribution = () => {
+        if (invalidReferralLink) return { referral: null, invalid: true, createdAt: null, landingPage: null };
         const participant = readSession();
         if (participant) return { referral: participant.referral, client: participant.client };
         try {
@@ -75,7 +73,44 @@
     };
     window.getTurkLuxxReferral = () => window.getTurkLuxxReferralAttribution().referral;
 
+    function showInvalidReferral() {
+        if (typeof document === 'undefined' || !document.createElement) return;
+        const style = document.createElement('style');
+        style.textContent = `
+            body.turkluxx-invalid-referral { margin: 0; background: #f9f7f2; }
+            body.turkluxx-invalid-referral > :not(#turkluxx-referral-error) { display: none !important; }
+            #turkluxx-referral-error { box-sizing: border-box; min-height: 100vh; min-height: 100svh;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                padding: 40px 24px; text-align: center; color: #212c6c; font-family: 'Manrope', sans-serif; }
+            #turkluxx-referral-error .referral-brand { font-size: 44px; font-weight: 700; letter-spacing: -2px; }
+            #turkluxx-referral-error h1 { font-family: 'Cormorant Garamond', serif;
+                font-size: clamp(36px, 6vw, 64px); font-weight: 500; line-height: 1.1; margin: 40px 0 20px; }
+            #turkluxx-referral-error p { max-width: 520px; font-size: 16px; line-height: 1.7; margin: 0 0 16px; }
+            #turkluxx-referral-error a { box-sizing: border-box; max-width: 100%; margin-top: 16px;
+                padding: 18px 24px; background: #212c6c; color: #fff; text-decoration: none;
+                font-size: 13px; font-weight: 700; letter-spacing: 1px; }
+            #turkluxx-referral-error a:focus-visible { outline: 3px solid #212c6c; outline-offset: 5px; }
+        `;
+        document.head.append(style);
+        const screen = document.createElement('main');
+        screen.id = 'turkluxx-referral-error';
+        screen.setAttribute('aria-labelledby', 'turkluxx-referral-error-title');
+        screen.innerHTML = `<div class="referral-brand">TurkLuxx</div>
+            <h1 id="turkluxx-referral-error-title" data-i18n="referral.title" tabindex="-1">Invalid referral link</h1>
+            <p data-i18n="referral.invalid">This referral link is not valid.</p>
+            <a href="/" data-i18n="referral.continue">CONTINUE TO TURKLUXX</a>`;
+        document.body.classList.add('turkluxx-invalid-referral');
+        document.body.append(screen);
+        document.title = 'Invalid referral link — TurkLuxx';
+        screen.querySelector('h1').focus();
+        document.addEventListener?.('submit', event => {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }, true);
+    }
+
     function updateReferralPhone() {
+        if (invalidReferralLink) return;
         const phoneKey = 'turkluxx_phone_referral';
         let referral;
         try { referral = normalize(localStorage.getItem(phoneKey)); } catch { /* URL still works. */ }
@@ -118,7 +153,7 @@
     const incoming = normalize(params.get('ref'));
     const hasSubref = params.has('subref');
     const subref = normalize(params.get('subref'));
-    const invalidPair = (hasSubref && !validPair(incoming, subref)) || (!hasSubref && incoming === 'MOHAMED_ABDO');
+    const invalidPair = hasSubref && !validPair(incoming, subref);
     const duplicate = params.getAll('ref').length > 1 || params.getAll('subref').length > 1;
     const hasClient = params.has('client');
     const client = (params.get('client') || '').trim().toUpperCase().replace(/\s+/g, '_');
@@ -126,7 +161,11 @@
     const invalidClient = hasClient && (!validClient(incoming, client) || hasSubref || !['ar', 'en'].includes(language));
     const invalidLink = (params.has('ref') && !incoming) || invalidPair || duplicate || invalidClient ||
         params.getAll('client').length > 1 || params.getAll('lang').length > 1;
-    if (invalidLink) return;
+    if (invalidLink) {
+        invalidReferralLink = true;
+        showInvalidReferral();
+        return;
+    }
     if (hasClient) {
         if (window.getTurkLuxxReferral() !== 'DIRECT') return;
         // First valid attribution wins; keep only registered identifiers for this tab session.

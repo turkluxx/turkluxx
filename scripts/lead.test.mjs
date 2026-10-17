@@ -65,6 +65,22 @@ test('E/F/G invalid referral, required values and email rejected without sending
     assert.equal(env.messages.length, 0);
   }
 });
+
+test('Lead validation rejects explicit invalid landing referrals even with a valid attribution payload', async () => {
+  for (const query of ['?ref=ABRACADABRA', '?ref=', '?ref=toString', '?ref=VLAD&ref=ALMA', '?ref=MOHAMED&subref=UNKNOWN']) {
+    for (const referral of ['DIRECT', 'AHMAD']) {
+      const env = environment();
+      const result = await worker.fetch(request({ ...generic, referral, page: 'https://turkluxx.com/' + query }), env);
+      assert.equal(result.status, 400, query);
+      assert.equal(env.messages.length, 0);
+      assert.match((await result.json()).error, /Invalid referral/);
+    }
+  }
+  // A recognized later referral URL does not replace legitimate first-touch attribution.
+  const env = environment();
+  assert.equal((await worker.fetch(request({ ...generic, referral: 'AHMAD', page: 'https://turkluxx.com/?ref=VLAD' }), env)).status, 200);
+  assert.match(env.messages[0].text, /Referral: AHMAD/);
+});
 test('H POST only; JSON only; invalid JSON; invalid field types/lengths/header controls', async () => {
   const env = environment();
   for (const method of ['GET', 'PUT', 'OPTIONS']) {

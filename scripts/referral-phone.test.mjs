@@ -58,7 +58,7 @@ test('Other referrals, participants, sub-referrals and direct visitors keep thei
         assert.equal(page.links[0].href, 'https://wa.me/12137322002', path);
         assert.equal(page.nodes[0].nodeValue, '+1 (213) 732-2002', path);
         for (const other of ['VLAD', 'ALMA']) {
-            if (page.window.getTurkLuxxReferral() === 'DIRECT') continue;
+            if (!page.window.getTurkLuxxReferral() || page.window.getTurkLuxxReferral() === 'DIRECT') continue;
             const next = visit(`/?ref=${other}`, page.storage);
             assert.equal(next.links[0].href, 'tel:+19493314195', path);
             assert.equal(JSON.stringify(next.window.getTurkLuxxReferralAttribution()), JSON.stringify(page.window.getTurkLuxxReferralAttribution()));

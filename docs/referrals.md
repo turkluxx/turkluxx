@@ -15,13 +15,21 @@ Standalone English QR deliverables (not website assets):
 
 Run `python scripts/generate-referral-qr.py` manually to generate only these four external images with the existing 1000px, centered-logo, high-error-correction design. It decodes every saved file before succeeding. Optional utility dependencies: Pillow, qrcode, zxing-cpp. Output lives under `generated/qr_codes/`, is Git-ignored, and is never copied into `dist/`. The website build, core tests, and deployment work with no QR files or output directory. Run `python scripts/test-referral-qr.py` separately to test the utility using disposable temporary output; no existing deliverables are required. Browser integration: `node scripts/test-referral-policy-browser.mjs --dist` with headless Chrome's CDP endpoint on port 9227; omit `--dist` to check source pages.
 
+# Referral validation
+
+`js/referral-registry.js` defines all registered consultants and sub-referrers, their permanent `parentConsultant` relationships, and participant lists. Browser and lead endpoint both use these records. The established `MUHAMED` incoming alias normalizes to `MOHAMED`; arbitrary unknown IDs do not. Standalone `MOHAMED_ABDO` and `ref=MOHAMED&subref=MOHAMED_ABDO` are both valid and retain Mohamed as parent.
+
+An explicitly unknown/empty referral, duplicate parameters, or invalid parent/client combination displays the existing translated invalid-link screen. Current-page attribution is marked invalid rather than falling back to saved data, and form submissions are blocked. Previously established attribution stays stored and is usable after explicitly continuing to a clean URL. The lead API independently validates registered referral records, relationships, and any explicit referral in the submitted page URL.
+
+Opening the regular domain does not clear `turkluxx_referral`, its pair/metadata, or the separate `turkluxx_phone_referral` contact preference. A remembered VLAD/ALMA contact context therefore still displays the 949 number on clean URLs. This is stored preference/attribution behavior, not a cookie or cache rule.
+
 # Participant referrals
 
 Example: `https://turkluxx.com/?ref=AHMAD&client=RAWASHDEH_MOHD&lang=ar`.
 
 `js/referral-registry.js` is the single allowlist used by the browser and the existing Worker lead endpoint. Add an uppercase identifier to its partner's `ar` or `en` array, using underscores for spaces. Both requested languages are permitted for every registered participant; the grouping describes the suggested link language, not a language restriction. Rebuild and deploy the static assets and Worker together. No dependencies were added.
 
-URL partner/client identifiers are case insensitive; surrounding whitespace is removed and participant spaces become underscores. Unknown partners, unknown clients, mismatched pairs, missing/unsupported languages, duplicate parameters, and mixed `client`/`subref` links are ignored. They never hide the website. Language URL hints continue using the existing i18n mechanism independently of attribution, with its existing six-language support and preference priority.
+URL partner/client identifiers are case insensitive; surrounding whitespace is removed and participant spaces become underscores. Unknown partners, unknown clients, mismatched pairs, missing/unsupported languages, duplicate parameters, and mixed `client`/`subref` links are rejected with the invalid-link screen and never overwrite stored attribution. Language URL hints continue using the existing i18n mechanism independently of attribution, with its existing six-language support and preference priority.
 
 ## Persistence and privacy
 

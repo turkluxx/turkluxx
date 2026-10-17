@@ -31,8 +31,10 @@ test('Mohamed canonical ID and Abdo attribution survives navigation and reaches 
     assert.match(email.text, /Sub-referrer: MOHAMED_ABDO/);
     assert.match(email.text, /Parent Consultant: MOHAMED/);
   }
-  assert.ok(visit('/?ref=MOHAMED_ABDO').elements.length);
-  assert.throws(() => validateLead({ referral: 'MOHAMED_ABDO', name: 'Test', phone: '123', email: 'test@example.com' }), /Invalid referral pair/);
+  const directAbdo = visit('/?ref=MOHAMED_ABDO');
+  assert.equal(directAbdo.elements.length, 0);
+  assert.equal(directAbdo.window.getTurkLuxxReferralAttribution().parentConsultant, 'MOHAMED');
+  assert.equal(validateLead({ referral: 'MOHAMED_ABDO', name: 'Test', phone: '123', email: 'test@example.com' }).parentConsultant, 'MOHAMED');
   for (const code of ['MOHAMED', 'AHMAD', 'VLAD']) {
     const first = visit(`/?ref=${code}`);
     assert.equal(visit(abdoUrl, first.storage).window.getTurkLuxxReferral(), code);
@@ -67,7 +69,7 @@ for (const path of ['/', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-o
     assert.equal(direct.window.getTurkLuxxReferral(), 'DIRECT');
     assert.equal(direct.storage.size, 0);
     assert.equal(direct.elements.length, 0);
-    for (const code of ['VLAD', 'ALMA', 'MOHAMED', 'AHMAD', 'ahmad', 'LAITH', 'FAOZI']) {
+    for (const code of ['VLAD', 'ALMA', 'MOHAMED', 'AHMAD', 'ahmad', 'LAITH', 'FAOZI', 'MOHAMED_ABDO']) {
       const result = visit(`${path}?ref=${code}`);
       assert.equal(result.window.getTurkLuxxReferral(), code.toUpperCase());
       assert.equal(result.elements.length, 0);
@@ -76,7 +78,8 @@ for (const path of ['/', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-o
     for (const code of ['SHIT', 'UNKNOWN', 'MUHHAMED', 'muhhamed', '123', '', 'DIRECT']) {
       const result = visit(`${path}?ref=${code}`);
       assert.equal(result.storage.size, 0);
-      assert.equal(result.elements.length, 0);
+      assert.ok(result.elements.length > 0);
+      assert.equal(result.window.getTurkLuxxReferral(), null);
     }
   });
 }
@@ -86,14 +89,16 @@ for (const code of ['VLAD', 'ALMA', 'MOHAMED', 'AHMAD', 'LAITH', 'FAOZI']) {
     const original = [...storage];
     for (const path of ['/?ref=SHIT', '/rengi-istanbul.html?ref=', '/?ref=ALMA', '/']) {
       const result = visit(path, storage);
-      assert.equal(result.window.getTurkLuxxReferral(), code);
+      const invalid = path.includes('ref=SHIT') || path.endsWith('ref=');
+      assert.equal(result.window.getTurkLuxxReferral(), invalid ? null : code);
       assert.deepEqual([...storage], original);
+      assert.equal(visit('/', storage).window.getTurkLuxxReferral(), code);
     }
   });
 }
 test('Blocked storage does not prevent direct visits or graceful invalid links', () => {
   assert.equal(visit('/', new Map(), true).window.getTurkLuxxReferral(), 'DIRECT');
-  assert.equal(visit('/?ref=SHIT', new Map(), true).elements.length, 0);
+  assert.ok(visit('/?ref=SHIT', new Map(), true).elements.length > 0);
   assert.equal(visit('/?ref=AHMAD', new Map(), true).elements.length, 0);
 });
 test('AHMAD client attribution reaches validated lead email', () => {
@@ -145,7 +150,10 @@ for (const subref of ['LAITH', 'FAOZI']) {
     assert.equal(attribution.parentConsultant, 'AHMAD');
     for (const path of ['/', '/rengi-istanbul.html', '/?ref=AHMAD', '/?ref=AHMAD&subref=FAOZI', '/?ref=VLAD', '/?ref=VLAD&subref=LAITH', '/?subref=FAOZI']) {
       const later = visit(path, first.storage);
-      assert.equal(JSON.stringify(later.window.getTurkLuxxReferralAttribution()), original);
+      if (path.includes('ref=VLAD&subref=') || path.startsWith('/?subref=')) {
+        assert.equal(later.window.getTurkLuxxReferral(), null);
+        assert.equal(JSON.stringify(visit('/', first.storage).window.getTurkLuxxReferralAttribution()), original);
+      } else assert.equal(JSON.stringify(later.window.getTurkLuxxReferralAttribution()), original);
     }
     const lead = validateLead({ ...attribution, directReferrer: 'VLAD', parentConsultant: 'ALMA', name: 'Test', phone: '123', email: 'test@example.com' });
     assert.equal(lead.referral, 'AHMAD');
@@ -170,7 +178,8 @@ test('Reject invalid pairs and duplicate parameters without partial attribution'
   for (const query of ['subref=LAITH', 'ref=ALMA&subref=LAITH', 'ref=VLAD&subref=FAOZI', 'ref=AHMAD&subref=UNKNOWN', 'ref=AHMAD&subref=', 'ref=LAITH&subref=FAOZI', 'ref=AHMAD&subref=AHMAD', 'ref=AHMAD&subref=LAITH&subref=FAOZI', 'ref=AHMAD&ref=VLAD&subref=LAITH']) {
     const result = visit('/?' + query);
     assert.equal(result.storage.size, 0);
-    assert.equal(result.elements.length, 0);
+    assert.ok(result.elements.length > 0);
+    assert.equal(result.window.getTurkLuxxReferral(), null);
   }
   for (const [referral, subref] of [['AHMAD', 'UNKNOWN'], ['AHMAD', ''], ['AHMAD', null], ['AHMAD', 1], ['AHMAD', 'laith'], ['ALMA', 'LAITH'], ['LAITH', 'FAOZI'], ['DIRECT', 'LAITH']]) {
     assert.throws(() => validateLead({ referral, subref, name: 'Test', phone: '123', email: 'test@example.com' }), /Invalid referral pair/);
@@ -195,7 +204,8 @@ test('Saved Muhamed misspelling migrates without losing first-touch metadata', (
     const result = visit(path, storage);
     assert.equal(storage.get('turkluxx_referral'), 'MOHAMED');
     assert.equal(storage.size, 3);
-    const attribution = result.window.getTurkLuxxReferralAttribution();
+    if (path.includes('ref=MUHHAMED')) assert.equal(result.window.getTurkLuxxReferral(), null);
+    const attribution = visit('/', storage).window.getTurkLuxxReferralAttribution();
     assert.equal(attribution.referral, 'MOHAMED');
     assert.equal(attribution.createdAt, '2026-01-01T12:00:00.000Z');
     assert.equal(attribution.landingPage, 'https://turkluxx.com/?ref=MUHHAMED&lang=ar');
@@ -219,6 +229,28 @@ test('Lead endpoint accepts only the canonical Muhamed ID', () => {
   const fields = { name: 'Test', phone: '123', email: 'test@example.com' };
   assert.equal(validateLead({ ...fields, referral: 'MOHAMED' }).referral, 'MOHAMED');
   assert.throws(() => validateLead({ ...fields, referral: 'MUHHAMED' }), /Invalid referral/);
+});
+
+test('Every registry record is a valid standalone referral; invalid explicit URLs never fall back to stored attribution', () => {
+  for (const referral of Object.keys(globalThis.TurkLuxxReferralRegistry)) {
+    const page = visit(`/?ref=${referral.toLowerCase()}`);
+    assert.equal(page.elements.length, 0);
+    assert.equal(page.window.getTurkLuxxReferral(), referral);
+    const lead = validateLead({ ...page.window.getTurkLuxxReferralAttribution(), name: 'Test', phone: '123', email: 'test@example.com' });
+    assert.equal(lead.referral, referral);
+  }
+  for (const previous of ['VLAD', 'ALMA', 'MOHAMED_ABDO']) {
+    const first = visit(`/?ref=${previous}`);
+    const saved = [...first.storage];
+    for (const query of ['ref=ABRACADABRA', 'ref=', 'ref=%20', 'ref=toString', 'ref=VLAD_OTHER']) {
+      const invalid = visit('/?' + query, first.storage);
+      assert.equal(invalid.window.getTurkLuxxReferral(), null);
+      assert.equal(invalid.window.getTurkLuxxReferralAttribution().invalid, true);
+      assert.ok(invalid.elements.length > 0);
+      assert.deepEqual([...first.storage], saved);
+      assert.equal(visit('/', first.storage).window.getTurkLuxxReferral(), previous);
+    }
+  }
 });
 
 
