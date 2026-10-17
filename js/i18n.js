@@ -296,6 +296,9 @@
             // An explicit language hint must agree with subsequent user selection.
             if (url.searchParams.has('lang') && url.searchParams.get('lang') !== code) { url.searchParams.set('lang', code); history.replaceState(null, '', url); }
         }
+        document.querySelectorAll('a[data-i18n="nav.videos"]').forEach(link => {
+            link.setAttribute('href', `/videos?lang=${code}`);
+        });
         document.documentElement.lang = code;
         document.documentElement.dir = code === 'ar' ? 'rtl' : 'ltr';
         // Keep split headline phrases in the reading order required by each language.

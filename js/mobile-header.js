@@ -67,12 +67,13 @@
     const properties = link(propertySource, propertySource ? null : explorer ? '#' + explorer.id : './#turkluxx-project-heading', 'mobile.nav.primary_properties');
     properties.dataset.homeScroll = 'properties';
     primary.append(roi, properties);
-    // The four dropdown actions intentionally duplicate the two quick links.
+    // The dropdown actions intentionally duplicate the two quick links.
     menu.append(
         link(source.querySelector('[href="meet-our-team.html"]'), 'meet-our-team.html', 'mobile.nav.team'),
         link(roi, null, 'mobile.nav.primary_roi'),
         link(properties, null, 'mobile.nav.primary_properties'),
-        link(source.querySelector('[data-home-scroll="contact"]'), null, 'mobile.nav.contact')
+        link(source.querySelector('[data-home-scroll="contact"]'), null, 'mobile.nav.contact'),
+        link(source.querySelector('[data-i18n="nav.videos"]'), '/videos', 'nav.videos')
     );
     wrapper.append(surface, toggle, menu);
     controls.append(wrapper);

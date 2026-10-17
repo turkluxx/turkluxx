@@ -112,8 +112,8 @@ for(const path of paths)for(const code of codes){
 await load(path,code);
 assert.equal(await evaluate('document.documentElement.scrollWidth>innerWidth'),false,path+code+' overflow');
 assert.equal(await evaluate("[...document.querySelectorAll('.turkluxx-sales-header>.turkluxx-sales-logo small')].every(e=>getComputedStyle(e).display==='none'&&e.getBoundingClientRect().height===0)"),true);
-assert.equal(await evaluate("document.querySelector('.turkluxx-mobile-menu').children.length"),4);
-assert.equal(await evaluate("[...document.querySelector('.turkluxx-mobile-menu').children].every((e,i)=>e.textContent===TurkLuxxI18n.t(['mobile.nav.team','mobile.nav.primary_roi','mobile.nav.primary_properties','mobile.nav.contact'][i]))"),true);
+assert.equal(await evaluate("document.querySelector('.turkluxx-mobile-menu').children.length"),5);
+assert.equal(await evaluate("[...document.querySelector('.turkluxx-mobile-menu').children].every((e,i)=>e.textContent===TurkLuxxI18n.t(['mobile.nav.team','mobile.nav.primary_roi','mobile.nav.primary_properties','mobile.nav.contact','nav.videos'][i]))"),true);
 await roiClick(quick+' a:first-child');
 await scrollClick(quick+' a:last-child');
 await load(path,code);
