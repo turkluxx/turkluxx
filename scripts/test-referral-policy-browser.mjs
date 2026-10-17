@@ -38,7 +38,7 @@ async function connect(url) {
 const browserInfo = await fetch('http://127.0.0.1:9227/json/version').then(response => response.json());
 const browser = await connect(browserInfo.webSocketDebuggerUrl);
 let checks = 0;
-async function scenario({ query, expectedLanguage, expectedRef, override = false, mobile, targeted = false, subref }) {
+async function scenario({ query, expectedLanguage, expectedRef, override = false, mobile, targeted = false, subref, previousRef }) {
     const { browserContextId } = await browser.send('Target.createBrowserContext');
     let page;
     try {
@@ -57,6 +57,8 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
             }
             throw Error('Timed out: ' + expression);
         };
+        await page.send('Page.enable');
+        await page.send('Runtime.enable');
         await page.send('Network.enable');
         await page.send('Network.setBlockedURLs', { urls: ['*googletagmanager.com*', '*google-analytics.com*', '*connect.facebook.net*'] });
         await page.send('Emulation.setDeviceMetricsOverride', { width: mobile ? 390 : 1440, height: 900, deviceScaleFactor: 1, mobile });
@@ -67,6 +69,11 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
         await page.send('Page.navigate', { url: origin + '/__seed' });
         await until(`location.pathname==='/__seed' && document.readyState!=='loading'`);
         await evaluate(`localStorage.setItem('turkluxx_language','nl')`);
+        if (previousRef === 'MOHAMED_ABDO') {
+            await evaluate(`localStorage.setItem('turkluxx_referral_pair',JSON.stringify({referral:'MOHAMED',subref:'MOHAMED_ABDO',createdAt:'original-time',landingPage:'original-page'}))`);
+        } else if (previousRef) {
+            await evaluate(`localStorage.setItem('turkluxx_referral',${JSON.stringify(previousRef)});localStorage.setItem('turkluxx_referral_created_at','original-time');localStorage.setItem('turkluxx_referral_landing_page','original-page')`);
+        }
         const navigate = async (path, language) => {
             await page.send('Page.navigate', { url: origin + path });
             await until(`location.pathname===${JSON.stringify(new URL(path, origin).pathname)} && document.readyState!=='loading' && window.TurkLuxxI18n?.language===${JSON.stringify(language)} && document.documentElement.dir===${JSON.stringify(language === 'ar' ? 'rtl' : 'ltr')} && !!document.querySelector('.turkluxx-language-toggle') && !!window.getTurkLuxxReferral && document.documentElement.style.visibility!=='hidden'`);
@@ -89,7 +96,7 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
             assert.ok(result.phones.length >= 2);
             for (const phone of result.phones) {
                 if (override) assert.deepEqual(phone, { href: 'tel:+19493314195', text: '+1 (949) 331-4195' });
-                else { assert.equal(phone.href, 'https://wa.me/12137322002'); assert.ok(!phone.text.includes('949')); }
+                else { assert.equal(phone.href, 'https://wa.me/12137322002'); assert.equal(phone.text, '+1 (213) 732-2002'); }
             }
             if (mobile) {
                 await evaluate(`document.querySelector('.turkluxx-mobile-menu-toggle').click()`);
@@ -106,17 +113,24 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
         await until(`TurkLuxxI18n.language==='es'`);
         await verify('es', attribution);
         const pages = override ? ['/', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-our-team.html', '/videos', '/privacy-policy.html', '/cookie-policy.html', '/terms-and-conditions.html', '/disclaimer.html'] : ['/videos'];
-        for (const path of pages) { await navigate(path, 'es'); await verify('es', attribution); }
-        if (targeted) {
-            await navigate('/' + query, 'es'); await verify('es', attribution);
-            const previousDocument = await evaluate('performance.timeOrigin');
-            await page.send('Page.reload');
-            await until(`performance.timeOrigin!==${previousDocument} && document.readyState!=='loading' && window.TurkLuxxI18n?.language==='es' && document.documentElement.dir==='ltr' && !!document.querySelector('.turkluxx-language-toggle') && !!window.getTurkLuxxReferral`);
+        for (const path of pages) {
+            if (path === '/videos') {
+                // Follow the site's actual internal link with its existing language hint.
+                await evaluate(`document.querySelector('.turkluxx-sales-header a[data-i18n="nav.videos"]').click()`);
+                await until(`location.pathname==='/videos' && document.readyState!=='loading' && window.TurkLuxxI18n?.language==='es' && !!window.getTurkLuxxReferral && document.documentElement.dir==='ltr'`);
+            } else await navigate(path, 'es');
             await verify('es', attribution);
         }
+        if (targeted) {
+            await navigate('/' + query, 'es'); await verify('es', attribution);
+        }
+        const previousDocument = await evaluate('performance.timeOrigin');
+        await page.send('Page.reload');
+        await until(`performance.timeOrigin!==${previousDocument} && document.readyState!=='loading' && window.TurkLuxxI18n?.language==='es' && document.documentElement.dir==='ltr' && !!document.querySelector('.turkluxx-language-toggle') && !!window.getTurkLuxxReferral`);
+        await verify('es', attribution);
         await evaluate(`TurkLuxxI18n.setLanguage('ar')`);
         await verify('ar', attribution);
-        console.log(`PASS ${mobile ? 'mobile' : 'desktop'} ${query || 'direct'}: language, phone, manual switching, attribution and navigation`);
+        console.log(`PASS ${mobile ? 'mobile' : 'desktop'} ${query || 'direct'}${previousRef ? ' after saved ' + previousRef : ''}: ${override ? '+1 (949) 331-4195 tel:+19493314195' : '+1 (213) 732-2002 (existing WhatsApp link)'}; switching, attribution, navigation and reload`);
     } finally {
         page?.socket.close(); await browser.send('Target.disposeBrowserContext', { browserContextId });
     }
@@ -132,6 +146,17 @@ try {
             ['?ref=AHMAD&subref=LAITH&lang=ar', 'AHMAD', 'ar', 'LAITH'],
             ['?ref=AHMAD&client=MUNTHER&lang=ar', 'AHMAD', 'ar']
         ]) await scenario({ query, expectedRef, expectedLanguage, subref, mobile });
+        for (const ref of ['alma', 'vlad']) {
+            await scenario({ query: `?ref=${ref}`, expectedLanguage: 'nl', expectedRef: ref.toUpperCase(), override: true, mobile });
+        }
+        for (const [ref, previousRef] of [['ALMA', 'AHMAD'], ['VLAD', 'MOHAMED'], ['alma', 'MOHAMED_ABDO'], ['vlad', 'AHMAD']]) {
+            await scenario({ query: `?ref=${ref}`, previousRef, expectedLanguage: ref === ref.toUpperCase() ? 'en' : 'nl',
+                expectedRef: previousRef === 'MOHAMED_ABDO' ? 'MOHAMED' : previousRef,
+                subref: previousRef === 'MOHAMED_ABDO' ? 'MOHAMED_ABDO' : undefined, override: true, mobile });
+        }
+        for (const [query, expectedLanguage, previousRef] of [['?ref=AHMAD', 'en', 'ALMA'], ['?ref=MOHAMED', 'en', 'VLAD'], ['?ref=VLAD_OTHER', 'nl', 'AHMAD']]) {
+            await scenario({ query, expectedLanguage, previousRef, expectedRef: previousRef, mobile });
+        }
     }
     console.log(`Passed ${checks} rendered-page checks.`);
 } finally { browser.socket.close(); server.close(); }

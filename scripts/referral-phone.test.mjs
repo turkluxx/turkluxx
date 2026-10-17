@@ -30,7 +30,7 @@ for (const ref of ['VLAD', 'ALMA']) {
     test(`${ref}: all contact numbers dial the override and retain attribution across clean URLs and language changes`, () => {
         const entry = visit(`/?ref=${ref}`);
         const attribution = JSON.stringify(entry.window.getTurkLuxxReferralAttribution());
-        for (const path of ['/', '/videos', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-our-team.html?lang=ar', '/?ref=MOHAMED&subref=MOHAMED_ABDO']) {
+        for (const path of ['/', '/videos', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-our-team.html?lang=ar']) {
             const page = visit(path, entry.storage);
             page.refresh(); page.refresh();
             assert.deepEqual(page.links.slice(0, 3).map(link => link.href), Array(3).fill('tel:+19493314195'));
@@ -40,7 +40,12 @@ for (const ref of ['VLAD', 'ALMA']) {
             assert.equal(page.nodes[3].nodeValue, '+44 20 1234 5678');
             assert.equal(JSON.stringify(page.window.getTurkLuxxReferralAttribution()), attribution);
         }
-        assert.equal(visit(`/?ref=${ref}`, new Map(), true).links[0].href, 'tel:+19493314195');
+        for (const code of [ref, ref.toLowerCase()]) {
+            assert.equal(visit(`/?ref=${code}`, new Map(), true).links[0].href, 'tel:+19493314195');
+        }
+        const subref = visit('/?ref=MOHAMED&subref=MOHAMED_ABDO', entry.storage);
+        assert.equal(subref.links[0].href, 'https://wa.me/12137322002');
+        assert.equal(JSON.stringify(subref.window.getTurkLuxxReferralAttribution()), attribution);
     });
 }
 
@@ -55,7 +60,25 @@ test('Other referrals, participants, sub-referrals and direct visitors keep thei
         for (const other of ['VLAD', 'ALMA']) {
             if (page.window.getTurkLuxxReferral() === 'DIRECT') continue;
             const next = visit(`/?ref=${other}`, page.storage);
-            assert.equal(next.links[0].href, 'https://wa.me/12137322002', path);
+            assert.equal(next.links[0].href, 'tel:+19493314195', path);
+            assert.equal(JSON.stringify(next.window.getTurkLuxxReferralAttribution()), JSON.stringify(page.window.getTurkLuxxReferralAttribution()));
+        }
+    }
+});
+
+test('Existing first-touch records do not mask a new contact context, and explicit other referrals reset it', () => {
+    for (const first of ['AHMAD', 'MOHAMED', 'VLAD', 'ALMA']) {
+        const entry = visit(`/?ref=${first}`);
+        const attribution = JSON.stringify(entry.window.getTurkLuxxReferralAttribution());
+        for (const ref of ['alma', 'vlad', 'AHMAD', 'MOHAMED', 'ALMA', 'VLAD']) {
+            const override = ['alma', 'vlad', 'ALMA', 'VLAD'].includes(ref);
+            const expectedHref = override ? 'tel:+19493314195' : 'https://wa.me/12137322002';
+            for (const path of [`/?ref=${ref}`, '/videos', '/videos']) {
+                const page = visit(path, entry.storage);
+                assert.equal(page.links[0].href, expectedHref, `${first} -> ${ref} ${path}`);
+                assert.equal(page.nodes[0].nodeValue, override ? '+1 (949) 331-4195' : '+1 (213) 732-2002');
+                assert.equal(JSON.stringify(page.window.getTurkLuxxReferralAttribution()), attribution);
+            }
         }
     }
 });

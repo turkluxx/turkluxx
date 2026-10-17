@@ -76,14 +76,20 @@
     window.getTurkLuxxReferral = () => window.getTurkLuxxReferralAttribution().referral;
 
     function updateReferralPhone() {
-        const attribution = window.getTurkLuxxReferralAttribution();
-        const query = new URLSearchParams(window.location.search);
-        // Stored first-touch attribution wins. The URL also works on this page
-        // when storage is blocked, without changing attribution persistence.
-        const referral = attribution.referral !== 'DIRECT' ? attribution.referral :
-            query.getAll('ref').length === 1 && query.getAll('lang').length <= 1 &&
-                !query.has('subref') && !query.has('client') ? query.get('ref') : null;
-        if (!['VLAD', 'ALMA'].includes(referral) || attribution.subref || attribution.client) return;
+        const phoneKey = 'turkluxx_phone_referral';
+        let referral;
+        try { referral = normalize(localStorage.getItem(phoneKey)); } catch { /* URL still works. */ }
+        if (!invalidLink && incoming) {
+            // Contact presentation follows the current valid link, independently
+            // of immutable first-touch lead attribution. Reuse its normalization
+            // and pair/client validation rather than trusting raw URL strings.
+            referral = hasSubref ? subref : incoming;
+            try { localStorage.setItem(phoneKey, referral); } catch { /* Current page still works. */ }
+        } else if (!referral) {
+            const attribution = window.getTurkLuxxReferralAttribution();
+            referral = attribution.client ? null : attribution.subref || attribution.referral;
+        }
+        if (!['VLAD', 'ALMA'].includes(referral)) return;
         const defaults = new Set(['12137322002', '18184347266']);
         for (const link of document.querySelectorAll('a[href]')) {
             const href = link.getAttribute('href');
@@ -118,8 +124,9 @@
     const client = (params.get('client') || '').trim().toUpperCase().replace(/\s+/g, '_');
     const language = params.get('lang');
     const invalidClient = hasClient && (!validClient(incoming, client) || hasSubref || !['ar', 'en'].includes(language));
-    if ((params.has('ref') && !incoming) || invalidPair || duplicate || invalidClient ||
-        params.getAll('client').length > 1 || params.getAll('lang').length > 1) return;
+    const invalidLink = (params.has('ref') && !incoming) || invalidPair || duplicate || invalidClient ||
+        params.getAll('client').length > 1 || params.getAll('lang').length > 1;
+    if (invalidLink) return;
     if (hasClient) {
         if (window.getTurkLuxxReferral() !== 'DIRECT') return;
         // First valid attribution wins; keep only registered identifiers for this tab session.

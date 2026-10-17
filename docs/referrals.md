@@ -2,7 +2,7 @@
 
 Exact top-level links for `AHMAD`, `ALMA`, `VLAD`, and `MOHAMED` start in English, overriding browser, saved, and URL language hints on the initial entry. A manual language choice is remembered for that referrer, including clean internal navigation, reloads, and later QR visits. Other referrals, `subref` links, and registered `client` links retain the ordinary language rules. This preference state is separate from attribution; the existing first valid attribution still wins.
 
-The active exact `VLAD` or `ALMA` attribution uses `+1 (949) 331-4195` and `tel:+19493314195` for existing phone contacts throughout the site. Other contexts retain their existing numbers and links. No parent-based or prefix-based phone matching is used.
+The latest valid referral link selects the contact context, separately from first-touch lead attribution. Normalized exact `VLAD` or `ALMA` links use `+1 (949) 331-4195` and `tel:+19493314195` throughout the site, including lowercase incoming IDs. The separate `turkluxx_phone_referral` preference preserves this contact context on clean internal navigation and reloads; another valid referral link selects its own context. Other referrals and sub-referrals retain their existing numbers and links. No parent-based or prefix-based phone matching is used. Without storage, the incoming link still selects the correct number on the current page, but clean-URL navigation cannot retain that context.
 
 English QR links and files:
 
