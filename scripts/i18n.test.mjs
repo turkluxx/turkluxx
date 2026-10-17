@@ -71,10 +71,10 @@ test('Property data stores description keys; catalogs do not duplicate images or
         assert.ok(!Object.keys(catalog).some(key => /(?:imagePath|mapPath|grossArea|netArea|landShare)$/.test(key)));
     }
 });
-function runtime({ search = '', stored = null, blocked = false, remote = {}, browserLanguages = ['en-US'], browserLanguage = 'en-US' } = {}) {
+function runtime({ search = '', stored = null, storageMap = null, blocked = false, remote = {}, browserLanguages = ['en-US'], browserLanguage = 'en-US' } = {}) {
     class Element { querySelectorAll() { return []; } closest() { return null; } getAttribute() { return null; } }
     const document = { documentElement: new Element(), querySelectorAll: () => [], createTreeWalker: () => ({ nextNode: () => false }) };
-    const storage = new Map(stored ? [['turkluxx_language', stored]] : []);
+    const storage = storageMap || new Map(stored ? [['turkluxx_language', stored]] : []);
     const location = new URL('https://turkluxx.com/rengi-istanbul.html' + search);
     const window = { dispatchEvent() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) };
     const urls = [];
@@ -122,7 +122,7 @@ test('Villa product names follow the active language in labels and dynamic refer
 
 test('Browser regional languages select all six locales, Arabic RTL, and unsupported languages fall back', async () => {
     for (const [browserLanguage, expected] of [['en-US', 'en'], ['ru-RU', 'ru'], ['es-MX', 'es'], ['ar-SA', 'ar'], ['tr-TR', 'tr'], ['nl-NL', 'nl'], ['de-DE', 'en']]) {
-        const { api, document, urls } = runtime({ browserLanguages: [browserLanguage], browserLanguage, search: '?ref=VLAD&sub=campaign%20one' });
+        const { api, document, urls } = runtime({ browserLanguages: [browserLanguage], browserLanguage, search: '?ref=LAITH&sub=campaign%20one' });
         await api.ready; await new Promise(resolve => setImmediate(resolve));
         assert.equal(api.language, expected);
         assert.equal(document.documentElement.dir, expected === 'ar' ? 'rtl' : 'ltr');
@@ -134,14 +134,14 @@ test('Browser regional languages select all six locales, Arabic RTL, and unsuppo
 });
 
 test('URL then saved preference take priority over browser; manual selection persists', async () => {
-    assert.equal(runtime({ search: '?lang=ar&ref=VLAD&sub=partner', stored: 'nl', browserLanguages: ['ru-RU'] }).api.language, 'ar');
+    assert.equal(runtime({ search: '?lang=ar&ref=LAITH&sub=partner', stored: 'nl', browserLanguages: ['ru-RU'] }).api.language, 'ar');
     assert.equal(runtime({ stored: 'nl', browserLanguages: ['ru-RU'] }).api.language, 'nl');
-    const { api, storage, urls } = runtime({ browserLanguages: ['ru-RU'], search: '?ref=VLAD&sub=partner' });
+    const { api, storage, urls } = runtime({ browserLanguages: ['ru-RU'], search: '?ref=LAITH&sub=partner' });
     await api.setLanguage('es');
     assert.equal(storage.get('turkluxx_language'), 'es');
     assert.deepEqual(urls, []);
     assert.equal(runtime({ stored: storage.get('turkluxx_language'), browserLanguages: ['ru-RU'] }).api.language, 'es');
-    const explicit = runtime({ search: '?lang=ar&ref=VLAD&sub=campaign%20one', browserLanguages: ['ru-RU'] });
+    const explicit = runtime({ search: '?lang=ar&ref=LAITH&sub=campaign%20one', browserLanguages: ['ru-RU'] });
     await explicit.api.ready; await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(explicit.urls, [], 'Matching explicit language does not reserialize referral parameters');
 });
@@ -179,6 +179,44 @@ test('Only language storage is written and the most recent switch wins', async (
     assert.deepEqual([...result.storage], [['turkluxx_language', 'nl']]);
     assert.equal(result.api.text('I want Jade villa'), catalogs.nl['villa.cta'].replace('{name}', 'Jade'));
     assert.equal(result.api.text('View Gold Upper Floor plan fullscreen'), result.api.t('media.planFullscreen', { name: 'Gold', floor: 'Upper Floor' }));
+});
+
+for (const referral of ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED']) {
+    test(`${referral}: English landing overrides browser/saved/URL language, manual choice survives navigation and QR revisits`, async () => {
+        const storageMap = new Map([['turkluxx_language', 'nl']]);
+        const landing = runtime({ search: `?ref=${referral}&lang=ar`, storageMap, browserLanguages: ['ru-RU'] });
+        assert.equal(landing.api.language, 'en');
+        await landing.api.ready; await new Promise(resolve => setImmediate(resolve));
+        assert.equal(landing.document.documentElement.dir, 'ltr');
+        assert.equal(storageMap.get('turkluxx_language'), 'en');
+        await landing.api.setLanguage('es');
+        const navigated = runtime({ storageMap });
+        await navigated.api.ready; await new Promise(resolve => setImmediate(resolve));
+        assert.equal(navigated.api.language, 'es');
+        await navigated.api.setLanguage('tr');
+        for (const search of [`?ref=${referral}&lang=en`, `?ref=${referral}`, '']) {
+            const reload = runtime({ search, storageMap, browserLanguages: ['ar-SA'] });
+            await reload.api.ready; await new Promise(resolve => setImmediate(resolve));
+            assert.equal(reload.api.language, 'tr', search);
+        }
+        // Visiting another referral does not discard this referrer's manual choice.
+        const other = runtime({ search: '?ref=LAITH', storageMap });
+        await other.api.ready; await new Promise(resolve => setImmediate(resolve));
+        assert.equal(runtime({ search: `?ref=${referral}&lang=en`, storageMap }).api.language, 'tr');
+    });
+}
+
+test('Sub-referrals, participants, other IDs, invalid and duplicate IDs retain ordinary language selection', async () => {
+    for (const search of ['', '?ref=LAITH', '?ref=FAOZI', '?ref=MOHAMED_ABDO', '?ref=MUHAMED',
+        '?ref=VLAD_OTHER', '?ref=vlad', '?ref=AHMAD&subref=LAITH', '?ref=MOHAMED&subref=MOHAMED_ABDO',
+        '?ref=AHMAD&client=MUNTHER', '?ref=VLAD&ref=ALMA']) {
+        assert.equal(runtime({ search, stored: 'nl', browserLanguages: ['ru-RU'] }).api.language, 'nl', search);
+        assert.equal(runtime({ search: search + (search ? '&' : '?') + 'lang=ar', stored: 'nl' }).api.language, 'ar', search);
+    }
+    const blocked = runtime({ search: '?ref=ALMA&lang=ar', blocked: true, browserLanguages: ['ru-RU'] });
+    assert.equal(blocked.api.language, 'en');
+    await blocked.api.setLanguage('ar');
+    assert.equal(blocked.api.language, 'ar');
 });
 test('Arabic isolates configurations and measurements without changing their values', async () => {
     const { api } = runtime();

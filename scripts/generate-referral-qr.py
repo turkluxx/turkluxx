@@ -1,4 +1,4 @@
-"""Generate and decode both static referral codes. See README for dependencies."""
+"""Generate and decode the four English referral codes; leave sub-referral codes intact."""
 from pathlib import Path
 
 from PIL import Image
@@ -8,8 +8,10 @@ import zxingcpp
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / 'img' / 'qr_codes'
 LINKS = {
-    'QR_MOHAMED_STATIC.png': 'https://turkluxx.com/?ref=MOHAMED&lang=ar',
-    'QR_MOHAMED_ABDO_STATIC.png': 'https://turkluxx.com/?ref=MOHAMED&subref=MOHAMED_ABDO&lang=ar',
+    'QR_AHMAD_STATIC.png': 'https://turkluxx.com/?ref=AHMAD&lang=en',
+    'QR_ALMA_STATIC.png': 'https://turkluxx.com/?ref=ALMA&lang=en',
+    'QR_VLAD_STATIC.png': 'https://turkluxx.com/?ref=VLAD&lang=en',
+    'QR_MOHAMED_STATIC.png': 'https://turkluxx.com/?ref=MOHAMED&lang=en',
 }
 
 

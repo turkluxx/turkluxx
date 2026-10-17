@@ -75,6 +75,36 @@
     };
     window.getTurkLuxxReferral = () => window.getTurkLuxxReferralAttribution().referral;
 
+    function updateReferralPhone() {
+        const attribution = window.getTurkLuxxReferralAttribution();
+        const query = new URLSearchParams(window.location.search);
+        // Stored first-touch attribution wins. The URL also works on this page
+        // when storage is blocked, without changing attribution persistence.
+        const referral = attribution.referral !== 'DIRECT' ? attribution.referral :
+            query.getAll('ref').length === 1 && query.getAll('lang').length <= 1 &&
+                !query.has('subref') && !query.has('client') ? query.get('ref') : null;
+        if (!['VLAD', 'ALMA'].includes(referral) || attribution.subref || attribution.client) return;
+        const defaults = new Set(['12137322002', '18184347266']);
+        for (const link of document.querySelectorAll('a[href]')) {
+            const href = link.getAttribute('href');
+            if (/^(?:tel:|https:\/\/wa\.me\/)/.test(href) && defaults.has(href.replace(/\D/g, ''))) {
+                link.setAttribute('href', 'tel:+19493314195');
+            }
+        }
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode()) {
+            const node = walker.currentNode;
+            if (node.parentElement?.closest('script, style, noscript, textarea')) continue;
+            const value = node.nodeValue.replace(/\+1[\d\s()-]+/g, number =>
+                defaults.has(number.replace(/\D/g, '')) ? number.replace(/\S[\s\S]*\S/, '+1 (949) 331-4195') : number);
+            if (node.nodeValue !== value) node.nodeValue = value;
+        }
+    }
+    // Defer until this script has accepted the incoming referral and the mobile
+    // header has finished assembling its existing controls.
+    if (typeof document !== 'undefined') document.addEventListener?.('DOMContentLoaded', updateReferralPhone);
+    window.addEventListener?.('turkluxx:language-change', updateReferralPhone);
+
     // Run storage migration even on clean visits or rejected incoming links.
     window.getTurkLuxxReferralAttribution();
 

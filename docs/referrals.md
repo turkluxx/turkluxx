@@ -1,3 +1,20 @@
+# Referral landing preferences
+
+Exact top-level links for `AHMAD`, `ALMA`, `VLAD`, and `MOHAMED` start in English, overriding browser, saved, and URL language hints on the initial entry. A manual language choice is remembered for that referrer, including clean internal navigation, reloads, and later QR visits. Other referrals, `subref` links, and registered `client` links retain the ordinary language rules. This preference state is separate from attribution; the existing first valid attribution still wins.
+
+The active exact `VLAD` or `ALMA` attribution uses `+1 (949) 331-4195` and `tel:+19493314195` for existing phone contacts throughout the site. Other contexts retain their existing numbers and links. No parent-based or prefix-based phone matching is used.
+
+English QR links and files:
+
+| Referral URL | File |
+| --- | --- |
+| `https://turkluxx.com/?ref=AHMAD&lang=en` | `img/qr_codes/QR_AHMAD_STATIC.png` |
+| `https://turkluxx.com/?ref=ALMA&lang=en` | `img/qr_codes/QR_ALMA_STATIC.png` |
+| `https://turkluxx.com/?ref=VLAD&lang=en` | `img/qr_codes/QR_VLAD_STATIC.png` |
+| `https://turkluxx.com/?ref=MOHAMED&lang=en` | `img/qr_codes/QR_MOHAMED_STATIC.png` |
+
+Run `python scripts/generate-referral-qr.py` to regenerate only these four images with the existing 1000px, centered-logo, high-error-correction design. It decodes every saved file before succeeding. Dependencies: Pillow, qrcode, zxing-cpp. Run `python scripts/test-referral-qr.py` to verify the saved artifacts and the unchanged Mohamed Abdo QR without regenerating anything. Browser integration: `node scripts/test-referral-policy-browser.mjs --dist` with headless Chrome's CDP endpoint on port 9227; omit `--dist` to check source pages.
+
 # Participant referrals
 
 Example: `https://turkluxx.com/?ref=AHMAD&client=RAWASHDEH_MOHD&lang=ar`.

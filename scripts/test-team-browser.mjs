@@ -78,7 +78,7 @@ try {
     for (const width of [1440, 820, 390]) {
         await send('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: width < 768 });
         for (const code of codes) {
-            await send('Page.navigate', { url: `${origin}/meet-our-team.html?lang=${code}&ref=VLAD&sub=Team%20check` });
+            await send('Page.navigate', { url: `${origin}/meet-our-team.html?lang=${code}&ref=LAITH&sub=Team%20check` });
             await until(`document.readyState==='complete' && window.TurkLuxxI18n?.language==='${code}'`);
             await evaluate('TurkLuxxI18n.setLanguage(TurkLuxxI18n.language)');
             await pause(200);
@@ -129,7 +129,7 @@ try {
             await until('document.querySelector("#turkluxx-callback").open');
             assert.equal(await evaluate('document.querySelector("#turkluxx-callback-title").textContent'),catalogs[code]['common.let_s_talk']);
             const payload=await evaluate('buildTurkLuxxLeadPayload(document.querySelector("#turkluxx-callback-form"))');
-            assert.equal(payload.referral,'VLAD'); assert.equal(payload.page,url); assert.equal(payload.project,null);
+            assert.equal(payload.referral,'LAITH'); assert.equal(payload.page,url); assert.equal(payload.project,null);
             await click('#turkluxx-callback .turkluxx-callback-close');
             await until('!document.querySelector("#turkluxx-callback").open'); await pause(200);
             await evaluate('window.scrollTo({top:0,behavior:"instant"})'); await pause(200);

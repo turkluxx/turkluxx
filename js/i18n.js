@@ -2,6 +2,9 @@
     'use strict';
     const languages = { en: 'English', ru: 'Русский', es: 'Español', ar: 'العربية', tr: 'Türkçe', nl: 'Nederlands' };
     const storageKey = 'turkluxx_language';
+    const referralLanguageKey = 'turkluxx_referral_language';
+    const englishReferrals = new Set(['AHMAD', 'ALMA', 'VLAD', 'MOHAMED']);
+    let referralLanguage = { active: null, choices: {} };
     const catalogs = new Map();
     const originals = new WeakMap();
     const attributes = new WeakMap();
@@ -18,6 +21,28 @@
         const detected = browserLanguages.map(value => typeof value === 'string' ? value.toLowerCase().split(/[-_]/)[0] : '')
             .find(code => Object.hasOwn(languages, code));
         language = Object.hasOwn(languages, requested) ? requested : Object.hasOwn(languages, stored) ? stored : detected || 'en';
+        const params = new URLSearchParams(location.search);
+        try {
+            const saved = JSON.parse(localStorage.getItem(referralLanguageKey));
+            if (saved && (saved.active === null || englishReferrals.has(saved.active)) && saved.choices && typeof saved.choices === 'object') {
+                referralLanguage = saved;
+            }
+        } catch { /* A fresh referral entry still works without storage. */ }
+        const exactReferral = params.getAll('ref').length === 1 && params.getAll('lang').length <= 1 &&
+            !params.has('subref') && !params.has('client') && englishReferrals.has(params.get('ref'));
+        if (exactReferral) {
+            referralLanguage.active = params.get('ref');
+            const choice = referralLanguage.choices[referralLanguage.active];
+            language = Object.hasOwn(languages, choice) ? choice : 'en';
+            try {
+                // Carry the landing language onto clean internal URLs as usual.
+                localStorage.setItem(storageKey, language);
+                localStorage.setItem(referralLanguageKey, JSON.stringify(referralLanguage));
+            } catch { /* Current-page language selection remains available. */ }
+        } else if (params.has('ref') && referralLanguage.active) {
+            referralLanguage.active = null;
+            try { localStorage.setItem(referralLanguageKey, JSON.stringify(referralLanguage)); } catch { /* Optional state. */ }
+        }
     } catch { /* English works even when storage is unavailable. */ }
 
     async function catalog(code) {
@@ -283,7 +308,7 @@
             controls.forEach(control => { if (!control.container.contains(event.target)) control.close(); });
         });
     }
-    async function setLanguage(code, persist = true) {
+    async function setLanguage(code, persist = true, manual = true) {
         if (!Object.hasOwn(languages, code)) code = 'en';
         const version = ++requestId;
         await ready;
@@ -292,6 +317,10 @@
         language = code;
         if (persist) {
             try { localStorage.setItem(storageKey, code); } catch { /* Current page remains translated. */ }
+            if (manual && englishReferrals.has(referralLanguage.active)) {
+                referralLanguage.choices[referralLanguage.active] = code;
+                try { localStorage.setItem(referralLanguageKey, JSON.stringify(referralLanguage)); } catch { /* Optional state. */ }
+            }
             const url = new URL(location.href);
             // An explicit language hint must agree with subsequent user selection.
             if (url.searchParams.has('lang') && url.searchParams.get('lang') !== code) { url.searchParams.set('lang', code); history.replaceState(null, '', url); }
@@ -325,5 +354,5 @@
     });
     window.TurkLuxxI18n = { t, text, bind, setLanguage, get language() { return language; }, ready };
     selectors();
-    setLanguage(language).finally(() => window.turkLuxxRevealLanguage?.());
+    setLanguage(language, true, false).finally(() => window.turkLuxxRevealLanguage?.());
 })();
