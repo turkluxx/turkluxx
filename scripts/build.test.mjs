@@ -54,6 +54,41 @@ test('bundles production pages, copies only allowlisted assets, and cleans stale
   assert.equal(readFileSync(join(f.root, 'dist/index.html'), 'utf8').split('rel="manifest"').length - 1, 1, 'Repeated builds do not duplicate favicon links');
 });
 
+test('rebuild replaces stale shared referral code with current source and keeps production HTML on that bundle', t => {
+  const f = fixture(t);
+  const source = readFileSync(new URL('../js/referral.js', import.meta.url), 'utf8');
+  for (const file of f.files.filter(file => file.endsWith('.html'))) {
+    const html = readFileSync(join(f.root, file), 'utf8');
+    f.put(file, html.replace('</head>', '<script src="js/referral.js" defer></script></head>'));
+  }
+  f.put('scripts/public-files.json', JSON.stringify([...f.files, 'js/referral.js']));
+  f.put('js/referral.js', 'window.oldReferralBundle = true;');
+  assert.equal(f.run().status, 0);
+  const output = join(f.root, 'dist/js/turkluxx.min.js');
+  const stale = readFileSync(output, 'utf8');
+  assert.match(stale, /oldReferralBundle/);
+  assert.doesNotMatch(stale, /19493314195/);
+
+  f.put('js/referral.js', source);
+  const result = f.run();
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /js\/referral\.js/);
+  const current = readFileSync(output, 'utf8');
+  assert.notEqual(current, stale);
+  assert.doesNotMatch(current, /oldReferralBundle/);
+  assert.match(current, /tel:\+19493314195/);
+  assert.match(current, /\+1 \(949\) 331-4195/);
+  assert.match(current, /turkluxx_phone_referral/);
+  assert.equal(readFileSync(join(f.root, 'js/referral.js'), 'utf8'), source, 'Build preserves referral source');
+  for (const file of f.files.filter(file => file.endsWith('.html'))) {
+    const html = readFileSync(join(f.root, 'dist', file), 'utf8');
+    assert.equal(html.split('src="js/turkluxx.min.js"').length - 1, 1);
+    assert.doesNotMatch(html, /src="js\/referral\.js"/);
+  }
+  assert.equal(f.run().status, 0);
+  assert.equal(readFileSync(output, 'utf8'), current, 'Unchanged sources produce the same bundle');
+});
+
 test('homepage reuse follows project content changes without duplicate sections or viewers', t => {
   const f = fixture(t);
   const shell = readFileSync(join(f.root, 'index.html'), 'utf8');

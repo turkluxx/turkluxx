@@ -45,6 +45,11 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
         const { targetId } = await browser.send('Target.createTarget', { url: 'about:blank', browserContextId });
         const targets = await fetch('http://127.0.0.1:9227/json/list').then(response => response.json());
         page = await connect(targets.find(target => target.id === targetId).webSocketDebuggerUrl);
+        const exceptions = [];
+        page.socket.addEventListener('message', event => {
+            const message = JSON.parse(event.data);
+            if (message.method === 'Runtime.exceptionThrown') exceptions.push(message.params.exceptionDetails);
+        });
         const evaluate = async expression => {
             const result = await page.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
             if (result.exceptionDetails) throw Error(JSON.stringify(result.exceptionDetails));
@@ -130,6 +135,7 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
         await verify('es', attribution);
         await evaluate(`TurkLuxxI18n.setLanguage('ar')`);
         await verify('ar', attribution);
+        assert.deepEqual(exceptions, [], 'No uncaught JavaScript errors in rendered production pages');
         console.log(`PASS ${mobile ? 'mobile' : 'desktop'} ${query || 'direct'}${previousRef ? ' after saved ' + previousRef : ''}: ${override ? '+1 (949) 331-4195 tel:+19493314195' : '+1 (213) 732-2002 (existing WhatsApp link)'}; switching, attribution, navigation and reload`);
     } finally {
         page?.socket.close(); await browser.send('Target.disposeBrowserContext', { browserContextId });

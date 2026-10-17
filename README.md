@@ -1,3 +1,9 @@
+## Production build
+
+Run `npm run build` after source changes or merges before packaging assets. The build reads the current source files, includes `js/referral.js` in `dist/js/turkluxx.min.js`, and rewrites production HTML to load that shared bundle. It clears stale output first. Uploading an older `dist/` directory will serve older logic even when the source checkout is current.
+
+`dist/` is generated and intentionally ignored by Git; merging source commits does not update an already deployed bundle. Wrangler's configured build hook runs the same build command and uses `./dist` as its asset directory. For local production verification, run `node scripts/test-referral-policy-browser.mjs --dist` with Chrome's CDP endpoint on port 9227. This does not deploy anything.
+
 ## Lead email endpoint (implemented; not deployed)
 
 Use Node.js 22+ and the pinned Wrangler installation:
