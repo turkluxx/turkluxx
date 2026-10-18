@@ -254,7 +254,10 @@
         tab.type = 'button';
         tab.id = `rengi-category-${i}`;
         tab.dataset.category = key;
-        tab.textContent = key.replace('+', ' + ');
+        const layoutLabel = element('bdi', key.replace('+', ' + '));
+        layoutLabel.dir = 'ltr';
+        layoutLabel.setAttribute('data-i18n-ignore', '');
+        tab.append(layoutLabel);
         tab.setAttribute('role', 'tab');
         tab.setAttribute('aria-controls', panel.id);
         tab.addEventListener('click', () => selectCategory(key));
