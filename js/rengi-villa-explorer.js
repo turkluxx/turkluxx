@@ -272,6 +272,16 @@
         tablist.append(tab);
     });
 
+    function updateLayoutLabels() {
+        const arabic = window.TurkLuxxI18n.language === 'ar';
+        for (const tab of tablist.children) {
+            const numbers = tab.dataset.category.split('+');
+            tab.querySelector('bdi').textContent = (arabic ? numbers.reverse() : numbers).join(' + ');
+        }
+    }
+    window.addEventListener('turkluxx:language-change', updateLayoutLabels);
+    updateLayoutLabels();
+
     // Horizontal gestures navigate only the open viewer; vertical gestures never change images.
     dialog.addEventListener('pointerdown', event => {
         gesture = event.isPrimary && event.pointerType !== 'mouse' && !event.target.closest('button')
