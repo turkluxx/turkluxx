@@ -207,8 +207,21 @@ for (const referral of ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED', 'TIM_BOND']) {
     });
 }
 
+test('VLAD/TIM_BOND hierarchical entry overrides language hints and remembers manual switching', async () => {
+    const storageMap = new Map([['turkluxx_language', 'ar']]);
+    const entry = runtime({ search: '?ref=VLAD&subref=TIM_BOND&lang=ar', storageMap, browserLanguages: ['ru-RU'] });
+    assert.equal(entry.api.language, 'nl');
+    await entry.api.setLanguage('es');
+    for (const search of ['', '?lang=es', '?ref=VLAD&subref=TIM_BOND&lang=nl']) {
+        assert.equal(runtime({ search, storageMap }).api.language, 'es');
+    }
+    for (const search of ['?ref=AHMAD&subref=TIM_BOND', '?ref=VLAD&subref=TIM_BOND&subref=TIM_BOND']) {
+        assert.equal(runtime({ search, stored: 'ar' }).api.language, 'ar');
+    }
+});
+
 test('TIM_BOND normalized entries default to Dutch even with blocked storage and allow manual switching', async () => {
-    for (const search of ['?ref=TIM_BOND', '?ref=tim_bond&lang=ar', '?ref=%20TIM_BOND%20&lang=en']) {
+    for (const search of ['?ref=TIM_BOND', '?ref=tim_bond&lang=ar', '?ref=%20TIM_BOND%20&lang=en', '?ref=VLAD&subref=TIM_BOND&lang=en']) {
         const page = runtime({ search, blocked: true, browserLanguages: ['ru-RU'] });
         assert.equal(page.api.language, 'nl');
         await page.api.setLanguage('es');

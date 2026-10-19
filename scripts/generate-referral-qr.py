@@ -12,7 +12,7 @@ LINKS = {
     'QR_ALMA_STATIC.png': 'https://turkluxx.com/?ref=ALMA&lang=en',
     'QR_VLAD_STATIC.png': 'https://turkluxx.com/?ref=VLAD&lang=en',
     'QR_MOHAMED_STATIC.png': 'https://turkluxx.com/?ref=MOHAMED&lang=en',
-    'QR_TIM_BOND_STATIC.png': 'https://turkluxx.com/?ref=TIM_BOND&lang=nl',
+    'QR_TIM_BOND_VLAD_NL.png': 'https://turkluxx.com/?ref=VLAD&subref=TIM_BOND&lang=nl',
 }
 
 

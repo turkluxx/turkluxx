@@ -8,6 +8,9 @@ const registrySource = readFileSync(new URL('../js/referral-registry.js', import
 const source = readFileSync(new URL('../js/referral.js', import.meta.url), 'utf8');
 
 test('TIM_BOND retains its own identity and VLAD parent through navigation and lead delivery', () => {
+  assert.deepEqual(globalThis.TurkLuxxReferralRegistry.TIM_BOND, { parentConsultant: 'VLAD' });
+  assert.equal(globalThis.TurkLuxxReferralRegistry.VLAD.parentConsultant, undefined);
+  assert.equal(globalThis.TurkLuxxReferralRegistry.MOHAMED_ABDO.parentConsultant, 'MOHAMED');
   const entry = visit('/?ref=TIM_BOND&lang=nl');
   const attribution = entry.window.getTurkLuxxReferralAttribution();
   assert.equal(attribution.referral, 'TIM_BOND');
@@ -22,8 +25,20 @@ test('TIM_BOND retains its own identity and VLAD parent through navigation and l
     assert.match(createLeadEmail(lead, 'test-id', 'test-time').text, /Referral: TIM_BOND[\s\S]*Parent Consultant: VLAD/);
   }
   const pair = visit('/?ref=VLAD&subref=TIM_BOND').window.getTurkLuxxReferralAttribution();
+  assert.equal(pair.referral, 'VLAD');
   assert.equal(pair.subref, 'TIM_BOND');
+  assert.equal(pair.directReferrer, 'TIM_BOND');
   assert.equal(pair.parentConsultant, 'VLAD');
+  for (const source of ['callback', 'general-contact']) {
+    const lead = validateLead({ ...pair, source, language: 'nl', message: 'Test enquiry', name: 'Test', phone: '123', email: 'test@example.com', page: 'https://turkluxx.com/?ref=VLAD&subref=TIM_BOND&lang=nl' });
+    assert.equal(lead.referral, 'VLAD');
+    assert.equal(lead.subref, 'TIM_BOND');
+    assert.equal(lead.directReferrer, 'TIM_BOND');
+    assert.equal(lead.parentConsultant, 'VLAD');
+    assert.match(createLeadEmail(lead, 'id', 'time').text, /Sub-referrer: TIM_BOND[\s\S]*Parent Consultant: VLAD/);
+    assert.throws(() => validateLead({ ...lead, referral: 'AHMAD' }), /Invalid referral pair/);
+  }
+  assert.deepEqual(Object.entries(globalThis.TurkLuxxReferralRegistry).filter(([, record]) => !record.parentConsultant).map(([code]) => code).sort(), ['AHMAD', 'ALMA', 'MOHAMED', 'VLAD']);
   assert.ok(visit('/?ref=AHMAD&subref=TIM_BOND').elements.length);
   const first = visit('/?ref=MOHAMED_ABDO');
   assert.equal(visit('/?ref=TIM_BOND', first.storage).window.getTurkLuxxReferral(), 'MOHAMED_ABDO');

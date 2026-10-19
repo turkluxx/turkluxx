@@ -30,9 +30,11 @@
         } catch { /* A fresh referral entry still works without storage. */ }
         const rawReferral = params.get('ref');
         // Keep established exact-case behavior for existing referrals.
-        const entryReferral = rawReferral?.trim().toUpperCase() === 'TIM_BOND' ? 'TIM_BOND' : rawReferral;
+        const timBondPair = rawReferral?.trim().toUpperCase() === 'VLAD' &&
+            params.getAll('subref').length === 1 && params.get('subref')?.trim().toUpperCase() === 'TIM_BOND';
+        const entryReferral = timBondPair || rawReferral?.trim().toUpperCase() === 'TIM_BOND' ? 'TIM_BOND' : rawReferral;
         const exactReferral = params.getAll('ref').length === 1 && params.getAll('lang').length <= 1 &&
-            !params.has('subref') && !params.has('client') && Object.hasOwn(referralDefaults, entryReferral);
+            (!params.has('subref') || timBondPair) && !params.has('client') && Object.hasOwn(referralDefaults, entryReferral);
         if (exactReferral) {
             referralLanguage.active = entryReferral;
             const choice = referralLanguage.choices[referralLanguage.active];

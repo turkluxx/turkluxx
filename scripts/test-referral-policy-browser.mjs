@@ -3,17 +3,19 @@ import http from 'node:http';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import assert from 'node:assert/strict';
-import worker from '../worker/index.mjs';
+import worker, { validateLead } from '../worker/index.mjs';
 
 const root = resolve(import.meta.dirname, '..', process.argv.includes('--dist') ? 'dist' : '.');
 const port = Number(process.env.TURKLUXX_REFERRAL_TEST_PORT || 8806);
 const origin = `http://127.0.0.1:${port}`;
 let mockEmailCount = 0;
+let lastValidatedLead;
 const server = http.createServer(async (req, res) => {
     try {
         let path = new URL(req.url, origin).pathname;
         if (path === '/api/lead') {
             let body = ''; for await (const chunk of req) body += chunk;
+            try { lastValidatedLead = validateLead(JSON.parse(body)); } catch { lastValidatedLead = null; }
             const result = await worker.fetch(new Request(origin + path, { method: req.method,
                 headers: { 'Content-Type': req.headers['content-type'] || '', Origin: origin }, body }),
                 { LEAD_EMAIL: { send: async () => { mockEmailCount++; } } });
@@ -82,7 +84,7 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
         ` });
         await page.send('Page.navigate', { url: origin + '/__seed' });
         await until(`location.pathname==='/__seed' && document.readyState!=='loading'`);
-        await evaluate(`localStorage.setItem('turkluxx_language',${JSON.stringify(expectedRef === 'TIM_BOND' ? 'ar' : 'nl')})`);
+        await evaluate(`localStorage.setItem('turkluxx_language',${JSON.stringify(expectedRef === 'TIM_BOND' || subref === 'TIM_BOND' ? 'ar' : 'nl')})`);
         if (previousRef === 'MOHAMED_ABDO') {
             await evaluate(`localStorage.setItem('turkluxx_referral_pair',JSON.stringify({referral:'MOHAMED',subref:'MOHAMED_ABDO',createdAt:'original-time',landingPage:'original-page'}))`);
         } else if (previousRef) {
@@ -128,6 +130,17 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
             ...getTurkLuxxReferralAttribution(),name:'Browser Test',phone:'123',email:'browser@example.com',page:location.href
         })}).then(response=>response.status)`);
         assert.equal(leadStatus, 200, 'Registered attribution reaches the actual Worker validator with a mocked email binding');
+        if (expectedRef === 'TIM_BOND' || subref === 'TIM_BOND') {
+            assert.equal(lastValidatedLead.referral, expectedRef);
+            assert.equal(lastValidatedLead.subref, subref);
+            assert.equal(lastValidatedLead.parentConsultant, 'VLAD');
+            const contact = await snapshot();
+            console.log('TIM_BOND EVIDENCE ' + JSON.stringify({
+                registry: { VLAD: globalThis.TurkLuxxReferralRegistry.VLAD, TIM_BOND: globalThis.TurkLuxxReferralRegistry.TIM_BOND },
+                browser: attribution, lead: { referral: lastValidatedLead.referral, subref: lastValidatedLead.subref, directReferrer: lastValidatedLead.directReferrer, parentConsultant: lastValidatedLead.parentConsultant },
+                language: contact.language, phones: contact.phones
+            }));
+        }
         // Exercise the actual language menu handlers rather than assigning language state.
         await evaluate(`document.querySelector('.turkluxx-sales-language .turkluxx-language-toggle').click();document.querySelector('.turkluxx-sales-language [data-language="es"]').click()`);
         await until(`TurkLuxxI18n.language==='es'`);
@@ -238,6 +251,15 @@ async function invalidScenario(query, previousRef, mobile, path = '/') {
     } finally { page?.socket.close(); await browser.send('Target.disposeBrowserContext', { browserContextId }); }
 }
 try {
+    if (process.argv.includes('--tim-bond-only')) {
+        const decodedURL = process.env.TURKLUXX_DECODED_QR_URL || 'https://turkluxx.com/?ref=VLAD&subref=TIM_BOND&lang=nl';
+        const decoded = new URL(decodedURL);
+        assert.equal(decoded.href, 'https://turkluxx.com/?ref=VLAD&subref=TIM_BOND&lang=nl');
+        for (const mobile of [false, true]) {
+            await scenario({ query: decoded.search, expectedLanguage: 'nl', expectedRef: 'VLAD', subref: 'TIM_BOND', override: true, targeted: true, mobile });
+            await invalidScenario('?ref=AHMAD&subref=TIM_BOND&lang=en', undefined, mobile);
+        }
+    } else {
     for (const mobile of [false, true]) {
         for (const ref of ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED']) {
             for (const hint of ['', '&lang=en', '&lang=ar']) await scenario({ query: `?ref=${ref}${hint}`, expectedLanguage: 'en', expectedRef: ref, override: ['VLAD', 'ALMA'].includes(ref), targeted: true, mobile });
@@ -268,6 +290,7 @@ try {
                 for (const path of ['/', '/videos']) await invalidScenario(query, previousRef, mobile, path);
             }
         }
+    }
     }
     console.log(`Passed ${checks} rendered-page checks.`);
 } finally { browser.socket.close(); server.close(); }

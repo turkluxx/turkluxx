@@ -25,6 +25,9 @@ class ReferralQRTests(unittest.TestCase):
             filename = f'QR_{ref}_STATIC.png'
             language = 'nl' if ref == 'TIM_BOND' else 'en'
             expected = f'https://turkluxx.com/?ref={ref}&lang={language}'
+            if ref == 'TIM_BOND':
+                filename = 'QR_TIM_BOND_VLAD_NL.png'
+                expected = 'https://turkluxx.com/?ref=VLAD&subref=TIM_BOND&lang=nl'
             with self.subTest(ref=ref), Image.open(self.output / filename) as image:
                 self.assertEqual(config['LINKS'][filename], expected)
                 self.assertEqual(image.size, (1000, 1000))
