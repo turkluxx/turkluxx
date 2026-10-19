@@ -26,7 +26,7 @@ function visit(search, storage = new Map(), blocked = false, records = {}) {
     return { window, links, nodes, storage, refresh: () => handlers.get('turkluxx:language-change')() };
 }
 
-for (const ref of ['VLAD', 'ALMA', 'TIM_BOND']) {
+for (const ref of ['VLAD', 'ALMA', 'VLAD=TIM_BOND']) {
     test(`${ref}: tree phone override preserves WhatsApp and attribution across clean URLs and language changes`, () => {
         const entry = visit(`/?ref=${ref}`);
         const attribution = JSON.stringify(entry.window.getTurkLuxxReferralAttribution());
@@ -50,10 +50,9 @@ for (const ref of ['VLAD', 'ALMA', 'TIM_BOND']) {
 }
 
 test('Other referrals, participants, sub-referrals and direct visitors keep their existing contact behavior', () => {
-    for (const path of ['/', '/?ref=AHMAD', '/?ref=MOHAMED', '/?ref=LAITH', '/?ref=FAOZI',
+    for (const path of ['/', '/?ref=AHMAD', '/?ref=MOHAMED', '/?ref=AHMAD=LAITH', '/?ref=AHMAD=FAOZI',
         '/?ref=AHMAD&client=MUNTHER&lang=ar', '/?ref=AHMAD&subref=LAITH',
-        '/?ref=MOHAMED&subref=MOHAMED_ABDO', '/?ref=MOHAMED_ABDO', '/?ref=VLAD_OTHER',
-        '/?ref=VLAD&subref=LAITH', '/?ref=ALMA&client=UNKNOWN', '/?ref=VLAD&ref=ALMA']) {
+        '/?ref=MOHAMED&subref=MOHAMED_ABDO', '/?ref=MOHAMED=MOHAMED_ABDO']) {
         const page = visit(path);
         assert.equal(page.links[0].href, 'https://wa.me/12137322002', path);
         assert.equal(page.nodes[0].nodeValue, '+1 (213) 732-2002', path);
@@ -72,8 +71,8 @@ test('Existing first-touch records do not mask a new contact context, and explic
     for (const first of ['AHMAD', 'MOHAMED', 'VLAD', 'ALMA']) {
         const entry = visit(`/?ref=${first}`);
         const attribution = JSON.stringify(entry.window.getTurkLuxxReferralAttribution());
-        for (const ref of ['alma', 'vlad', 'AHMAD', 'MOHAMED', 'ALMA', 'VLAD', 'TIM_BOND']) {
-            const override = ['alma', 'vlad', 'ALMA', 'VLAD', 'TIM_BOND'].includes(ref);
+        for (const ref of ['alma', 'vlad', 'AHMAD', 'MOHAMED', 'ALMA', 'VLAD', 'VLAD=TIM_BOND']) {
+            const override = ['alma', 'vlad', 'ALMA', 'VLAD', 'VLAD=TIM_BOND'].includes(ref);
             const expectedHref = override ? 'tel:+19493314195' : 'tel:+12137322002';
             for (const path of [`/?ref=${ref}`, '/videos', '/videos']) {
                 const page = visit(path, entry.storage);
@@ -81,6 +80,24 @@ test('Existing first-touch records do not mask a new contact context, and explic
                 assert.equal(page.links[0].href, 'https://wa.me/12137322002');
                 assert.equal(page.nodes[0].nodeValue, override ? '+1 (949) 331-4195' : '+1 (213) 732-2002');
                 assert.equal(JSON.stringify(page.window.getTurkLuxxReferralAttribution()), attribution);
+            }
+        }
+    }
+});
+
+test('Invalid explicit referrals select VLAD phones and attribution over saved roots and children', () => {
+    for (const previous of ['/?ref=AHMAD', '/?ref=MOHAMED=MOHAMED_ABDO']) {
+        for (const query of ['?ref=TIM_BOND&lang=nl', '?ref=MOHAMED_ABDO', '?ref=UNKNOWN', '?ref=ALMA=UNKNOWN', '?ref=', '?ref=VLAD&ref=ALMA']) {
+            const saved = visit(previous);
+            const entry = visit('/' + query, saved.storage);
+            for (const page of [entry, visit('/videos', entry.storage), visit('/videos?lang=ar', entry.storage)]) {
+                page.refresh();
+                assert.equal(page.window.getTurkLuxxReferral(), 'VLAD');
+                assert.equal(page.window.getTurkLuxxReferralAttribution().subref, undefined);
+                assert.equal(page.links[1].href, 'tel:+19493314195');
+                assert.equal(page.links[2].href, 'tel:+19493314195');
+                assert.equal(page.links[0].href, 'https://wa.me/12137322002');
+                assert.equal(page.nodes[0].nodeValue, '+1 (949) 331-4195');
             }
         }
     }
@@ -99,8 +116,8 @@ test('Registry ancestry handles deep VLAD/ALMA descendants and leaves other tree
         records[`DEEP_${i}`] = { parentConsultant: parent };
         parent = `DEEP_${i}`;
     }
-    for (const query of ['?ref=TIM_GRANDCHILD', '?ref=ALMA_GRANDCHILD', `?ref=${parent}`,
-        '?ref=VLAD&subref=TIM_BOND', '?ref=TIM_CHILD&subref=TIM_GRANDCHILD']) {
+    for (const query of ['?ref=VLAD=TIM_BOND=TIM_CHILD=TIM_GRANDCHILD', '?ref=ALMA=ALMA_CHILD=ALMA_GRANDCHILD', '?ref=VLAD=TIM_BOND=TIM_CHILD=TIM_GRANDCHILD=' + Array.from({length:2000},(_,i)=>`DEEP_${i}`).join('='),
+        '?ref=VLAD&subref=TIM_BOND', '?ref=VLAD=TIM_BOND=TIM_CHILD=TIM_GRANDCHILD']) {
         const entry = visit('/' + query, new Map(), false, records);
         const attribution = JSON.stringify(entry.window.getTurkLuxxReferralAttribution());
         for (const path of ['/' + query, '/videos', '/videos?lang=ar']) {
@@ -113,12 +130,12 @@ test('Registry ancestry handles deep VLAD/ALMA descendants and leaves other tree
             assert.equal(JSON.stringify(page.window.getTurkLuxxReferralAttribution()), attribution);
         }
     }
-    const other = visit('/?ref=OTHER_CHILD', new Map(), false, records);
+    const other = visit('/?ref=MOHAMED=MOHAMED_ABDO=OTHER_CHILD', new Map(), false, records);
     assert.equal(other.nodes[0].nodeValue, '+1 (213) 732-2002');
     assert.equal(other.links[1].href, 'tel:+12137322002');
 });
 
-test('Broken ancestry and circular relationships never grant the override or hang', () => {
+test('Broken ancestry and circular paths safely use VLAD fallback', () => {
     for (const records of [
         { BROKEN: { parentConsultant: 'UNKNOWN' } },
         { BROKEN: { parentConsultant: null } },
@@ -130,7 +147,7 @@ test('Broken ancestry and circular relationships never grant the override or han
     ]) {
         const page = visit('/?ref=BROKEN', new Map(), false, records);
         page.refresh();
-        assert.equal(page.links[1].href, 'tel:+12137322002');
-        assert.equal(page.nodes[0].nodeValue, '+1 (213) 732-2002');
+        assert.equal(page.links[1].href, records.VLAD ? 'tel:+12137322002' : 'tel:+19493314195');
+        assert.equal(page.nodes[0].nodeValue, records.VLAD ? '+1 (213) 732-2002' : '+1 (949) 331-4195');
     }
 });

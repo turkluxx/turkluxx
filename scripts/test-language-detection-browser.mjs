@@ -33,7 +33,7 @@ async function connection(url) {
 const browserUrl = await fetch('http://127.0.0.1:9227/json/version').then(response => response.json());
 const browser = await connection(browserUrl.webSocketDebuggerUrl);
 const codes = ['en', 'ru', 'es', 'ar', 'tr', 'nl'];
-const suffix = '?ref=LAITH&sub=campaign%20one';
+const suffix = '?ref=AHMAD=LAITH&sub=campaign%20one';
 async function scenario({ code, preferred = [`${code}-${code.toUpperCase()}`], primary = preferred[0], stored, explicit, expected = code }) {
     const { browserContextId } = await browser.send('Target.createBrowserContext');
     let page;
@@ -68,7 +68,7 @@ async function scenario({ code, preferred = [`${code}-${code.toUpperCase()}`], p
         await navigate(firstPath, expected);
         assert.equal(await evaluate('window.initialStorageCount'), 0, 'Fresh context has no saved preference');
         assert.equal(await evaluate('window.initialCookies'), '', 'Fresh context has no site cookies');
-        assert.equal(await evaluate('getTurkLuxxReferral()'), 'LAITH');
+        assert.equal(await evaluate('getTurkLuxxReferral()'), 'AHMAD');
         if (!explicit && !stored) {
             const manual = codes[(codes.indexOf(expected) + 1) % codes.length];
             await evaluate(`document.querySelector('.turkluxx-sales-language .turkluxx-language-toggle').click();document.querySelector('.turkluxx-sales-language [data-language="${manual}"]').click()`);
@@ -78,7 +78,7 @@ async function scenario({ code, preferred = [`${code}-${code.toUpperCase()}`], p
             await navigate('/' + suffix, manual);
             await navigate('/rengi-istanbul.html' + suffix, manual);
             await navigate('/rengi-antalya.html' + suffix, manual);
-            assert.equal(await evaluate('getTurkLuxxReferral()'), 'LAITH');
+            assert.equal(await evaluate('getTurkLuxxReferral()'), 'AHMAD');
         }
         console.log(`${primary} / ${preferred.join(',')}: ${expected}; fresh storage/cookies, RTL, URL and persistence passed${explicit ? '; explicit URL priority' : stored ? '; stored priority' : ''}`);
     } finally {

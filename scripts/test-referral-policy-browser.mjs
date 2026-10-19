@@ -10,6 +10,8 @@ const port = Number(process.env.TURKLUXX_REFERRAL_TEST_PORT || 8806);
 const origin = `http://127.0.0.1:${port}`;
 let mockEmailCount = 0;
 let lastValidatedLead;
+let lastDeliveredMessage;
+const serverAttributionEvidence = [];
 const server = http.createServer(async (req, res) => {
     try {
         let path = new URL(req.url, origin).pathname;
@@ -18,7 +20,7 @@ const server = http.createServer(async (req, res) => {
             try { lastValidatedLead = validateLead(JSON.parse(body)); } catch { lastValidatedLead = null; }
             const result = await worker.fetch(new Request(origin + path, { method: req.method,
                 headers: { 'Content-Type': req.headers['content-type'] || '', Origin: origin }, body }),
-                { LEAD_EMAIL: { send: async () => { mockEmailCount++; } } });
+                { LEAD_EMAIL: { send: async message => { mockEmailCount++; lastDeliveredMessage = message; } } });
             res.writeHead(result.status, { 'Content-Type': 'application/json' }); res.end(await result.text()); return;
         }
         if (path === '/__seed') { res.end('<!doctype html><title>Test storage</title>'); return; }
@@ -126,10 +128,47 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
         };
         await navigate('/' + query, expectedLanguage);
         const attribution = await verify(expectedLanguage);
-        const leadStatus = await evaluate(`fetch('/api/lead', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-            ...getTurkLuxxReferralAttribution(),name:'Browser Test',phone:'123',email:'browser@example.com',page:location.href
-        })}).then(response=>response.status)`);
-        assert.equal(leadStatus, 200, 'Registered attribution reaches the actual Worker validator with a mocked email binding');
+        const submitForm = async (selector, values) => {
+            let listener, timer;
+            const sent = new Promise((resolve, reject) => {
+                let requestId, payload;
+                listener = event => {
+                    const message = JSON.parse(event.data);
+                    if (message.method === 'Network.requestWillBeSent' && message.params.request.url.endsWith('/api/lead') && message.params.request.postData) {
+                        requestId = message.params.requestId;
+                        payload = JSON.parse(message.params.request.postData);
+                    }
+                    if (message.method === 'Network.responseReceived' && message.params.requestId === requestId && payload) {
+                        resolve({ payload, status: message.params.response.status });
+                    }
+                };
+                page.socket.addEventListener('message', listener);
+                timer = setTimeout(() => reject(Error('Form did not submit: ' + selector)), 10000);
+            });
+            try {
+                await evaluate(`(()=>{const f=document.querySelector(${JSON.stringify(selector)});for(const [key,value] of Object.entries(${JSON.stringify(values)}))f.elements.namedItem(key).value=value;f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));})()`);
+                const response = await sent;
+                assert.equal(response.status, 200, 'Actual form reaches the Worker and mocked email delivery');
+                assert.equal(response.payload.referral, expectedRef);
+                assert.equal(response.payload.subref, subref);
+                assert.ok(lastDeliveredMessage.subject.startsWith(`[${expectedRef}] `));
+                assert.ok(lastDeliveredMessage.text.split('\n').includes(`Referral: ${expectedRef}`));
+                if (process.argv.includes('--server-fallback-only')) {
+                    assert.equal(lastValidatedLead.referral, 'VLAD');
+                    assert.equal(new URL(lastValidatedLead.page).searchParams.get('ref'), 'VLAD');
+                    assert.equal(lastValidatedLead.diagnostics.originalPage, origin + '/' + query);
+                    for (const key of ['subref', 'directReferrer', 'parentConsultant', 'client', 'referralPath']) assert.equal(lastValidatedLead[key], undefined);
+                    assert.doesNotMatch(lastDeliveredMessage.text, /^(?:Sub-referrer|Direct Referrer|Parent Consultant|Participant):/m);
+                    serverAttributionEvidence.push({
+                        viewport: mobile ? 'mobile' : 'desktop', form: selector, previousRef: previousRef || null,
+                        requestedURL: origin + '/' + query, submittedReferral: response.payload.referral,
+                        serverLead: lastValidatedLead, deliveredNotification: lastDeliveredMessage
+                    });
+                }
+                return response.payload;
+            } finally { clearTimeout(timer); page.socket.removeEventListener('message', listener); }
+        };
+        await submitForm('#turkluxx-callback form', { name:'Browser Test', phone:'123', email:'browser@example.com' });
         if (expectedRef === 'TIM_BOND' || subref === 'TIM_BOND') {
             assert.equal(lastValidatedLead.referral, expectedRef);
             assert.equal(lastValidatedLead.subref, subref);
@@ -141,6 +180,11 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
                 language: contact.language, phones: contact.phones
             }));
         }
+        const contactPayload = await submitForm('#turkluxx-contact form', { name:'Browser Test', email:'browser@example.com', message:'Test enquiry' });
+        const contactLead = validateLead(contactPayload);
+        assert.equal(contactLead.referral, expectedRef);
+        assert.equal(contactLead.subref, subref);
+        assert.equal(await evaluate("document.querySelector('#turkluxx-referral-error') === null && getComputedStyle(document.querySelector('.turkluxx-sales-hero')).display !== 'none'"), true);
         // Exercise the actual language menu handlers rather than assigning language state.
         await evaluate(`document.querySelector('.turkluxx-sales-language .turkluxx-language-toggle').click();document.querySelector('.turkluxx-sales-language [data-language="es"]').click()`);
         await until(`TurkLuxxI18n.language==='es'`);
@@ -171,87 +215,43 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
 }
 
 async function invalidScenario(query, previousRef, mobile, path = '/') {
-    const { browserContextId } = await browser.send('Target.createBrowserContext');
-    let page;
-    try {
-        const { targetId } = await browser.send('Target.createTarget', { url: 'about:blank', browserContextId });
-        const targets = await fetch('http://127.0.0.1:9227/json/list').then(response => response.json());
-        page = await connect(targets.find(target => target.id === targetId).webSocketDebuggerUrl);
-        const exceptions = [];
-        page.socket.addEventListener('message', event => {
-            const message = JSON.parse(event.data);
-            if (message.method === 'Runtime.exceptionThrown') exceptions.push(message.params.exceptionDetails);
-        });
-        const evaluate = async expression => {
-            const result = await page.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
-            if (result.exceptionDetails) throw Error(JSON.stringify(result.exceptionDetails));
-            return result.result.value;
-        };
-        const until = async expression => {
-            for (let i = 0; i < 400; i++) {
-                if (await evaluate(expression)) return;
-                await new Promise(resolve => setTimeout(resolve, 50));
-            }
-            throw Error('Timed out: ' + expression);
-        };
-        const trackedState = () => evaluate(`JSON.stringify(Object.fromEntries(Object.entries(localStorage).filter(([key])=>key!=='turkluxx_referral_language' && /^turkluxx_referral(?:_|$)|^turkluxx_phone_referral$/.test(key))))`);
-        await page.send('Page.enable'); await page.send('Runtime.enable'); await page.send('Network.enable');
-        await page.send('Network.setBlockedURLs', { urls: ['*googletagmanager.com*', '*google-analytics.com*', '*connect.facebook.net*'] });
-        await page.send('Emulation.setDeviceMetricsOverride', { width: mobile ? 390 : 1440, height: 900, deviceScaleFactor: 1, mobile });
-        await page.send('Page.navigate', { url: origin + '/__seed' });
-        await until(`location.pathname==='/__seed' && document.readyState!=='loading'`);
-        await evaluate(`localStorage.setItem('turkluxx_language','en')`);
-        if (previousRef) {
-            await page.send('Page.navigate', { url: origin + '/?ref=' + previousRef });
-            await until(`window.TurkLuxxI18n?.language==='en' && document.documentElement.dir==='ltr' && window.getTurkLuxxReferral?.()===${JSON.stringify(previousRef)}`);
-            await evaluate('TurkLuxxI18n.ready');
-            await new Promise(resolve => setTimeout(resolve, 80));
-        }
-        const saved = await trackedState();
-        const verifyError = async () => {
-            await until(`document.readyState!=='loading' && !!document.querySelector('#turkluxx-referral-error') && window.getTurkLuxxReferralAttribution?.().invalid===true && window.TurkLuxxI18n?.language==='en' && document.documentElement.style.visibility!=='hidden'`);
-            assert.equal(await evaluate(`document.querySelector('#turkluxx-referral-error h1').textContent`), 'Invalid referral link');
-            assert.equal(await evaluate('getTurkLuxxReferral()'), null);
-            assert.equal(await evaluate(`getComputedStyle(document.querySelector('.turkluxx-sales-hero')).display`), 'none');
-            assert.equal(await evaluate(`document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))`), false);
-            assert.equal(await trackedState(), saved, 'Invalid input never overwrites saved attribution/contact preferences');
-            checks++;
-        };
-        await page.send('Page.navigate', { url: origin + path + query });
-        await verifyError();
-        const documentTime = await evaluate('performance.timeOrigin');
-        await page.send('Page.reload');
-        await until(`performance.timeOrigin!==${documentTime}`);
-        await verifyError();
-        const emailsBefore = mockEmailCount;
-        for (const referral of [null, 'ABRACADABRA', 'DIRECT']) {
-            const response = await evaluate(`fetch('/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-                referral:${JSON.stringify(referral)},name:'Browser Test',phone:'123',email:'browser@example.com',page:location.href
-            })}).then(async response=>({status:response.status,body:await response.json()}))`);
-            assert.equal(response.status, 400);
-            assert.match(response.body.error, /Invalid referral/);
-        }
-        assert.equal(mockEmailCount, emailsBefore, 'Rejected browser/API submissions never send mail');
-        if (previousRef === 'VLAD' && path === '/' && query === '?ref=ABRACADABRA') {
-            const folder = resolve(import.meta.dirname, '../build/referral-validation');
-            await mkdir(folder, { recursive: true });
-            const shot = await page.send('Page.captureScreenshot', { format: 'png' });
-            await writeFile(resolve(folder, mobile ? 'invalid-mobile.png' : 'invalid-desktop.png'), Buffer.from(shot.data, 'base64'));
-        }
-        await evaluate(`document.querySelector('#turkluxx-referral-error a').click()`);
-        await until(`location.pathname==='/' && location.search==='' && document.readyState!=='loading' && !!window.getTurkLuxxReferral && !document.querySelector('#turkluxx-referral-error') && document.documentElement.dir==='ltr'`);
-        assert.equal(await evaluate('getTurkLuxxReferral()'), previousRef || 'DIRECT');
-        if (['VLAD', 'ALMA'].includes(previousRef)) {
-            assert.equal(await evaluate(`document.querySelector('.turkluxx-call').textContent.trim()`), '+1 (949) 331-4195');
-            assert.equal(await evaluate(`document.querySelector('.turkluxx-call').getAttribute('href')`), 'https://wa.me/12137322002');
-        }
-        assert.deepEqual(exceptions, []);
-        checks++;
-        console.log(`PASS ${mobile ? 'mobile' : 'desktop'} ${path}${query} after ${previousRef || 'DIRECT'}: error, reload, no stored fallback, API 400, clean-URL recovery`);
-    } finally { page?.socket.close(); await browser.send('Target.disposeBrowserContext', { browserContextId }); }
+    const hint = new URLSearchParams(query).get('lang');
+    const expectedLanguage = ['en','nl','ar','es','ru','tr'].includes(hint) ? hint : 'en';
+    await scenario({ query, previousRef, expectedLanguage, expectedRef: 'VLAD', override: true, mobile });
 }
+
 try {
-    if (process.argv.includes('--tim-bond-only')) {
+    if (process.argv.includes('--server-fallback-only')) {
+        for (const mobile of [false, true]) {
+            for (const previousRef of [undefined, 'ALMA']) {
+                for (const query of ['?ref=TIM_BOND&lang=nl', '?ref=UNKNOWN']) {
+                    await scenario({ query, previousRef, expectedRef: 'VLAD', expectedLanguage: query.includes('lang=nl') ? 'nl' : 'en', override: true, mobile });
+                }
+            }
+        }
+        const output = resolve(import.meta.dirname, '../build/server-referral-attribution.json');
+        await mkdir(resolve(import.meta.dirname, '../build'), { recursive: true });
+        await writeFile(output, JSON.stringify(serverAttributionEvidence, null, 2) + '\n');
+        console.log(`Verified ${serverAttributionEvidence.length} actual submissions and delivered mock notifications; evidence: ${output}`);
+    } else if (process.argv.includes('--fallback-only')) {
+        for (const mobile of [false, true]) {
+            for (const [query, expectedRef, expectedLanguage, subref, override] of [
+                ['?ref=VLAD','VLAD','en',undefined,true], ['?ref=ALMA','ALMA','en',undefined,true],
+                ['?ref=MOHAMED','MOHAMED','en'], ['?ref=AHMAD','AHMAD','en'],
+                ['?ref=VLAD=TIM_BOND&lang=nl','VLAD','nl','TIM_BOND',true],
+                ['?ref=TIM_BOND&lang=nl','VLAD','nl',undefined,true],
+                ['?ref=MOHAMED=MOHAMED_ABDO','MOHAMED','nl','MOHAMED_ABDO'],
+                ['?ref=MOHAMED_ABDO','VLAD','en',undefined,true],
+                ['?ref=UNKNOWN','VLAD','en',undefined,true], ['?ref=ALMA=UNKNOWN','VLAD','en',undefined,true],
+                ['?ref=','VLAD','en',undefined,true], ['', 'DIRECT','nl'],
+                ['?ref=VLAD&subref=TIM_BOND&lang=nl','VLAD','nl','TIM_BOND',true],
+                ['?ref=MOHAMED&subref=MOHAMED_ABDO&lang=ar','MOHAMED','ar','MOHAMED_ABDO']
+            ]) await scenario({ query, expectedRef, expectedLanguage, subref, override, mobile });
+            for (const previousRef of ['ALMA','MOHAMED_ABDO','AHMAD']) {
+                await scenario({ query: '?ref=UNKNOWN&lang=ar', expectedRef:'VLAD', expectedLanguage:'ar', previousRef, override:true, mobile });
+            }
+        }
+    } else if (process.argv.includes('--tim-bond-only')) {
         const decodedURL = process.env.TURKLUXX_DECODED_QR_URL || 'https://turkluxx.com/?ref=VLAD&subref=TIM_BOND&lang=nl';
         const decoded = new URL(decodedURL);
         assert.equal(decoded.href, 'https://turkluxx.com/?ref=VLAD&subref=TIM_BOND&lang=nl');
@@ -265,15 +265,15 @@ try {
             for (const hint of ['', '&lang=en', '&lang=ar']) await scenario({ query: `?ref=${ref}${hint}`, expectedLanguage: 'en', expectedRef: ref, override: ['VLAD', 'ALMA'].includes(ref), targeted: true, mobile });
         }
         for (const [query, expectedRef, expectedLanguage, subref] of [
-            ['?ref=TIM_BOND&lang=nl', 'TIM_BOND', 'nl'],
-            ['?ref=TIM_BOND&lang=ar', 'TIM_BOND', 'nl'],
-            ['?ref=tim_bond', 'TIM_BOND', 'nl'],
-            ['', 'DIRECT', 'nl'], ['?ref=LAITH', 'LAITH', 'nl'], ['?ref=FAOZI&lang=ar', 'FAOZI', 'ar'],
+            ['?ref=VLAD=TIM_BOND&lang=nl', 'VLAD', 'nl', 'TIM_BOND'],
+            ['?ref=VLAD=TIM_BOND&lang=ar', 'VLAD', 'nl', 'TIM_BOND'],
+            ['?ref=vlad=tim_bond', 'VLAD', 'nl', 'TIM_BOND'],
+            ['', 'DIRECT', 'nl'], ['?ref=AHMAD=LAITH', 'AHMAD', 'nl', 'LAITH'], ['?ref=AHMAD=FAOZI&lang=ar', 'AHMAD', 'ar', 'FAOZI'],
             ['?ref=MOHAMED&subref=MOHAMED_ABDO&lang=ar', 'MOHAMED', 'ar', 'MOHAMED_ABDO'],
             ['?ref=AHMAD&subref=LAITH&lang=ar', 'AHMAD', 'ar', 'LAITH'],
             ['?ref=AHMAD&client=MUNTHER&lang=ar', 'AHMAD', 'ar'],
-            ['?ref=MOHAMED_ABDO', 'MOHAMED_ABDO', 'nl']
-        ]) await scenario({ query, expectedRef, expectedLanguage, subref, override: expectedRef === 'TIM_BOND', mobile });
+            ['?ref=MOHAMED=MOHAMED_ABDO', 'MOHAMED', 'nl', 'MOHAMED_ABDO']
+        ]) await scenario({ query, expectedRef, expectedLanguage, subref, override: subref === 'TIM_BOND', mobile });
         for (const ref of ['alma', 'vlad']) {
             await scenario({ query: `?ref=${ref}`, expectedLanguage: 'nl', expectedRef: ref.toUpperCase(), override: true, mobile });
         }

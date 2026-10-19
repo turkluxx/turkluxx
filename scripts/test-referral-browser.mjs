@@ -33,7 +33,7 @@ async function connection(url) {
 const browserUrl = await fetch('http://127.0.0.1:9227/json/version').then(response => response.json());
 const browser = await connection(browserUrl.webSocketDebuggerUrl);
 const arabic = JSON.parse(await readFile(resolve(root, 'locales/ar.json'), 'utf8'));
-async function check(code, first, pair = false) {
+async function check(code, first, pair = true) {
     const { browserContextId } = await browser.send('Target.createBrowserContext');
     let page;
     try {

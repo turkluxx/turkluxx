@@ -78,7 +78,7 @@ function runtime({ search = '', stored = null, storageMap = null, blocked = fals
     const location = new URL('https://turkluxx.com/rengi-istanbul.html' + search);
     const window = { dispatchEvent() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) };
     const urls = [];
-    runInNewContext(source, {
+    runInNewContext(readFileSync(new URL('../js/referral-registry.js', import.meta.url), 'utf8') + source, {
         window, document, location, URL, URLSearchParams, Element,
         navigator: { languages: browserLanguages, language: browserLanguage },
         NodeFilter: { SHOW_TEXT: 4 }, MutationObserver: class { observe() {} disconnect() {} },
@@ -122,7 +122,7 @@ test('Villa product names follow the active language in labels and dynamic refer
 
 test('Browser regional languages select all six locales, Arabic RTL, and unsupported languages fall back', async () => {
     for (const [browserLanguage, expected] of [['en-US', 'en'], ['ru-RU', 'ru'], ['es-MX', 'es'], ['ar-SA', 'ar'], ['tr-TR', 'tr'], ['nl-NL', 'nl'], ['de-DE', 'en']]) {
-        const { api, document, urls } = runtime({ browserLanguages: [browserLanguage], browserLanguage, search: '?ref=LAITH&sub=campaign%20one' });
+        const { api, document, urls } = runtime({ browserLanguages: [browserLanguage], browserLanguage, search: '?ref=AHMAD=LAITH&sub=campaign%20one' });
         await api.ready; await new Promise(resolve => setImmediate(resolve));
         assert.equal(api.language, expected);
         assert.equal(document.documentElement.dir, expected === 'ar' ? 'rtl' : 'ltr');
@@ -134,14 +134,14 @@ test('Browser regional languages select all six locales, Arabic RTL, and unsuppo
 });
 
 test('URL then saved preference take priority over browser; manual selection persists', async () => {
-    assert.equal(runtime({ search: '?lang=ar&ref=LAITH&sub=partner', stored: 'nl', browserLanguages: ['ru-RU'] }).api.language, 'ar');
+    assert.equal(runtime({ search: '?lang=ar&ref=AHMAD=LAITH&sub=partner', stored: 'nl', browserLanguages: ['ru-RU'] }).api.language, 'ar');
     assert.equal(runtime({ stored: 'nl', browserLanguages: ['ru-RU'] }).api.language, 'nl');
-    const { api, storage, urls } = runtime({ browserLanguages: ['ru-RU'], search: '?ref=LAITH&sub=partner' });
+    const { api, storage, urls } = runtime({ browserLanguages: ['ru-RU'], search: '?ref=AHMAD=LAITH&sub=partner' });
     await api.setLanguage('es');
     assert.equal(storage.get('turkluxx_language'), 'es');
     assert.deepEqual(urls, []);
     assert.equal(runtime({ stored: storage.get('turkluxx_language'), browserLanguages: ['ru-RU'] }).api.language, 'es');
-    const explicit = runtime({ search: '?lang=ar&ref=LAITH&sub=campaign%20one', browserLanguages: ['ru-RU'] });
+    const explicit = runtime({ search: '?lang=ar&ref=AHMAD=LAITH&sub=campaign%20one', browserLanguages: ['ru-RU'] });
     await explicit.api.ready; await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(explicit.urls, [], 'Matching explicit language does not reserialize referral parameters');
 });
@@ -184,8 +184,9 @@ test('Only language storage is written and the most recent switch wins', async (
 for (const referral of ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED', 'TIM_BOND']) {
     test(`${referral}: landing default overrides browser/saved/URL language, manual choice survives navigation and QR revisits`, async () => {
         const expected = referral === 'TIM_BOND' ? 'nl' : 'en';
+        const path = referral === 'TIM_BOND' ? 'VLAD=TIM_BOND' : referral;
         const storageMap = new Map([['turkluxx_language', 'ar']]);
-        const landing = runtime({ search: `?ref=${referral}&lang=ar`, storageMap, browserLanguages: ['ru-RU'] });
+        const landing = runtime({ search: `?ref=${path}&lang=ar`, storageMap, browserLanguages: ['ru-RU'] });
         assert.equal(landing.api.language, expected);
         await landing.api.ready; await new Promise(resolve => setImmediate(resolve));
         assert.equal(landing.document.documentElement.dir, 'ltr');
@@ -195,15 +196,15 @@ for (const referral of ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED', 'TIM_BOND']) {
         await navigated.api.ready; await new Promise(resolve => setImmediate(resolve));
         assert.equal(navigated.api.language, 'es');
         await navigated.api.setLanguage('tr');
-        for (const search of [`?ref=${referral}&lang=en`, `?ref=${referral}`, '']) {
+        for (const search of [`?ref=${path}&lang=en`, `?ref=${path}`, '']) {
             const reload = runtime({ search, storageMap, browserLanguages: ['ar-SA'] });
             await reload.api.ready; await new Promise(resolve => setImmediate(resolve));
             assert.equal(reload.api.language, 'tr', search);
         }
         // Visiting another referral does not discard this referrer's manual choice.
-        const other = runtime({ search: '?ref=LAITH', storageMap });
+        const other = runtime({ search: '?ref=AHMAD=LAITH', storageMap });
         await other.api.ready; await new Promise(resolve => setImmediate(resolve));
-        assert.equal(runtime({ search: `?ref=${referral}&lang=en`, storageMap }).api.language, 'tr');
+        assert.equal(runtime({ search: `?ref=${path}&lang=en`, storageMap }).api.language, 'tr');
     });
 }
 
@@ -216,12 +217,26 @@ test('VLAD/TIM_BOND hierarchical entry overrides language hints and remembers ma
         assert.equal(runtime({ search, storageMap }).api.language, 'es');
     }
     for (const search of ['?ref=AHMAD&subref=TIM_BOND', '?ref=VLAD&subref=TIM_BOND&subref=TIM_BOND']) {
-        assert.equal(runtime({ search, stored: 'ar' }).api.language, 'ar');
+        assert.equal(runtime({ search, stored: 'ar' }).api.language, 'en');
     }
 });
 
+test('Invalid referral fallback preserves explicit language and never infers Dutch from a child name', async () => {
+    for (const ref of ['TIM_BOND', 'UNKNOWN', '', 'ALMA=TIM_BOND', 'VLAD=TIM_BOND=UNKNOWN']) {
+        for (const language of ['nl', 'ar', 'es', 'ru', 'tr', 'en']) {
+            const page = runtime({ search: `?ref=${ref}&lang=${language}`, stored: 'nl', browserLanguages: ['ru-RU'] });
+            assert.equal(page.api.language, language);
+            await page.api.setLanguage('es');
+            assert.equal(page.api.language, 'es');
+        }
+        assert.equal(runtime({ search: `?ref=${ref}`, stored: 'nl' }).api.language, 'en');
+    }
+    const valid = runtime({ search: '?ref=VLAD=TIM_BOND&lang=ar', stored: 'ar' });
+    assert.equal(valid.api.language, 'nl');
+});
+
 test('TIM_BOND normalized entries default to Dutch even with blocked storage and allow manual switching', async () => {
-    for (const search of ['?ref=TIM_BOND', '?ref=tim_bond&lang=ar', '?ref=%20TIM_BOND%20&lang=en', '?ref=VLAD&subref=TIM_BOND&lang=en']) {
+    for (const search of ['?ref=VLAD=TIM_BOND', '?ref=vlad=tim_bond&lang=ar', '?ref=VLAD&subref=TIM_BOND&lang=en']) {
         const page = runtime({ search, blocked: true, browserLanguages: ['ru-RU'] });
         assert.equal(page.api.language, 'nl');
         await page.api.setLanguage('es');
@@ -230,9 +245,8 @@ test('TIM_BOND normalized entries default to Dutch even with blocked storage and
 });
 
 test('Sub-referrals, participants, other IDs, invalid and duplicate IDs retain ordinary language selection', async () => {
-    for (const search of ['', '?ref=LAITH', '?ref=FAOZI', '?ref=MOHAMED_ABDO', '?ref=MUHAMED',
-        '?ref=VLAD_OTHER', '?ref=vlad', '?ref=AHMAD&subref=LAITH', '?ref=MOHAMED&subref=MOHAMED_ABDO',
-        '?ref=AHMAD&client=MUNTHER', '?ref=VLAD&ref=ALMA']) {
+    for (const search of ['', '?ref=AHMAD=LAITH', '?ref=AHMAD=FAOZI', '?ref=MOHAMED=MOHAMED_ABDO', '?ref=MUHAMED',
+        '?ref=vlad', '?ref=AHMAD&subref=LAITH', '?ref=MOHAMED&subref=MOHAMED_ABDO']) {
         assert.equal(runtime({ search, stored: 'nl', browserLanguages: ['ru-RU'] }).api.language, 'nl', search);
         assert.equal(runtime({ search: search + (search ? '&' : '?') + 'lang=ar', stored: 'nl' }).api.language, 'ar', search);
     }

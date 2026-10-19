@@ -26,8 +26,8 @@
     }
   });
   const referralFields = () => {
-    const { referral, client, subref, directReferrer, parentConsultant } = window.getTurkLuxxReferralAttribution();
-    return { referral, ...(client ? { client } : {}), ...(subref ? { subref, directReferrer } : {}), ...(parentConsultant ? { parentConsultant } : {}) };
+    const { referral, client, subref, directReferrer, parentConsultant, referralPath } = window.getTurkLuxxReferralAttribution();
+    return { referral, ...(client ? { client } : {}), ...(subref ? { subref, directReferrer } : {}), ...(parentConsultant ? { parentConsultant } : {}), ...(referralPath ? { referralPath } : {}) };
   };
   window.buildTurkLuxxLeadPayload = sourceForm => {
     const fields = new FormData(sourceForm);

@@ -53,11 +53,40 @@ export function validateLead(data) {
     if (!trimmed && required) throw new InputError(400, `Missing ${key}.`);
     return trimmed || null;
   };
+  let page = field('page', 2048);
+  let diagnostics;
+  if (page) {
+    let url;
+    try {
+      url = new URL(page);
+      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error();
+    } catch { throw new InputError(400, 'Invalid page.'); }
+    if (globalThis.resolveTurkLuxxReferralURL(url.searchParams).fallback) {
+      diagnostics = { originalPage: page };
+      // Never attribute an invalid incoming URL to its raw value or saved child.
+      data = { ...data, referral: 'VLAD' };
+      for (const key of ['subref', 'directReferrer', 'parentConsultant', 'client', 'referralPath']) delete data[key];
+      // Downstream consumers receive an effective page URL, not an invalid owner hint.
+      url.searchParams.set('ref', 'VLAD');
+      url.searchParams.delete('subref');
+      url.searchParams.delete('client');
+      const language = url.searchParams.get('lang');
+      url.searchParams.delete('lang');
+      if (['en', 'nl', 'ar', 'es', 'ru', 'tr'].includes(language)) url.searchParams.set('lang', language);
+      page = url.href;
+    }
+  }
   // Attribution is an untrusted label: accept only exact allowlisted values.
   const referral = data.referral === 'DIRECT' ? 'DIRECT' : normalizeReferral(data.referral);
   if (!referral || data.referral !== data.referral.trim().toUpperCase()) throw new InputError(400, 'Invalid referral.');
   const hasSubref = Object.hasOwn(data, 'subref');
-  if (hasSubref && !(typeof data.subref === 'string' && Object.hasOwn(parents, data.subref) && parents[data.subref] === referral)) {
+  let path;
+  if (Object.hasOwn(data, 'referralPath')) {
+    if (!Array.isArray(data.referralPath) || data.referralPath.length < 3 || !data.referralPath.every(code => typeof code === 'string' && normalizeReferral(code) === code)) throw new InputError(400, 'Invalid referral path.');
+    path = globalThis.resolveTurkLuxxReferralURL(new URLSearchParams({ ref: data.referralPath.join('=') }));
+    if (path.fallback || path.referral !== referral || path.subref !== data.subref) throw new InputError(400, 'Invalid referral path.');
+  }
+  if (hasSubref && !(typeof data.subref === 'string' && Object.hasOwn(parents, data.subref) && (path || parents[data.subref] === referral))) {
     throw new InputError(400, 'Invalid referral pair.');
   }
   const hasClient = Object.hasOwn(data, 'client');
@@ -70,11 +99,13 @@ export function validateLead(data) {
   const lead = {
     referral,
     ...(hasClient ? { client: data.client } : {}),
-    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: referral } : {}),
+    ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: path ? path.parentConsultant : referral } : {}),
+    ...(path ? { referralPath: path.referralPath } : {}),
     ...(Object.hasOwn(parents, referral) ? { parentConsultant: parents[referral] } : {}),
     name: field('name', 120, true), phone: field('phone', 80, !generalContact), email: field('email', 254, true),
     project: field('project', 120), property: field('property', 180), propertyCode: field('propertyCode', 80),
-    page: field('page', 2048)
+    page,
+    ...(diagnostics ? { diagnostics } : {})
   };
   if (generalContact) {
     if (!['en', 'nl', 'es', 'ru', 'tr', 'ar'].includes(data.language)) throw new InputError(400, 'Invalid language.');
@@ -85,22 +116,6 @@ export function validateLead(data) {
   }
   if (!/^[^\s<>(),;:"\\@]+@[^\s<>(),;:"\\@]+\.[^\s<>(),;:"\\@]+$/u.test(lead.email)) {
     throw new InputError(400, 'Invalid email.');
-  }
-  if (lead.page) {
-    let url;
-    try {
-      url = new URL(lead.page);
-      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new Error();
-    } catch { throw new InputError(400, 'Invalid page.'); }
-    const params = url.searchParams;
-    const incoming = normalizeReferral(params.get('ref'));
-    if (params.has('ref') && (params.getAll('ref').length !== 1 || !incoming)) {
-      throw new InputError(400, 'Invalid referral.');
-    }
-    const subref = normalizeReferral(params.get('subref'));
-    if (params.has('subref') && (params.getAll('subref').length !== 1 || !subref || parents[subref] !== incoming)) {
-      throw new InputError(400, 'Invalid referral pair.');
-    }
   }
   // Client-supplied leadId/submittedAt/from/to and other unknown keys are ignored.
   return lead;
@@ -115,6 +130,7 @@ export function createLeadEmail(lead, leadId, submittedAt) {
   for (const [key, label] of [['project', 'Project'], ['property', 'Property'], ['propertyCode', 'Property Code'], ['page', 'Page']]) {
     if (lead[key]) lines.push(`${label}: ${lead[key]}`);
   }
+  if (lead.diagnostics?.originalPage) lines.push(`Original page (diagnostic only): ${lead.diagnostics.originalPage}`);
   lines.push(`Submitted: ${submittedAt}`);
   if (lead.source === 'general-contact') lines.push(`Source: ${lead.source}`, `Language: ${lead.language}`, '', 'Message:', lead.message);
   return {

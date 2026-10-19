@@ -46,6 +46,8 @@ async function check(code, first, pair = false, client, lang = 'ar', mobile = fa
             return result.result.value;
         };
         await page.send('Page.enable');
+        await page.send('Network.enable');
+        await page.send('Network.setBlockedURLs', { urls: ['*googletagmanager.com*', '*google-analytics.com*', '*connect.facebook.net*'] });
         await page.send('Emulation.setDeviceMetricsOverride', {width:mobile?390:1440,height:mobile?844:1000,deviceScaleFactor:1,mobile});
         await page.send('Page.addScriptToEvaluateOnNewDocument', { source: `
             Object.defineProperties(navigator,{languages:{get:()=>['en-US']},language:{get:()=> 'en-US'}});
@@ -55,7 +57,7 @@ async function check(code, first, pair = false, client, lang = 'ar', mobile = fa
             document.addEventListener('DOMContentLoaded',()=>window.initialArabicState={lang:document.documentElement.lang,dir:document.documentElement.dir,visibility:document.documentElement.style.visibility});
         ` });
         const wait = async expression => {
-            for(let i=0;i<200;i++) { if(await evaluate(expression)) return; await new Promise(r=>setTimeout(r,25)); }
+            for(let i=0;i<400;i++) { if(await evaluate(expression)) return; await new Promise(r=>setTimeout(r,25)); }
             throw Error('Timed out: '+expression);
         };
         const navigate = async (path, lang) => {
@@ -114,10 +116,11 @@ async function check(code, first, pair = false, client, lang = 'ar', mobile = fa
         }
         await navigate('/?ref=AHMAD&subref=FAOZI',switched);
         assert.deepEqual(await evaluate('getTurkLuxxReferralAttribution()'),original);
-        await navigate('/?ref=ALMA',switched);
+        await navigate('/?ref=ALMA','en');
         assert.deepEqual(await evaluate('getTurkLuxxReferralAttribution()'),original);
-        await navigate('/?ref=AHMAD&client=UNKNOWN',switched);
-        assert.deepEqual(await evaluate('getTurkLuxxReferralAttribution()'),original);
+        await navigate('/?ref=AHMAD&client=UNKNOWN','en');
+        assert.equal(await evaluate('getTurkLuxxReferral()'),'VLAD');
+        assert.equal(await evaluate('getTurkLuxxReferralAttribution().client'),undefined);
         assert.equal(await evaluate("document.querySelector('#turkluxx-referral-error')===null && getComputedStyle(document.querySelector('.turkluxx-sales-hero')).display!=='none'"),true);
         console.log(`${mobile?'mobile':'desktop'} ${client} ${lang}: language, layout, forms, navigation and first-touch passed`);
     } finally {page?.socket.close();await browser.send('Target.disposeBrowserContext',{browserContextId});}

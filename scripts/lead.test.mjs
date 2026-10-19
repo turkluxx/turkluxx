@@ -1,6 +1,6 @@
 ﻿import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import worker from '../worker/index.mjs';
+import worker, { validateLead } from '../worker/index.mjs';
 
 const generic = { referral: 'DIRECT', name: 'Sarah Williams', phone: '+44 20 1234 5678', email: 'sarah@example.com', project: null, property: null, propertyCode: null, page: 'https://turkluxx.com/' };
 test('General contact sends multiline message and language without requiring a phone', async () => {
@@ -66,20 +66,48 @@ test('E/F/G invalid referral, required values and email rejected without sending
   }
 });
 
-test('Lead validation rejects explicit invalid landing referrals even with a valid attribution payload', async () => {
+test('Lead endpoint falls back to VLAD for explicit invalid landing referrals over saved attribution', async () => {
   for (const query of ['?ref=ABRACADABRA', '?ref=', '?ref=toString', '?ref=VLAD&ref=ALMA', '?ref=MOHAMED&subref=UNKNOWN']) {
     for (const referral of ['DIRECT', 'AHMAD']) {
       const env = environment();
       const result = await worker.fetch(request({ ...generic, referral, page: 'https://turkluxx.com/' + query }), env);
-      assert.equal(result.status, 400, query);
-      assert.equal(env.messages.length, 0);
-      assert.match((await result.json()).error, /Invalid referral/);
+      assert.equal(result.status, 200, query);
+      assert.equal(env.messages.length, 1);
+      assert.match(env.messages[0].text, /Referral: VLAD/);
     }
   }
   // A recognized later referral URL does not replace legitimate first-touch attribution.
   const env = environment();
   assert.equal((await worker.fetch(request({ ...generic, referral: 'AHMAD', page: 'https://turkluxx.com/?ref=VLAD' }), env)).status, 200);
   assert.match(env.messages[0].text, /Referral: AHMAD/);
+});
+
+test('Invalid TIM_BOND and UNKNOWN links produce only VLAD ownership in final leads and notifications', async () => {
+  for (const query of ['?ref=TIM_BOND&lang=nl', '?ref=UNKNOWN']) {
+    for (const source of ['callback', 'general-contact']) {
+      const originalPage = 'https://turkluxx.com/' + query;
+      const submitted = { ...generic, referral: 'TIM_BOND', subref: 'TIM_BOND', parentConsultant: 'MOHAMED',
+        directReferrer: 'UNKNOWN', client: 'MUNTHER', referralPath: ['ALMA', 'UNKNOWN'],
+        diagnostics: { originalPage: 'forged' }, page: originalPage, source, language: 'nl', message: 'Test enquiry' };
+      const lead = validateLead(submitted);
+      assert.equal(lead.referral, 'VLAD');
+      assert.deepEqual(lead.diagnostics, { originalPage });
+      assert.equal(new URL(lead.page).searchParams.get('ref'), 'VLAD');
+      for (const key of ['subref', 'directReferrer', 'parentConsultant', 'client', 'referralPath']) assert.equal(lead[key], undefined);
+      const env = environment();
+      const response = await worker.fetch(request(submitted), env);
+      assert.equal(response.status, 200);
+      const { leadId } = await response.json();
+      const notification = env.messages[0];
+      assert.ok(notification.subject.startsWith('[VLAD] '));
+      assert.match(notification.text, /^Referral: VLAD$/m);
+      assert.match(notification.text, new RegExp(`Lead ID: ${leadId}`));
+      assert.ok(notification.text.includes(`Original page (diagnostic only): ${originalPage}`));
+      assert.ok(notification.text.includes(`Page: ${lead.page}`));
+      assert.doesNotMatch(notification.text, /^(?:Sub-referrer|Direct Referrer|Parent Consultant|Participant):/m);
+      assert.doesNotMatch(notification.subject, /TIM_BOND|UNKNOWN/);
+    }
+  }
 });
 test('H POST only; JSON only; invalid JSON; invalid field types/lengths/header controls', async () => {
   const env = environment();

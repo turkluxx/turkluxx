@@ -20,11 +20,7 @@ for (const [language, clients] of Object.entries(registry.AHMAD)) {
     assert.equal(attribution.client, client);
     for (const path of ['/', '/rengi-istanbul.html', '/rengi-antalya.html', '/meet-our-team.html', '/privacy-policy.html', '/?ref=AHMAD&client=MUNTHER&lang=en', '/?client=UNKNOWN', '/?lang=en']) {
       const result = visit(path, session);
-      if (path.includes('client=UNKNOWN')) {
-        assert.equal(result.invalid, true);
-        assert.equal(result.referral, null);
-        assert.equal(visit('/', session).client, client);
-      } else assert.equal(result.client, client);
+      assert.equal(result.client, client);
     }
     const fields = { ...attribution, name: 'Test', phone: '123', email: 'test@example.com' };
     for (const lead of [validateLead(fields), validateLead({ ...fields, source: 'general-contact', language, message: 'Enquiry' })]) {
@@ -37,7 +33,7 @@ for (const [language, clients] of Object.entries(registry.AHMAD)) {
 test('Invalid, duplicate, mismatched and malicious links are harmless', () => {
   for (const query of ['ref=AHMAD&client=UNKNOWN&lang=en', 'ref=VLAD&client=MUNTHER&lang=ar', 'client=MUNTHER&lang=ar', 'ref=AHMAD&client=MUNTHER', 'ref=AHMAD&client=MUNTHER&lang=xx', 'ref=AHMAD&client=MUNTHER&lang=en&lang=ar', 'ref=AHMAD&client=MUNTHER&client=SAFA&lang=ar', 'ref=AHMAD&client=MUNTHER&subref=LAITH&lang=ar', 'ref=AHMAD&client=%3Cscript%3E&lang=en']) {
     const session = new Map();
-    assert.equal(visit('/?' + query, session).referral, null);
+    assert.equal(visit('/?' + query, session).referral, query.startsWith('client=') ? 'DIRECT' : 'VLAD');
     assert.equal(session.size, 0);
   }
   for (const fields of [{ referral: 'VLAD', client: 'MUNTHER' }, { referral: 'AHMAD', client: 'UNKNOWN' }, { referral: 'AHMAD', client: 'MUNTHER', subref: 'LAITH' }]) {

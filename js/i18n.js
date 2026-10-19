@@ -28,19 +28,18 @@
                 referralLanguage = saved;
             }
         } catch { /* A fresh referral entry still works without storage. */ }
+        const resolved = globalThis.resolveTurkLuxxReferralURL?.(params);
         const rawReferral = params.get('ref');
-        // Keep established exact-case behavior for existing referrals.
-        const timBondPair = rawReferral?.trim().toUpperCase() === 'VLAD' &&
-            params.getAll('subref').length === 1 && params.get('subref')?.trim().toUpperCase() === 'TIM_BOND';
-        const entryReferral = timBondPair || rawReferral?.trim().toUpperCase() === 'TIM_BOND' ? 'TIM_BOND' : rawReferral;
-        const exactReferral = params.getAll('ref').length === 1 && params.getAll('lang').length <= 1 &&
-            (!params.has('subref') || timBondPair) && !params.has('client') && Object.hasOwn(referralDefaults, entryReferral);
+        const timBondPair = resolved && !resolved.fallback && resolved.subref === 'TIM_BOND' && resolved.parentConsultant === 'VLAD';
+        const entryReferral = resolved?.fallback ? 'VLAD' : timBondPair ? 'TIM_BOND' : rawReferral;
+        const exactReferral = resolved?.fallback || (resolved?.present && !resolved.fallback && !resolved.client &&
+            (timBondPair || (!resolved.subref && Object.hasOwn(referralDefaults, rawReferral))));
         if (exactReferral) {
             referralLanguage.active = entryReferral;
             const choice = referralLanguage.choices[referralLanguage.active];
-            language = Object.hasOwn(languages, choice) ? choice : referralDefaults[entryReferral];
+            language = resolved.fallback && Object.hasOwn(languages, requested) ? requested
+                : Object.hasOwn(languages, choice) ? choice : referralDefaults[entryReferral];
             try {
-                // Carry the landing language onto clean internal URLs as usual.
                 localStorage.setItem(storageKey, language);
                 localStorage.setItem(referralLanguageKey, JSON.stringify(referralLanguage));
             } catch { /* Current-page language selection remains available. */ }

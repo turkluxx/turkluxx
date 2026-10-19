@@ -29,7 +29,7 @@ The fixed sender is `TurkLuxx Leads <leads@turkluxx.com>`; validated customer em
 is Reply-To only. Neither recipient nor sender is client-controlled.
 
 Validation requires JSON with non-empty name, phone and email, and an exact
-ALMA/AHMAD/MUHAMED/VLAD/LAITH/FAOZI/DIRECT referral. Limits (characters): name 120, phone 80,
+registered referral (or DIRECT). The four roots are VLAD, ALMA, MOHAMED and AHMAD; child URL paths must include their complete ancestry. Invalid explicit incoming refs open normally and override saved attribution with VLAD, including server-side form validation; a missing ref keeps normal behavior. See [referral policy](docs/referrals.md). Limits (characters): name 120, phone 80,
 email 254, project 120, property 180, propertyCode 80, page 2048. Optional values
 may be null or absent. Control characters are rejected; email format and
 HTTP(S) page URLs are checked. Bodies over 8 KiB are rejected even without

@@ -20,3 +20,35 @@ globalThis.normalizeTurkLuxxReferral = value => {
     const code = raw === 'MUHAMED' ? 'MOHAMED' : raw;
     return Object.hasOwn(globalThis.TurkLuxxReferralRegistry, code) ? code : null;
 };
+
+globalThis.TurkLuxxReferralRoots = Object.freeze(['VLAD', 'ALMA', 'MOHAMED', 'AHMAD']);
+
+// Shared by language selection, browser attribution and the lead endpoint.
+// URLSearchParams decodes percent-encoded '=' before path validation.
+globalThis.resolveTurkLuxxReferralURL = params => {
+    if (!params.has('ref')) return { present: false, fallback: false, referral: null };
+    const fallback = () => ({ present: true, fallback: true, referral: 'VLAD' });
+    if (['ref', 'subref', 'client', 'lang'].some(key => params.getAll(key).length > 1)) return fallback();
+    const normalize = globalThis.normalizeTurkLuxxReferral;
+    const registry = globalThis.TurkLuxxReferralRegistry;
+    const path = params.get('ref').split('=').map(normalize);
+    if (params.has('subref')) {
+        if (path.length !== 1) return fallback();
+        path.push(normalize(params.get('subref')));
+    }
+    if (!globalThis.TurkLuxxReferralRoots.includes(path[0]) || path.some(code => !code || !registry[code] || typeof registry[code] !== 'object') ||
+        new Set(path).size !== path.length ||
+        path.some((code, i) => i === 0 ? Object.hasOwn(registry[code], 'parentConsultant') : registry[code].parentConsultant !== path[i - 1])) return fallback();
+    const result = { present: true, fallback: false, referral: path[0] };
+    if (path.length > 1) Object.assign(result, {
+        subref: path.at(-1), directReferrer: path.at(-1), parentConsultant: path.at(-2),
+        ...(path.length > 2 ? { referralPath: path } : {})
+    });
+    if (params.has('client')) {
+        const client = params.get('client').trim().toUpperCase().replace(/\s+/g, '_');
+        if (path.length !== 1 || !['ar', 'en'].includes(params.get('lang')) ||
+            ![registry[path[0]].ar, registry[path[0]].en].some(ids => Array.isArray(ids) && ids.includes(client))) return fallback();
+        result.client = client;
+    }
+    return result;
+};
