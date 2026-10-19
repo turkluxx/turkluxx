@@ -82,7 +82,7 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
         ` });
         await page.send('Page.navigate', { url: origin + '/__seed' });
         await until(`location.pathname==='/__seed' && document.readyState!=='loading'`);
-        await evaluate(`localStorage.setItem('turkluxx_language','nl')`);
+        await evaluate(`localStorage.setItem('turkluxx_language',${JSON.stringify(expectedRef === 'TIM_BOND' ? 'ar' : 'nl')})`);
         if (previousRef === 'MOHAMED_ABDO') {
             await evaluate(`localStorage.setItem('turkluxx_referral_pair',JSON.stringify({referral:'MOHAMED',subref:'MOHAMED_ABDO',createdAt:'original-time',landingPage:'original-page'}))`);
         } else if (previousRef) {
@@ -111,7 +111,7 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
             if (attribution) assert.deepEqual(result.attribution, attribution);
             assert.ok(result.phones.length >= 2);
             for (const phone of result.phones) {
-                if (override) assert.deepEqual(phone, { href: 'tel:+19493314195', text: '+1 (949) 331-4195' });
+                if (override) assert.deepEqual(phone, { href: 'https://wa.me/12137322002', text: '+1 (949) 331-4195' });
                 else { assert.equal(phone.href, 'https://wa.me/12137322002'); assert.equal(phone.text, '+1 (213) 732-2002'); }
             }
             if (mobile) {
@@ -151,7 +151,7 @@ async function scenario({ query, expectedLanguage, expectedRef, override = false
         await evaluate(`TurkLuxxI18n.setLanguage('ar')`);
         await verify('ar', attribution);
         assert.deepEqual(exceptions, [], 'No uncaught JavaScript errors in rendered production pages');
-        console.log(`PASS ${mobile ? 'mobile' : 'desktop'} ${query || 'direct'}${previousRef ? ' after saved ' + previousRef : ''}: ${override ? '+1 (949) 331-4195 tel:+19493314195' : '+1 (213) 732-2002 (existing WhatsApp link)'}; switching, attribution, navigation and reload`);
+        console.log(`PASS ${mobile ? 'mobile' : 'desktop'} ${query || 'direct'}${previousRef ? ' after saved ' + previousRef : ''}: ${override ? '+1 (949) 331-4195 (existing WhatsApp link)' : '+1 (213) 732-2002 (existing WhatsApp link)'}; switching, attribution, navigation and reload`);
     } finally {
         page?.socket.close(); await browser.send('Target.disposeBrowserContext', { browserContextId });
     }
@@ -230,7 +230,7 @@ async function invalidScenario(query, previousRef, mobile, path = '/') {
         assert.equal(await evaluate('getTurkLuxxReferral()'), previousRef || 'DIRECT');
         if (['VLAD', 'ALMA'].includes(previousRef)) {
             assert.equal(await evaluate(`document.querySelector('.turkluxx-call').textContent.trim()`), '+1 (949) 331-4195');
-            assert.equal(await evaluate(`document.querySelector('.turkluxx-call').getAttribute('href')`), 'tel:+19493314195');
+            assert.equal(await evaluate(`document.querySelector('.turkluxx-call').getAttribute('href')`), 'https://wa.me/12137322002');
         }
         assert.deepEqual(exceptions, []);
         checks++;
@@ -243,12 +243,15 @@ try {
             for (const hint of ['', '&lang=en', '&lang=ar']) await scenario({ query: `?ref=${ref}${hint}`, expectedLanguage: 'en', expectedRef: ref, override: ['VLAD', 'ALMA'].includes(ref), targeted: true, mobile });
         }
         for (const [query, expectedRef, expectedLanguage, subref] of [
+            ['?ref=TIM_BOND&lang=nl', 'TIM_BOND', 'nl'],
+            ['?ref=TIM_BOND&lang=ar', 'TIM_BOND', 'nl'],
+            ['?ref=tim_bond', 'TIM_BOND', 'nl'],
             ['', 'DIRECT', 'nl'], ['?ref=LAITH', 'LAITH', 'nl'], ['?ref=FAOZI&lang=ar', 'FAOZI', 'ar'],
             ['?ref=MOHAMED&subref=MOHAMED_ABDO&lang=ar', 'MOHAMED', 'ar', 'MOHAMED_ABDO'],
             ['?ref=AHMAD&subref=LAITH&lang=ar', 'AHMAD', 'ar', 'LAITH'],
             ['?ref=AHMAD&client=MUNTHER&lang=ar', 'AHMAD', 'ar'],
             ['?ref=MOHAMED_ABDO', 'MOHAMED_ABDO', 'nl']
-        ]) await scenario({ query, expectedRef, expectedLanguage, subref, mobile });
+        ]) await scenario({ query, expectedRef, expectedLanguage, subref, override: expectedRef === 'TIM_BOND', mobile });
         for (const ref of ['alma', 'vlad']) {
             await scenario({ query: `?ref=${ref}`, expectedLanguage: 'nl', expectedRef: ref.toUpperCase(), override: true, mobile });
         }

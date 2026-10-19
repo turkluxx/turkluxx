@@ -16,14 +16,15 @@ class ReferralQRTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.output = Path(self.temporary.name) / 'qr_codes'
 
-    def test_four_english_referral_artifacts(self):
+    def test_registered_referral_artifacts(self):
         self.assertEqual(config['OUTPUT'], config['ROOT'] / 'generated' / 'qr_codes')
         self.assertFalse(self.output.exists())
         config['main'](self.output)
-        self.assertEqual(len(config['LINKS']), 4)
-        for ref in ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED']:
+        self.assertEqual(len(config['LINKS']), 5)
+        for ref in ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED', 'TIM_BOND']:
             filename = f'QR_{ref}_STATIC.png'
-            expected = f'https://turkluxx.com/?ref={ref}&lang=en'
+            language = 'nl' if ref == 'TIM_BOND' else 'en'
+            expected = f'https://turkluxx.com/?ref={ref}&lang={language}'
             with self.subTest(ref=ref), Image.open(self.output / filename) as image:
                 self.assertEqual(config['LINKS'][filename], expected)
                 self.assertEqual(image.size, (1000, 1000))

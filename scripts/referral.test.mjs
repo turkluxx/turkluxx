@@ -7,6 +7,28 @@ import { validateLead, createLeadEmail } from '../worker/index.mjs';
 const registrySource = readFileSync(new URL('../js/referral-registry.js', import.meta.url), 'utf8');
 const source = readFileSync(new URL('../js/referral.js', import.meta.url), 'utf8');
 
+test('TIM_BOND retains its own identity and VLAD parent through navigation and lead delivery', () => {
+  const entry = visit('/?ref=TIM_BOND&lang=nl');
+  const attribution = entry.window.getTurkLuxxReferralAttribution();
+  assert.equal(attribution.referral, 'TIM_BOND');
+  assert.equal(attribution.parentConsultant, 'VLAD');
+  for (const path of ['/', '/videos?lang=es', '/?ref=TIM_BOND&lang=es']) {
+    assert.equal(JSON.stringify(visit(path, entry.storage).window.getTurkLuxxReferralAttribution()), JSON.stringify(attribution));
+  }
+  for (const source of ['callback', 'general-contact']) {
+    const lead = validateLead({ ...attribution, source, language: 'nl', message: 'Test enquiry', parentConsultant: 'AHMAD', name: 'Test', phone: '123', email: 'test@example.com', page: 'https://turkluxx.com/?ref=TIM_BOND&lang=nl' });
+    assert.equal(lead.referral, 'TIM_BOND');
+    assert.equal(lead.parentConsultant, 'VLAD');
+    assert.match(createLeadEmail(lead, 'test-id', 'test-time').text, /Referral: TIM_BOND[\s\S]*Parent Consultant: VLAD/);
+  }
+  const pair = visit('/?ref=VLAD&subref=TIM_BOND').window.getTurkLuxxReferralAttribution();
+  assert.equal(pair.subref, 'TIM_BOND');
+  assert.equal(pair.parentConsultant, 'VLAD');
+  assert.ok(visit('/?ref=AHMAD&subref=TIM_BOND').elements.length);
+  const first = visit('/?ref=MOHAMED_ABDO');
+  assert.equal(visit('/?ref=TIM_BOND', first.storage).window.getTurkLuxxReferral(), 'MOHAMED_ABDO');
+});
+
 test('Mohamed canonical ID and Abdo attribution survives navigation and reaches both lead forms', () => {
   const mohamed = visit('/?ref=MOHAMED&lang=ar');
   assert.equal(mohamed.elements.length, 0);

@@ -3,7 +3,7 @@
     const languages = { en: 'English', ru: 'Русский', es: 'Español', ar: 'العربية', tr: 'Türkçe', nl: 'Nederlands' };
     const storageKey = 'turkluxx_language';
     const referralLanguageKey = 'turkluxx_referral_language';
-    const englishReferrals = new Set(['AHMAD', 'ALMA', 'VLAD', 'MOHAMED']);
+    const referralDefaults = { AHMAD: 'en', ALMA: 'en', VLAD: 'en', MOHAMED: 'en', TIM_BOND: 'nl' };
     let referralLanguage = { active: null, choices: {} };
     const catalogs = new Map();
     const originals = new WeakMap();
@@ -24,16 +24,19 @@
         const params = new URLSearchParams(location.search);
         try {
             const saved = JSON.parse(localStorage.getItem(referralLanguageKey));
-            if (saved && (saved.active === null || englishReferrals.has(saved.active)) && saved.choices && typeof saved.choices === 'object') {
+            if (saved && (saved.active === null || Object.hasOwn(referralDefaults, saved.active)) && saved.choices && typeof saved.choices === 'object') {
                 referralLanguage = saved;
             }
         } catch { /* A fresh referral entry still works without storage. */ }
+        const rawReferral = params.get('ref');
+        // Keep established exact-case behavior for existing referrals.
+        const entryReferral = rawReferral?.trim().toUpperCase() === 'TIM_BOND' ? 'TIM_BOND' : rawReferral;
         const exactReferral = params.getAll('ref').length === 1 && params.getAll('lang').length <= 1 &&
-            !params.has('subref') && !params.has('client') && englishReferrals.has(params.get('ref'));
+            !params.has('subref') && !params.has('client') && Object.hasOwn(referralDefaults, entryReferral);
         if (exactReferral) {
-            referralLanguage.active = params.get('ref');
+            referralLanguage.active = entryReferral;
             const choice = referralLanguage.choices[referralLanguage.active];
-            language = Object.hasOwn(languages, choice) ? choice : 'en';
+            language = Object.hasOwn(languages, choice) ? choice : referralDefaults[entryReferral];
             try {
                 // Carry the landing language onto clean internal URLs as usual.
                 localStorage.setItem(storageKey, language);
@@ -317,7 +320,7 @@
         language = code;
         if (persist) {
             try { localStorage.setItem(storageKey, code); } catch { /* Current page remains translated. */ }
-            if (manual && englishReferrals.has(referralLanguage.active)) {
+            if (manual && Object.hasOwn(referralDefaults, referralLanguage.active)) {
                 referralLanguage.choices[referralLanguage.active] = code;
                 try { localStorage.setItem(referralLanguageKey, JSON.stringify(referralLanguage)); } catch { /* Optional state. */ }
             }

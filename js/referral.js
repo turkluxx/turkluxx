@@ -109,6 +109,19 @@
         }, true);
     }
 
+    function referralRoot(referral) {
+        const visited = new Set();
+        while (typeof referral === 'string' && Object.hasOwn(registry, referral) && !visited.has(referral)) {
+            visited.add(referral);
+            const record = registry[referral];
+            if (!record || typeof record !== 'object') return null;
+            if (!Object.hasOwn(record, 'parentConsultant')) return referral;
+            referral = record.parentConsultant;
+        }
+        // Unknown parents and cycles do not establish a valid referral tree.
+        return null;
+    }
+
     function updateReferralPhone() {
         if (invalidReferralLink) return;
         const phoneKey = 'turkluxx_phone_referral';
@@ -124,11 +137,12 @@
             const attribution = window.getTurkLuxxReferralAttribution();
             referral = attribution.client ? null : attribution.subref || attribution.referral;
         }
-        if (!['VLAD', 'ALMA'].includes(referral)) return;
+        if (!['VLAD', 'ALMA'].includes(referralRoot(referral))) return;
         const defaults = new Set(['12137322002', '18184347266']);
         for (const link of document.querySelectorAll('a[href]')) {
             const href = link.getAttribute('href');
-            if (/^(?:tel:|https:\/\/wa\.me\/)/.test(href) && defaults.has(href.replace(/\D/g, ''))) {
+            // WhatsApp destinations have their own existing behavior; only dial links change.
+            if (/^tel:/.test(href) && defaults.has(href.replace(/\D/g, ''))) {
                 link.setAttribute('href', 'tel:+19493314195');
             }
         }

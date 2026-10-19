@@ -181,14 +181,15 @@ test('Only language storage is written and the most recent switch wins', async (
     assert.equal(result.api.text('View Gold Upper Floor plan fullscreen'), result.api.t('media.planFullscreen', { name: 'Gold', floor: 'Upper Floor' }));
 });
 
-for (const referral of ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED']) {
-    test(`${referral}: English landing overrides browser/saved/URL language, manual choice survives navigation and QR revisits`, async () => {
-        const storageMap = new Map([['turkluxx_language', 'nl']]);
+for (const referral of ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED', 'TIM_BOND']) {
+    test(`${referral}: landing default overrides browser/saved/URL language, manual choice survives navigation and QR revisits`, async () => {
+        const expected = referral === 'TIM_BOND' ? 'nl' : 'en';
+        const storageMap = new Map([['turkluxx_language', 'ar']]);
         const landing = runtime({ search: `?ref=${referral}&lang=ar`, storageMap, browserLanguages: ['ru-RU'] });
-        assert.equal(landing.api.language, 'en');
+        assert.equal(landing.api.language, expected);
         await landing.api.ready; await new Promise(resolve => setImmediate(resolve));
         assert.equal(landing.document.documentElement.dir, 'ltr');
-        assert.equal(storageMap.get('turkluxx_language'), 'en');
+        assert.equal(storageMap.get('turkluxx_language'), expected);
         await landing.api.setLanguage('es');
         const navigated = runtime({ storageMap });
         await navigated.api.ready; await new Promise(resolve => setImmediate(resolve));
@@ -205,6 +206,15 @@ for (const referral of ['AHMAD', 'ALMA', 'VLAD', 'MOHAMED']) {
         assert.equal(runtime({ search: `?ref=${referral}&lang=en`, storageMap }).api.language, 'tr');
     });
 }
+
+test('TIM_BOND normalized entries default to Dutch even with blocked storage and allow manual switching', async () => {
+    for (const search of ['?ref=TIM_BOND', '?ref=tim_bond&lang=ar', '?ref=%20TIM_BOND%20&lang=en']) {
+        const page = runtime({ search, blocked: true, browserLanguages: ['ru-RU'] });
+        assert.equal(page.api.language, 'nl');
+        await page.api.setLanguage('es');
+        assert.equal(page.api.language, 'es');
+    }
+});
 
 test('Sub-referrals, participants, other IDs, invalid and duplicate IDs retain ordinary language selection', async () => {
     for (const search of ['', '?ref=LAITH', '?ref=FAOZI', '?ref=MOHAMED_ABDO', '?ref=MUHAMED',

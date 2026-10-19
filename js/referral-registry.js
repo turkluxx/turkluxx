@@ -7,6 +7,7 @@ globalThis.TurkLuxxReferralRegistry = Object.freeze({
     }),
     MOHAMED: Object.freeze({}),
     VLAD: Object.freeze({}),
+    TIM_BOND: Object.freeze({ parentConsultant: 'VLAD' }),
     LAITH: Object.freeze({ parentConsultant: 'AHMAD' }),
     FAOZI: Object.freeze({ parentConsultant: 'AHMAD' }),
     MOHAMED_ABDO: Object.freeze({ parentConsultant: 'MOHAMED' })
