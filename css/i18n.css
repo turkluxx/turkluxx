@@ -529,32 +529,14 @@ html[lang="ar"] {
         direction: rtl;
     }
 
+    /* Keep physical control placement consistent with the LTR header. */
     html[dir='rtl'] .turkluxx-page .turkluxx-sales-hero > .turkluxx-sales-header,
     html[dir='rtl'] .turkluxx-page .turkluxx-mobile-hero-stage > .turkluxx-sales-header {
-        grid-template-columns: 48px 88px minmax(0, 1fr);
-        grid-template-areas: 'toggle language logo' 'nav nav nav';
+        direction: ltr;
     }
 
     html[dir='rtl'] .turkluxx-sales-header > .turkluxx-sales-logo {
-        justify-self: end;
-    }
-
-    html[dir='rtl'] .turkluxx-mobile-menu-wrapper,
-    html[dir='rtl'] .turkluxx-mobile-menu-surface {
-        right: auto;
-        left: 0;
-    }
-
-    html[dir='rtl'] .turkluxx-mobile-menu-wrapper {
-        grid-template-columns: 48px minmax(0, 1fr);
-    }
-
-    html[dir='rtl'] .turkluxx-mobile-menu-toggle {
-        grid-column: 1;
-    }
-
-    html[dir='rtl'] .turkluxx-mobile-menu-surface {
-        transform: scaleX(-1);
+        justify-self: start;
     }
 
     html[dir='rtl'] .turkluxx-mobile-menu a::after {
@@ -813,32 +795,14 @@ html[lang="ar"] {
         direction: rtl;
     }
 
+    /* Keep physical control placement consistent with the LTR header. */
     html[dir='rtl'] .turkluxx-page.turkluxx-homepage .turkluxx-sales-hero > .turkluxx-sales-header,
     html[dir='rtl'] .turkluxx-page.turkluxx-homepage .turkluxx-mobile-hero-stage > .turkluxx-sales-header {
-        grid-template-columns: 48px 88px minmax(0, 1fr);
-        grid-template-areas: 'toggle language logo' 'nav nav nav';
+        direction: ltr;
     }
 
     html[dir='rtl'] .turkluxx-homepage .turkluxx-sales-header > .turkluxx-sales-logo {
-        justify-self: end;
-    }
-
-    html[dir='rtl'] .turkluxx-homepage .turkluxx-mobile-menu-wrapper,
-    html[dir='rtl'] .turkluxx-homepage .turkluxx-mobile-menu-surface {
-        right: auto;
-        left: 0;
-    }
-
-    html[dir='rtl'] .turkluxx-homepage .turkluxx-mobile-menu-wrapper {
-        grid-template-columns: 48px minmax(0, 1fr);
-    }
-
-    html[dir='rtl'] .turkluxx-homepage .turkluxx-mobile-menu-toggle {
-        grid-column: 1;
-    }
-
-    html[dir='rtl'] .turkluxx-homepage .turkluxx-mobile-menu-surface {
-        transform: scaleX(-1);
+        justify-self: start;
     }
 
     html[dir='rtl'] .turkluxx-homepage .turkluxx-mobile-menu a::after {
@@ -983,8 +947,8 @@ html[lang="ar"] {
     }
 
     html[dir='rtl'] .turkluxx-sales-header > .turkluxx-sales-logo .turkluxx-brand-tagline {
-        left: auto;
-        right: 0;
+        left: 0;
+        right: auto;
     }
 
     .turkluxx-brand-tagline br {
@@ -1017,8 +981,8 @@ html[lang="ar"] {
     }
 
     html[dir='rtl'] .turkluxx-homepage .turkluxx-sales-header > .turkluxx-sales-logo .turkluxx-brand-tagline {
-        left: auto;
-        right: 0;
+        left: 0;
+        right: auto;
     }
 
     .turkluxx-homepage .turkluxx-brand-tagline br {
@@ -1369,4 +1333,17 @@ html[lang="ar"] {
         max-height: calc(100dvh - 100px);
         overflow-y: auto;
     }
+}
+
+/* English contact values read LTR while the Arabic footer stays right-aligned.
+   Target the displayed phone link independently of its referral-specific value. */
+html[dir="rtl"] .turkluxx-footer [data-company-field="phone"] a,
+html[dir="rtl"] .turkluxx-footer [data-company-field="address"] {
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: right;
+}
+
+html[dir="rtl"] .turkluxx-footer [data-company-field="phone"] a {
+    display: inline-block;
 }

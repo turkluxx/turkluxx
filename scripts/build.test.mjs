@@ -54,6 +54,27 @@ test('bundles production pages, copies only allowlisted assets, and cleans stale
   assert.equal(readFileSync(join(f.root, 'dist/index.html'), 'utf8').split('rel="manifest"').length - 1, 1, 'Repeated builds do not duplicate favicon links');
 });
 
+test('documentation is optional and never enters production output', t => {
+  const f = fixture(t);
+  assert.equal(existsSync(join(f.root, 'docs')), false);
+  let result = f.run();
+  assert.equal(result.status, 0, result.stderr);
+  const snapshot = () => Object.fromEntries(readdirSync(join(f.root, 'dist'), { recursive: true, withFileTypes: true })
+    .filter(entry => entry.isFile())
+    .map(entry => {
+      const file = join(entry.parentPath, entry.name);
+      return [file, readFileSync(file).toString('base64')];
+    }));
+  const withoutDocumentation = snapshot();
+  f.put('docs/i18n-audit.json', '{"documentationOnly":true}');
+  f.put('docs/referrals.md', 'Not an application input');
+  f.put('dist/docs/stale.md', 'Must be removed by the next build');
+  result = f.run();
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(existsSync(join(f.root, 'dist/docs')), false);
+  assert.deepEqual(snapshot(), withoutDocumentation);
+});
+
 test('external QR deliverables never affect builds or enter dist, whether absent or present', t => {
   const f = fixture(t);
   const external = ['generated/qr_codes/QR_TEST.png', 'img/qr_codes/QR_TEST.png', 'assets/QR_TEST.png'];
