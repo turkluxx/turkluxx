@@ -72,11 +72,15 @@ try {
             const result = await evaluate(`(() => {
                 const section = document.querySelector('.turkluxx-statistics');
                 const cards = [...section.querySelectorAll('article')];
-                const grid = section.firstElementChild;
+                const grid = section.querySelector('.turkluxx-statistics-grid');
                 return { previous: section.previousElementSibling.className, next: section.nextElementSibling.className,
                     columns: getComputedStyle(grid).gridTemplateColumns.split(' ').length,
                     overflow: cards.some(c => c.scrollWidth > c.clientWidth || c.scrollHeight > c.clientHeight),
                     heights: cards.map(c => c.getBoundingClientRect().height),
+                    order: cards.map(c=>c.querySelector('h3').dataset.i18n),
+                    positions: cards.map(c=>{const r=c.getBoundingClientRect();return {x:r.x,y:r.y};}),
+                    logos: (()=>{const row=document.querySelector('.turkluxx-statistics-logos'),r=row.getBoundingClientRect(),cells=[...row.children].map(e=>{const b=e.getBoundingClientRect();return {x:b.x,w:b.width};});return {visible:getComputedStyle(row).display!=='none',afterButton:row.previousElementSibling.matches('.turkluxx-team-cta'),x:r.x,width:r.width,cells,cardX:cards[0].getBoundingClientRect().x,cardW:cards[0].getBoundingClientRect().width};})(),
+                    curved: getComputedStyle(section,'::before').backgroundImage.includes('svg'),
                     numbersLTR: [...section.querySelectorAll('[data-count]')].every(c => getComputedStyle(c).direction === 'ltr'),
                     translated: [...section.querySelectorAll('[data-i18n]')].every(e => e.textContent === TurkLuxxI18n.t(e.dataset.i18n)),
                     band: {left:section.getBoundingClientRect().left,right:section.getBoundingClientRect().right,viewport:document.documentElement.clientWidth,radius:getComputedStyle(section).borderRadius,navy:getComputedStyle(section).backgroundColor},
@@ -88,7 +92,24 @@ try {
             assert.equal(result.overflow, false, JSON.stringify({width,language,result}));
             assert.ok(Math.max(...result.heights) - Math.min(...result.heights) < 1);
             assert.ok(result.numbersLTR && result.translated);
-            assert.equal(result.direction, language === 'ar' ? 'rtl' : 'ltr');
+            assert.equal(result.direction, 'ltr');
+            assert.deepEqual(result.order,['home.statistics.experience','home.statistics.families','home.statistics.exclusive','home.statistics.philosophy']);
+            assert.ok(result.curved);
+            assert.equal(result.logos.visible,width<768);
+            assert.ok(result.logos.afterButton);
+            if(width<768) {
+                assert.ok(Math.abs(result.logos.x-result.logos.cardX)<1,JSON.stringify({width,language,logos:result.logos}));
+                assert.ok(Math.abs(result.logos.width-2*result.logos.cardW)<1);
+                assert.ok(result.logos.cells[0].x<result.logos.cells[1].x);
+            }
+            if(width>=1024) assert.ok(result.positions.every((p,i,a)=>!i||p.x>a[i-1].x));
+            else {
+                assert.equal(result.positions[0].x,result.positions[1].x);
+                assert.equal(result.positions[2].x,result.positions[3].x);
+                assert.ok(result.positions[0].x<result.positions[2].x);
+                assert.ok(result.positions[0].y<result.positions[1].y);
+                assert.equal(result.positions[0].y,result.positions[2].y);
+            }
             assert.equal(result.band.left,0);
             assert.equal(result.band.right,result.band.viewport);
             assert.equal(result.band.radius,'0px');
@@ -112,7 +133,7 @@ try {
         return {count: bar.getAnimations().length,
             opacity: Number(getComputedStyle(bar).opacity),
             connected: getComputedStyle(bar).gap === '0px' && cards.every(c => getComputedStyle(c).backgroundColor === 'rgba(0, 0, 0, 0)'),
-            navy: getComputedStyle(bar.parentElement).backgroundColor === getComputedStyle(document.querySelector('.turkluxx-team-cta')).backgroundColor,
+            navy: getComputedStyle(bar.parentElement).backgroundImage === 'none' && getComputedStyle(bar.parentElement).backgroundColor === 'rgb(33, 44, 108)',
             white: cards.every(c => getComputedStyle(c).color === 'rgb(255, 255, 255)'),
             sans: cards.every(c => getComputedStyle(c.querySelector('p')).fontFamily.includes('Manrope'))};
     })()`);

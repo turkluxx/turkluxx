@@ -1449,6 +1449,7 @@
     position: relative;
     isolation: isolate;
     display: grid;
+    direction: ltr;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-auto-rows: 1fr;
     gap: 0;
@@ -1482,15 +1483,15 @@
     border: 0;
     border-radius: 0;
 }
-.turkluxx-statistics-card:nth-child(even)::before {
+.turkluxx-statistics-card:nth-child(n + 3)::before {
     content: '';
     position: absolute;
     inset-block: 20px;
-    inset-inline-start: 0;
+    left: 0;
     width: 1px;
     background: rgb(255 255 255 / 20%);
 }
-.turkluxx-statistics-card:nth-child(n + 3)::after {
+.turkluxx-statistics-card:nth-child(even)::after {
     content: '';
     position: absolute;
     inset-inline: 0;
@@ -1533,21 +1534,52 @@
     white-space: nowrap;
 }
 @media (min-width: 1024px) {
+    .turkluxx-homepage .turkluxx-developer {
+        padding-bottom: 16px;
+        margin-bottom: 0;
+    }
     .turkluxx-statistics-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .turkluxx-statistics-card:not(:first-child)::before {
         content: '';
         position: absolute;
         inset-block: 24px;
-        inset-inline-start: 0;
+        left: 0;
         width: 1px;
         background: rgb(255 255 255 / 20%);
     }
     .turkluxx-statistics-card::after { display: none; }
 }
 @media (max-width: 1023px) {
-    .turkluxx-statistics-card:nth-child(even)::before { inset-block: 0; }
+    .turkluxx-statistics-card:nth-child(n + 3)::before { inset-block: 0; }
+    .turkluxx-statistics-card:nth-child(2) { grid-column: 1; grid-row: 2; }
+    .turkluxx-statistics-card:nth-child(3) { grid-column: 2; grid-row: 1; }
+}
+html[dir="rtl"] .turkluxx-statistics-card { direction: rtl; }
+.turkluxx-statistics-logos { display: none; }
+@media (max-width: 767px) {
+    .turkluxx-homepage .turkluxx-developer {
+        padding-bottom: 20px;
+        margin-bottom: 0;
+    }
+    .turkluxx-statistics-logos {
+        display: grid;
+        direction: ltr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: center;
+        margin-top: 28px;
+    }
+    .turkluxx-statistics-logos .turkluxx-developer-brand {
+        grid-area: auto;
+        transform: none;
+        text-align: center;
+    }
+    .turkluxx-statistics-logos .turkluxx-developer-logo {
+        width: 100%;
+        height: auto;
+    }
 }
 @media (max-width: 359px) {
     .turkluxx-statistics { padding-inline: 16px; }
     .turkluxx-statistics-number { font-size: 28px; }
+    .turkluxx-statistics-logos { margin-inline: -8px; width: calc(100% + 16px); }
 }
