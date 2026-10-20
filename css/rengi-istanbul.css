@@ -255,6 +255,27 @@
     height: 100%;
     border: 0;
 }
+.rengi-map-open {
+    position: absolute;
+    left: 50%;
+    bottom: 38px;
+    transform: translateX(-50%);
+    box-sizing: border-box;
+    max-width: calc(100% - 112px);
+    padding: 8px 12px;
+    background: #fff;
+    color: #212c6c;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgb(0 0 0 / 18%);
+    font: 600 12px/1.5 'Manrope', sans-serif;
+    text-align: center;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.rengi-map-open:focus-visible {
+    outline: 2px solid #212c6c;
+    outline-offset: 3px;
+}
 
 .rengi-map > svg {
     position: absolute;
