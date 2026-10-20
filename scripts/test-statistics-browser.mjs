@@ -79,6 +79,7 @@ try {
                     heights: cards.map(c => c.getBoundingClientRect().height),
                     numbersLTR: [...section.querySelectorAll('[data-count]')].every(c => getComputedStyle(c).direction === 'ltr'),
                     translated: [...section.querySelectorAll('[data-i18n]')].every(e => e.textContent === TurkLuxxI18n.t(e.dataset.i18n)),
+                    band: {left:section.getBoundingClientRect().left,right:section.getBoundingClientRect().right,viewport:document.documentElement.clientWidth,radius:getComputedStyle(section).borderRadius,navy:getComputedStyle(section).backgroundColor},
                     direction: getComputedStyle(grid).direction };
             })()`);
             assert.equal(result.previous, 'turkluxx-developer');
@@ -88,6 +89,10 @@ try {
             assert.ok(Math.max(...result.heights) - Math.min(...result.heights) < 1);
             assert.ok(result.numbersLTR && result.translated);
             assert.equal(result.direction, language === 'ar' ? 'rtl' : 'ltr');
+            assert.equal(result.band.left,0);
+            assert.equal(result.band.right,result.band.viewport);
+            assert.equal(result.band.radius,'0px');
+            assert.equal(result.band.navy,'rgb(33, 44, 108)');
         }
     }
     for (const port of [8803, 8804]) {
@@ -107,7 +112,7 @@ try {
         return {count: bar.getAnimations().length,
             opacity: Number(getComputedStyle(bar).opacity),
             connected: getComputedStyle(bar).gap === '0px' && cards.every(c => getComputedStyle(c).backgroundColor === 'rgba(0, 0, 0, 0)'),
-            navy: getComputedStyle(bar).backgroundColor === getComputedStyle(document.querySelector('.turkluxx-team-cta')).backgroundColor,
+            navy: getComputedStyle(bar.parentElement).backgroundColor === getComputedStyle(document.querySelector('.turkluxx-team-cta')).backgroundColor,
             white: cards.every(c => getComputedStyle(c).color === 'rgb(255, 255, 255)'),
             sans: cards.every(c => getComputedStyle(c.querySelector('p')).fontFamily.includes('Manrope'))};
     })()`);
@@ -148,8 +153,10 @@ try {
     await load('ar');
     await evaluate(`document.querySelector('.turkluxx-statistics').scrollIntoView({block:'center',behavior:'instant'})`);
     await pause(200);
-    assert.deepEqual(await values(), ['27+', '10,000+']);
+    assert.notDeepEqual(await values(), ['27+', '10,000+']);
     assert.equal(await evaluate(`document.querySelector('.turkluxx-statistics').getAnimations({subtree:true}).length`), 0);
+    await pause(2400);
+    assert.deepEqual(await values(), ['27+', '10,000+']);
     await send('Emulation.setScriptExecutionDisabled', {value:true});
     await send('Page.navigate', {url:'http://127.0.0.1:8804/'}); await pause(500);
     assert.deepEqual(await values(), ['27+', '10,000+']);

@@ -25,7 +25,7 @@
         section.dataset.statisticsState = 'complete';
     };
     section.dataset.statisticsMotion = motion.matches ? 'reduced' : 'normal';
-    if (motion.matches || !('IntersectionObserver' in window)) {
+    if (!('IntersectionObserver' in window)) {
         finish();
         return;
     }
@@ -44,7 +44,7 @@
             revealed = true;
             section.dataset.statisticsState = 'animating';
             // Animate the shared surface so internal dividers stay joined.
-            if (typeof bar.animate === 'function') {
+            if (!motion.matches && typeof bar.animate === 'function') {
                 const animation = bar.animate([
                     { opacity: 0, transform: 'translateY(24px)' },
                     { opacity: 1, transform: 'translateY(0)' }
@@ -77,14 +77,14 @@
             schedule(tick);
         });
     }, { threshold: 0.1 });
-    // Keep final values in HTML for no-JS/reduced-motion, but prepare zero before
-    // normal-motion visitors scroll here, avoiding a flash of the final totals.
+    // Final HTML values cover no-JS; counters animate for both motion preferences.
     section.querySelectorAll('[data-count]').forEach(counter => { counter.textContent = '0+'; });
     cards.forEach(card => observer.observe(card));
     motion.addEventListener('change', event => {
+        section.dataset.statisticsMotion = event.matches ? 'reduced' : 'normal';
         if (event.matches) {
-            section.dataset.statisticsMotion = 'reduced';
-            finish();
+            animations.forEach(animation => animation.cancel());
+            animations.clear();
         }
     });
     };
