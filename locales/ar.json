@@ -452,5 +452,12 @@
   "videos.play": "تشغيل الفيديو: {title}",
   "videos.fallback": "هل تواجه صعوبة في تشغيل هذا الفيديو؟ افتحه في {provider}.",
   "videos.open": "فتح في {provider}",
-  "videos.unavailable": "هذا الفيديو غير متاح حالياً."
+  "videos.unavailable": "هذا الفيديو غير متاح حالياً.",
+  "home.statistics.exclusive": "تميّز TurkLuxx",
+  "home.statistics.exclusive_statement": "نقدم أرقى مظاهر الفخامة في العالم على الساحة العالمية",
+  "home.statistics.experience": "سنوات الخبرة",
+  "home.statistics.experience_caption": "عامًا من الخبرة في العقارات الفاخرة",
+  "home.statistics.philosophy": "فلسفتنا",
+  "home.statistics.philosophy_statement": "حيث تجد الأحلام بيتًا، ويبدأ الغد اليوم.",
+  "home.statistics.families": "عائلات سعيدة"
 }

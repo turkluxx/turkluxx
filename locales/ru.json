@@ -452,5 +452,12 @@
   "videos.play": "Смотреть видео: {title}",
   "videos.fallback": "Не удаётся воспроизвести видео? Откройте его в {provider}.",
   "videos.open": "Открыть в {provider}",
-  "videos.unavailable": "Это видео сейчас недоступно."
+  "videos.unavailable": "Это видео сейчас недоступно.",
+  "home.statistics.exclusive": "Эксклюзив TurkLuxx",
+  "home.statistics.exclusive_statement": "Представляем лучшие образцы мировой роскоши на международной арене",
+  "home.statistics.experience": "Годы опыта",
+  "home.statistics.experience_caption": "Лет опыта в элитной недвижимости",
+  "home.statistics.philosophy": "Наша философия",
+  "home.statistics.philosophy_statement": "Где мечты обретают дом, а завтра начинается сегодня.",
+  "home.statistics.families": "Счастливых семей"
 }

@@ -1433,3 +1433,117 @@
         pointer-events: none;
     }
 }
+
+/* Homepage statistics share the partnership section's container and brand palette. */
+.turkluxx-statistics {
+    padding: 0 clamp(24px, 5vw, 96px) 56px;
+    color: #212c6c;
+    font-family: 'Manrope', sans-serif;
+}
+.turkluxx-statistics-grid {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 0;
+    max-width: 1440px;
+    margin-inline: auto;
+    background: #212c6c;
+    color: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 12%);
+}
+.turkluxx-statistics-grid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(170deg, rgb(255 255 255 / 9%), rgb(255 255 255 / 2%) 42%, transparent 60%);
+    pointer-events: none;
+}
+.turkluxx-statistics-card {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(20px, 2.5vw, 36px) clamp(12px, 1.8vw, 26px);
+    text-align: center;
+    position: relative;
+    background: transparent;
+    color: #fff;
+    border: 0;
+    border-radius: 0;
+}
+.turkluxx-statistics-card:nth-child(even)::before {
+    content: '';
+    position: absolute;
+    inset-block: 20px;
+    inset-inline-start: 0;
+    width: 1px;
+    background: rgb(255 255 255 / 20%);
+}
+.turkluxx-statistics-card:nth-child(n + 3)::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    height: 1px;
+    background: rgb(255 255 255 / 20%);
+}
+.turkluxx-statistics-card h3 {
+    margin: 0 0 16px;
+    font: 600 14px/1.5 'Manrope', sans-serif;
+}
+.turkluxx-statistics-statement {
+    margin: 0;
+    font: 500 clamp(18px, 1.6vw, 23px)/1.5 'Manrope', sans-serif;
+    text-wrap: balance;
+}
+.turkluxx-statistics-number {
+    position: relative;
+    align-self: stretch;
+    margin: 0;
+    color: #fff;
+    font: 600 clamp(30px, 3.8vw, 54px)/1.2 'Manrope', sans-serif;
+    font-variant-numeric: tabular-nums lining-nums;
+    white-space: nowrap;
+    unicode-bidi: isolate;
+}
+.turkluxx-statistics-caption {
+    margin: 12px 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    text-wrap: balance;
+}
+.turkluxx-statistics-accessible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+@media (min-width: 1024px) {
+    .turkluxx-statistics-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .turkluxx-statistics-card:not(:first-child)::before {
+        content: '';
+        position: absolute;
+        inset-block: 24px;
+        inset-inline-start: 0;
+        width: 1px;
+        background: rgb(255 255 255 / 20%);
+    }
+    .turkluxx-statistics-card::after { display: none; }
+}
+@media (max-width: 1023px) {
+    .turkluxx-statistics-card:nth-child(even)::before { inset-block: 0; }
+}
+@media (max-width: 359px) {
+    .turkluxx-statistics { padding-inline: 16px; }
+    .turkluxx-statistics-number { font-size: 28px; }
+}

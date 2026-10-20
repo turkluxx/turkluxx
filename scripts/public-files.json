@@ -110,6 +110,7 @@
     "js/referral.js",
     "js/callback.js",
     "js/homepage-galleries.js",
+    "js/homepage-statistics.js",
     "js/homepage-navigation.js",
     "js/rengi-istanbul.js",
     "js/rengi-villa-data.js",

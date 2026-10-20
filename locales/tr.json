@@ -452,5 +452,12 @@
   "videos.play": "Videoyu oynat: {title}",
   "videos.fallback": "Video oynatılmıyor mu? {provider}’da açın.",
   "videos.open": "{provider}’da aç",
-  "videos.unavailable": "Bu video şu anda kullanılamıyor."
+  "videos.unavailable": "Bu video şu anda kullanılamıyor.",
+  "home.statistics.exclusive": "TurkLuxx Ayrıcalığı",
+  "home.statistics.exclusive_statement": "Dünyanın en seçkin lüksünü küresel sahneye taşıyoruz",
+  "home.statistics.experience": "Yılların deneyimi",
+  "home.statistics.experience_caption": "Lüks gayrimenkul sektöründe deneyim yılı",
+  "home.statistics.philosophy": "Felsefemiz",
+  "home.statistics.philosophy_statement": "Hayallerin yuva bulduğu, yarının bugün başladığı yer.",
+  "home.statistics.families": "Mutlu aileler"
 }

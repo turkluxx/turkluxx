@@ -452,5 +452,12 @@
   "videos.play": "Play video: {title}",
   "videos.fallback": "Having trouble playing this video? Open it in {provider}.",
   "videos.open": "Open in {provider}",
-  "videos.unavailable": "This video is currently unavailable."
+  "videos.unavailable": "This video is currently unavailable.",
+  "home.statistics.exclusive": "TurkLuxx Exclusive",
+  "home.statistics.exclusive_statement": "Bringing the World's Finest Luxury to the Global Stage",
+  "home.statistics.experience": "Years of Experience",
+  "home.statistics.experience_caption": "Years of Luxury Real Estate Experience",
+  "home.statistics.philosophy": "Our Philosophy",
+  "home.statistics.philosophy_statement": "Where dreams find a home, and tomorrow begins today.",
+  "home.statistics.families": "Happy Families"
 }

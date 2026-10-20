@@ -452,5 +452,12 @@
   "videos.play": "Video afspelen: {title}",
   "videos.fallback": "Lukt het afspelen niet? Open de video in {provider}.",
   "videos.open": "Openen in {provider}",
-  "videos.unavailable": "Deze video is momenteel niet beschikbaar."
+  "videos.unavailable": "Deze video is momenteel niet beschikbaar.",
+  "home.statistics.exclusive": "TurkLuxx Exclusief",
+  "home.statistics.exclusive_statement": "De mooiste luxe ter wereld op het internationale toneel",
+  "home.statistics.experience": "Jaren ervaring",
+  "home.statistics.experience_caption": "Jaar ervaring in luxe vastgoed",
+  "home.statistics.philosophy": "Onze filosofie",
+  "home.statistics.philosophy_statement": "Waar dromen een thuis vinden en morgen vandaag begint.",
+  "home.statistics.families": "Gelukkige gezinnen"
 }

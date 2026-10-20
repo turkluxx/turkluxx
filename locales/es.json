@@ -452,5 +452,12 @@
   "videos.play": "Reproducir vídeo: {title}",
   "videos.fallback": "¿Tiene problemas para reproducir este vídeo? Ábralo en {provider}.",
   "videos.open": "Abrir en {provider}",
-  "videos.unavailable": "Este vídeo no está disponible actualmente."
+  "videos.unavailable": "Este vídeo no está disponible actualmente.",
+  "home.statistics.exclusive": "TurkLuxx Exclusivo",
+  "home.statistics.exclusive_statement": "Llevamos el lujo más selecto del mundo al escenario internacional",
+  "home.statistics.experience": "Años de experiencia",
+  "home.statistics.experience_caption": "Años de experiencia en inmuebles de lujo",
+  "home.statistics.philosophy": "Nuestra filosofía",
+  "home.statistics.philosophy_statement": "Donde los sueños encuentran un hogar y el mañana comienza hoy.",
+  "home.statistics.families": "Familias felices"
 }
