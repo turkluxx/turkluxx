@@ -43,7 +43,7 @@
         if (entering.length && !revealed) {
             revealed = true;
             section.dataset.statisticsState = 'animating';
-            // Animate the shared surface so internal dividers stay joined.
+            // Reveal the framed composition once as it enters the viewport.
             if (!motion.matches && typeof bar.animate === 'function') {
                 const animation = bar.animate([
                     { opacity: 0, transform: 'translateY(24px)' },
@@ -77,7 +77,8 @@
             schedule(tick);
         });
     }, { threshold: 0.1 });
-    // Final HTML values cover no-JS; counters animate for both motion preferences.
+    // Keep the numeric count-up for both preferences; reduced motion disables
+    // the spatial entrance animation above, without consuming the counters early.
     section.querySelectorAll('[data-count]').forEach(counter => { counter.textContent = '0+'; });
     cards.forEach(card => observer.observe(card));
     motion.addEventListener('change', event => {

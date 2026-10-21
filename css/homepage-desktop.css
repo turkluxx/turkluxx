@@ -1434,152 +1434,156 @@
     }
 }
 
-/* Homepage statistics share the partnership section's container and brand palette. */
+/* Copper and midnight partnership presentation; scoped to the statistics section. */
 .turkluxx-statistics {
+    --partnership-copper: #e1ad89;
     position: relative;
     isolation: isolate;
-    padding: 0 clamp(24px, 5vw, 96px);
-    background: #212c6c;
-    overflow: clip;
-    color: #fff;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 26%), inset 0 -1px 0 rgb(0 0 0 / 12%);
+    padding: clamp(48px, 6vw, 88px) clamp(20px, 5vw, 96px);
+    color: #f6eee7;
+    background: radial-gradient(ellipse at 50% 0, #25344c 0, #111f33 48%, #091421 100%);
+    border-block: 1px solid #987052;
     font-family: 'Manrope', sans-serif;
 }
+.turkluxx-partnership-intro { max-width: 1080px; margin: 0 auto 40px; text-align: center; }
+.turkluxx-partnership-intro h2 {
+    margin: 0 auto 30px;
+    max-width: 1000px;
+    font: 500 clamp(27px, 3.2vw, 46px)/1.23 'Cormorant Garamond', Georgia, serif;
+    text-wrap: balance;
+    color: #f6eee7;
+}
+.turkluxx-partnership-slogans { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px 40px; }
+.turkluxx-partnership-slogans p {
+    margin: 0;
+    font: 600 clamp(25px, 3vw, 40px)/1.25 'Cormorant Garamond', Georgia, serif;
+    color: var(--partnership-copper);
+    text-shadow: 0 2px 2px #000;
+}
+.turkluxx-partnership-presented { margin: 20px 0 0; font-size: clamp(13px, 1.3vw, 16px); line-height: 1.7; color: #f0d0b7; }
+.turkluxx-partnership-presented::after { content: ''; display: block; width: 96px; height: 1px; margin: 26px auto 0; background: linear-gradient(90deg, transparent, #d69a71, transparent); }
 .turkluxx-statistics-grid {
-    position: relative;
-    isolation: isolate;
     display: grid;
     direction: ltr;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: 1fr;
-    gap: 0;
-    max-width: 1440px;
+    gap: 26px 32px;
+    max-width: 1120px;
     margin-inline: auto;
-    background: transparent;
-    color: #fff;
-    border-radius: 0;
 }
-.turkluxx-statistics::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto;
-    height: 55%;
-    z-index: -1;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='reflection' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop stop-color='%23e0ecff' stop-opacity='.18'/%3E%3Cstop offset='.6' stop-color='%23e0ecff' stop-opacity='.09'/%3E%3Cstop offset='1' stop-color='%23e0ecff' stop-opacity='.04'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 0H1000V55Q500 125 0 55Z' fill='url(%23reflection)'/%3E%3C/svg%3E") center top / 100% 100% no-repeat;
-    pointer-events: none;
-}
+.turkluxx-partnership-brand { min-width: 0; display: flex; align-items: center; justify-content: center; height: 112px; margin-bottom: 4px; }
+.turkluxx-partnership-brand img { display: block; object-fit: contain; max-width: 84%; height: auto; }
+.turkluxx-partnership-brand[data-brand="turkluxx"] img { width: 108px; height: 108px; }
+.turkluxx-partnership-brand[data-brand="karaarslan"] img { width: 360px; }
 .turkluxx-statistics-card {
+    position: relative;
     min-width: 0;
-    overflow-wrap: anywhere;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    padding: clamp(20px, 2.5vw, 36px) clamp(12px, 1.8vw, 26px);
+    justify-content: center;
+    min-height: 245px;
+    padding: 32px clamp(20px, 3vw, 48px);
+    border: 2px solid transparent;
+    border-radius: 24px;
+    background: linear-gradient(155deg, #23334a 0%, #111e30 38%, #0b1728 70%, #18283d 100%) padding-box,
+        linear-gradient(135deg, #f0c8a5 0%, #b67a54 23%, #69452f 49%, #e2ae88 74%, #805237 100%) border-box;
+    box-shadow: inset 0 0 0 3px #0c1829, inset 0 0 0 4px #805b43, inset 0 7px 14px #ffffff08, 0 10px 22px #0005;
     text-align: center;
-    position: relative;
-    background: transparent;
-    color: #fff;
-    border: 0;
-    border-radius: 0;
+    overflow-wrap: break-word;
 }
-.turkluxx-statistics-card:nth-child(n + 3)::before {
-    content: '';
-    position: absolute;
-    inset-block: 20px;
-    left: 0;
-    width: 1px;
-    background: rgb(255 255 255 / 20%);
-}
-.turkluxx-statistics-card:nth-child(even)::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    inset-block-start: 0;
+.turkluxx-statistics-card::before, .turkluxx-statistics-card::after {
+    content: ''; position: absolute; width: 42px; height: 12px; left: calc(50% - 21px);
+    background: linear-gradient(90deg, transparent, #daaa81, transparent);
     height: 1px;
-    background: rgb(255 255 255 / 20%);
 }
-.turkluxx-statistics-card h3 {
-    margin: 0 0 16px;
-    font: 600 14px/1.5 'Manrope', sans-serif;
-}
-.turkluxx-statistics-statement {
-    margin: 0;
-    font: 500 clamp(18px, 1.6vw, 23px)/1.5 'Manrope', sans-serif;
-    text-wrap: balance;
-}
-.turkluxx-statistics-number {
-    position: relative;
-    align-self: stretch;
-    margin: 0;
-    color: #fff;
-    font: 600 clamp(30px, 3.8vw, 54px)/1.2 'Manrope', sans-serif;
-    font-variant-numeric: tabular-nums lining-nums;
-    white-space: nowrap;
-    unicode-bidi: isolate;
-}
-.turkluxx-statistics-caption {
-    margin: 12px 0 0;
-    font-size: 14px;
-    line-height: 1.6;
-    text-wrap: balance;
-}
-.turkluxx-statistics-accessible {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-@media (min-width: 1024px) {
-    .turkluxx-homepage .turkluxx-developer {
-        padding-bottom: 16px;
-        margin-bottom: 0;
-    }
-    .turkluxx-statistics-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .turkluxx-statistics-card:not(:first-child)::before {
-        content: '';
-        position: absolute;
-        inset-block: 24px;
-        left: 0;
-        width: 1px;
-        background: rgb(255 255 255 / 20%);
-    }
-    .turkluxx-statistics-card::after { display: none; }
-}
-@media (max-width: 1023px) {
-    .turkluxx-statistics-card:nth-child(n + 3)::before { inset-block: 0; }
-    .turkluxx-statistics-card:nth-child(2) { grid-column: 1; grid-row: 2; }
-    .turkluxx-statistics-card:nth-child(3) { grid-column: 2; grid-row: 1; }
-}
+.turkluxx-statistics-card::before { top: 16px; }
+.turkluxx-statistics-card::after { bottom: 16px; }
+.turkluxx-statistics-card h3 { margin: 0 0 18px; color: #f3d5be; font: 600 14px/1.6 'Manrope', sans-serif; }
+.turkluxx-statistics-statement { margin: 0; color: var(--partnership-copper); font: 600 clamp(28px, 3vw, 40px)/1.18 'Cormorant Garamond', Georgia, serif; text-wrap: balance; text-shadow: 0 2px 2px #000; }
+.turkluxx-statistics-number { position: relative; margin: 0; color: var(--partnership-copper); font: 600 clamp(48px, 5.5vw, 76px)/1.1 'Cormorant Garamond', Georgia, serif; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; unicode-bidi: isolate; text-shadow: 0 2px 2px #000; }
+.turkluxx-statistics-caption { max-width: 300px; margin: 14px 0 0; font-size: 15px; line-height: 1.7; text-wrap: balance; }
+.turkluxx-statistics-accessible { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 html[dir="rtl"] .turkluxx-statistics-card { direction: rtl; }
-.turkluxx-statistics-logos { display: none; }
-@media (max-width: 767px) {
-    .turkluxx-homepage .turkluxx-developer {
-        padding-bottom: 20px;
-        margin-bottom: 0;
-    }
-    .turkluxx-statistics-logos {
-        display: grid;
-        direction: ltr;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        align-items: center;
-        margin-top: 28px;
-    }
-    .turkluxx-statistics-logos .turkluxx-developer-brand {
-        grid-area: auto;
-        transform: none;
-        text-align: center;
-    }
-    .turkluxx-statistics-logos .turkluxx-developer-logo {
-        width: 100%;
-        height: auto;
-    }
+html[dir="rtl"] .turkluxx-partnership-intro { direction: rtl; }
+.turkluxx-partnership-wordmark { text-align: center; line-height: 1; }
+.turkluxx-partnership-wordmark span {
+    display: block;
+    color: var(--partnership-copper);
+    background: linear-gradient(175deg, #fae0c7 8%, #d49b73 42%, #b77e57 58%, #efc29e 90%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font: 600 42px/1 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: .01em;
+    filter: drop-shadow(0 1px 1px #0008);
 }
-@media (max-width: 359px) {
-    .turkluxx-statistics { padding-inline: 16px; }
-    .turkluxx-statistics-number { font-size: 28px; }
-    .turkluxx-statistics-logos { margin-inline: -8px; width: calc(100% + 16px); }
+.turkluxx-partnership-wordmark small { display: block; margin-top: 5px; color: #e1ad89; font: 500 13px/1.2 'Manrope', sans-serif; letter-spacing: .16em; }
+.turkluxx-statistics-motif { position: absolute; pointer-events: none; stroke: #ce9a74; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; opacity: .65; }
+.turkluxx-motif-world { width: 35px; height: 42px; top: 14px; right: 16px; opacity: .8; }
+.turkluxx-motif-bridge { width: calc(100% - 32px); height: 110px; left: 16px; top: 50%; transform: translateY(-50%); stroke: #637c98; opacity: .21; }
+.turkluxx-motif-building { width: 52px; height: 42px; left: 14px; bottom: 12px; }
+.turkluxx-motif-key { width: 44px; height: 30px; left: 16px; bottom: 12px; }
+.turkluxx-motif-house { width: 43px; height: 39px; right: 14px; bottom: 12px; opacity: .5; }
+.turkluxx-statistics-card > :is(h3, p) { position: relative; z-index: 1; }
+@media (max-width: 1023px) {
+    .turkluxx-motif-world { width: 29px; height: 35px; }
+    .turkluxx-motif-building { width: 44px; height: 35px; }
+    .turkluxx-motif-key { width: 38px; height: 26px; }
+    .turkluxx-motif-house { width: 37px; height: 33px; }
+}
+/* Desktop: a compact introduction and four equally sized cards in one row. */
+@media (min-width: 1024px) {
+    .turkluxx-statistics { padding-block: 36px 40px; }
+    .turkluxx-partnership-intro { max-width: 1000px; margin-bottom: 18px; }
+    .turkluxx-partnership-intro h2 {
+        max-width: 900px;
+        margin-bottom: 14px;
+        font-size: clamp(26px, 1.9vw, 30px);
+        line-height: 1.2;
+    }
+    .turkluxx-partnership-slogans { gap: 8px 28px; }
+    .turkluxx-partnership-slogans p { font-size: 24px; line-height: 1.2; }
+    .turkluxx-partnership-presented { margin-top: 8px; font-size: 13px; line-height: 1.5; }
+    .turkluxx-partnership-presented::after { margin-top: 14px; }
+    .turkluxx-statistics-grid {
+        max-width: 1440px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px 20px;
+    }
+    .turkluxx-partnership-brand { height: 60px; margin-bottom: 0; }
+    .turkluxx-partnership-brand[data-brand="turkluxx"] { grid-column: 1 / 3; }
+    .turkluxx-partnership-brand[data-brand="karaarslan"] { grid-column: 3 / 5; }
+    .turkluxx-partnership-brand[data-brand="turkluxx"] img { width: 60px; height: 60px; }
+    .turkluxx-partnership-brand[data-brand="karaarslan"] img { width: 240px; }
+    .turkluxx-statistics-card { min-height: 210px; padding: 24px 18px; border-radius: 20px; }
+    .turkluxx-statistics-card h3 { margin-bottom: 12px; font-size: 13px; line-height: 1.5; }
+    .turkluxx-statistics-statement { font-size: clamp(25px, 1.9vw, 30px); line-height: 1.2; }
+    .turkluxx-statistics-number { font-size: clamp(48px, 3.5vw, 58px); }
+    .turkluxx-statistics-caption { margin-top: 10px; font-size: 13px; line-height: 1.5; }
+}
+@media (max-width: 599px) {
+    .turkluxx-statistics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .turkluxx-partnership-intro { margin-bottom: 28px; }
+    .turkluxx-partnership-slogans { flex-direction: column; gap: 6px; }
+    .turkluxx-partnership-brand { height: 72px; margin: 0; }
+    .turkluxx-partnership-brand[data-brand="turkluxx"] { grid-area: 1 / 1; }
+    .turkluxx-partnership-brand[data-brand="karaarslan"] { grid-area: 1 / 2; }
+    .turkluxx-partnership-brand[data-brand="karaarslan"] img { width: 100%; max-width: 180px; }
+    .turkluxx-partnership-wordmark span { font-size: clamp(27px, 7vw, 36px); }
+    .turkluxx-partnership-wordmark small { font-size: 10px; letter-spacing: .12em; }
+    .turkluxx-statistics-card:nth-of-type(1) { grid-area: 2 / 1; }
+    .turkluxx-statistics-card:nth-of-type(2) { grid-area: 2 / 2; }
+    .turkluxx-statistics-card:nth-of-type(3) { grid-area: 3 / 1; }
+    .turkluxx-statistics-card:nth-of-type(4) { grid-area: 3 / 2; }
+    .turkluxx-statistics-card { height: auto; min-height: 0; padding: 30px 8px 28px; border-radius: 20px; }
+    .turkluxx-statistics-card > :is(h3, p) { min-width: 0; max-width: 100%; }
+    .turkluxx-statistics-card h3 { margin-bottom: 6px; font-size: 11px; line-height: 1.5; }
+    .turkluxx-statistics-statement { font-size: clamp(18px, 4.4vw, 20px); line-height: 1.2; }
+    .turkluxx-statistics-number { font-size: clamp(30px, 8vw, 38px); }
+    .turkluxx-statistics-caption { margin-top: 6px; font-size: 12px; line-height: 1.5; }
+    .turkluxx-motif-world { width: 20px; height: 24px; top: 6px; right: 12px; }
+    .turkluxx-motif-bridge { height: 76px; }
+    .turkluxx-motif-building { width: 28px; height: 22px; bottom: 5px; }
+    .turkluxx-motif-key { width: 24px; height: 18px; left: 12px; bottom: 6px; }
+    .turkluxx-motif-house { width: 24px; height: 22px; right: 12px; bottom: 5px; }
 }
