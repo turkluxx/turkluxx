@@ -1561,7 +1561,7 @@ html[dir="rtl"] .turkluxx-partnership-intro { direction: rtl; }
     .turkluxx-statistics-number { font-size: clamp(48px, 3.5vw, 58px); }
     .turkluxx-statistics-caption { margin-top: 10px; font-size: 13px; line-height: 1.5; }
 }
-@media (max-width: 599px) {
+@media (max-width: 767px) {
     .turkluxx-statistics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .turkluxx-partnership-intro { margin-bottom: 28px; }
     .turkluxx-partnership-slogans { flex-direction: column; gap: 6px; }
@@ -1586,4 +1586,71 @@ html[dir="rtl"] .turkluxx-partnership-intro { direction: rtl; }
     .turkluxx-motif-building { width: 28px; height: 22px; bottom: 5px; }
     .turkluxx-motif-key { width: 24px; height: 18px; left: 12px; bottom: 6px; }
     .turkluxx-motif-house { width: 24px; height: 22px; right: 12px; bottom: 5px; }
+
+    /* Ahmad's copper typography and compact paired cards, mobile only. */
+    .turkluxx-statistics { padding: 24px 16px 28px; }
+    .turkluxx-partnership-intro { margin-bottom: 8px; }
+    .turkluxx-partnership-intro h2 {
+        margin-bottom: 4px;
+        color: var(--partnership-copper);
+        font: 500 clamp(16px, 4.7vw, 28px)/1.24 'Manrope', sans-serif;
+        text-shadow: 0 1px 1px #050d1d, 0 -1px 0 #fbe0c51a;
+    }
+    .turkluxx-partnership-slogans { gap: 0; }
+    .turkluxx-partnership-slogans p,
+    .turkluxx-partnership-presented {
+        color: var(--partnership-copper);
+        font: 500 clamp(16px, 4.5vw, 26px)/1.2 'Manrope', sans-serif;
+        text-shadow: 0 1px 2px #0009;
+    }
+    .turkluxx-partnership-presented { margin-top: 0; }
+    .turkluxx-partnership-presented::after { display: none; }
+    .turkluxx-statistics-grid { gap: 14px 10px; }
+    .turkluxx-partnership-brand { height: 44px; align-self: end; }
+    .turkluxx-partnership-brand[data-brand="karaarslan"] img { background: #fff; padding: 3px; box-sizing: border-box; }
+    .turkluxx-partnership-wordmark { direction: ltr; }
+    .turkluxx-partnership-wordmark span {
+        font: 800 clamp(27px, 7vw, 42px)/1 'Manrope', sans-serif;
+        letter-spacing: -.04em;
+    }
+    .turkluxx-partnership-wordmark small {
+        margin-top: 0;
+        font-weight: 700;
+        font-size: clamp(10px, 2.8vw, 16px);
+        letter-spacing: 0;
+    }
+    .turkluxx-statistics-card {
+        box-sizing: border-box;
+        padding: 14px 8px;
+        border-radius: 10px;
+        background: linear-gradient(155deg, #213f66, #122a4c 45%, #0e1d39) padding-box,
+            linear-gradient(135deg, #e3b699, #9d705c 42%, #e5b69a 73%, #79523e) border-box;
+        box-shadow: inset 0 0 0 1px #0c1829, inset 0 0 0 2px #a47962, 0 3px 5px #0008;
+    }
+    .turkluxx-statistics-card h3,
+    .turkluxx-statistics-card::before,
+    .turkluxx-statistics-card::after { display: none; }
+    .turkluxx-statistics-statement {
+        font: 500 clamp(17px, 4.6vw, 27px)/1.18 'Manrope', sans-serif;
+        text-shadow: 0 2px 2px #000b;
+    }
+    .turkluxx-statistics-card:nth-of-type(1) { padding-top: 18px; padding-right: 26px; min-height: clamp(146px, 37vw, 220px); }
+    .turkluxx-statistics-card:nth-of-type(3) { padding-left: 34px; min-height: clamp(118px, 29vw, 174px); }
+    .turkluxx-statistics-card:nth-of-type(3) .turkluxx-statistics-statement {
+        font-family: Georgia, serif;
+        font-weight: 500;
+        font-size: clamp(17px, 4.4vw, 26px);
+        text-align: end;
+    }
+    .turkluxx-statistics-number { font: 800 clamp(29px, 8vw, 48px)/1.12 'Manrope', sans-serif; letter-spacing: -.035em; }
+    .turkluxx-statistics-caption { color: #f6eee7; font-size: clamp(10px, 2.8vw, 16px); line-height: 1.25; margin-top: 14px; }
+    .turkluxx-statistics-card:nth-of-type(4) { justify-content: space-between; padding-top: 12px; padding-bottom: 12px; }
+    .turkluxx-statistics-card:nth-of-type(4) .turkluxx-statistics-caption { max-width: calc(100% - 44px); margin-top: 12px; }
+    .turkluxx-statistics-motif { stroke: #d5a789; stroke-width: 2.1; opacity: .95; filter: drop-shadow(0 1px 1px #0008); }
+    .turkluxx-motif-world { width: clamp(27px, 7vw, 40px); height: clamp(34px, 8.5vw, 48px); top: 5px; right: 4px; }
+    .turkluxx-motif-bridge { width: calc(100% - 12px); height: 85%; left: 6px; top: 38%; stroke: #081d39; stroke-width: 2; opacity: .85; }
+    .turkluxx-motif-building { width: 36px; height: 30px; left: 3px; bottom: 5px; }
+    .turkluxx-motif-key { width: 31px; height: 23px; left: 6px; bottom: 10px; transform: rotate(55deg); }
+    .turkluxx-motif-house { width: 30px; height: 29px; right: 3px; bottom: 7px; }
+    html[dir="rtl"] .turkluxx-statistics-card:nth-of-type(3) .turkluxx-statistics-statement { text-align: start; }
 }
