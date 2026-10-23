@@ -113,6 +113,7 @@
     <form>
       <div class="turkluxx-callback-field"><label for="contact-name" data-i18n="contact.name">Name</label><input id="contact-name" name="name" autocomplete="name" maxlength="120" required autofocus></div>
       <div class="turkluxx-callback-field"><label for="contact-email" data-i18n="contact.email">Email</label><input id="contact-email" name="email" type="email" dir="ltr" autocomplete="email" maxlength="254" required></div>
+      <div class="turkluxx-callback-field"><label for="contact-phone" data-i18n="contact.phone">Phone Number</label><input id="contact-phone" name="phone" type="tel" dir="ltr" autocomplete="tel" maxlength="80"></div>
       <div class="turkluxx-callback-field"><label for="contact-message" data-i18n="contact.message">Message</label><textarea id="contact-message" name="message" rows="4" maxlength="2000" required></textarea></div>
       <button class="turkluxx-callback-submit" type="submit" data-i18n="contact.submit">SEND MESSAGE</button>
       <p class="turkluxx-callback-status" role="status" aria-live="polite"></p>
@@ -122,16 +123,13 @@
   const contactForm = contactDialog.querySelector('form');
   // Native optional controls share one markup and payload mapping across both forms.
   const smsConsentFields = fields => ({
-    smsInformationalConsent: fields.get('smsInformationalConsent') === 'on',
-    smsMarketingConsent: fields.get('smsMarketingConsent') === 'on'
+    smsConsent: fields.get('smsConsent') === 'on'
   });
   function addSmsConsent(targetForm) {
     const section = document.createElement('div');
     section.className = 'turkluxx-sms-consent';
     section.innerHTML = `
-      <label><input type="checkbox" name="smsInformationalConsent"><span data-i18n="sms.informational">By checking this box, you agree to receive transactional and informational SMS messages from TurkLuxx regarding your inquiry, appointments, and customer care. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to opt out.</span></label>
-      <label><input type="checkbox" name="smsMarketingConsent"><span data-i18n="sms.marketing">By checking this box, you agree to receive promotional and marketing SMS messages from TurkLuxx, including property offers, updates, and related services. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to opt out.</span></label>
-      <p><a href="privacy-policy.html" data-i18n="common.privacy_policy">Privacy Policy</a> &middot; <a href="terms-and-conditions.html" data-i18n="common.terms_conditions">Terms &amp; Conditions</a></p>`;
+      <label><input type="checkbox" name="smsConsent"><span data-i18n="sms.consent">By checking this box, you agree to receive transactional/informational and promotional/marketing SMS messages from TurkLuxx regarding your inquiry, appointments, customer care, and promotional offers. Message frequency may vary. Msg &amp; data rates may apply. Reply HELP for help or STOP to opt out.</span></label>`;
     targetForm.querySelector('[type="submit"]').before(section);
     window.TurkLuxxI18n.ready.then(() => {
       section.querySelectorAll('[data-i18n]').forEach(element => window.TurkLuxxI18n.bind(element, element.dataset.i18n));
@@ -139,6 +137,19 @@
   }
   addSmsConsent(form);
   addSmsConsent(contactForm);
+  let phoneModule;
+  const phoneFormatting = () => phoneModule ||= import('./phone-format.js').catch(() => null);
+  for (const phone of [form.elements.phone, contactForm.elements.phone]) {
+    phone.type = 'tel';
+    phone.autocomplete = 'tel';
+    phone.inputMode = 'tel';
+    phone.dir = 'ltr';
+    phone.placeholder = '+1 949 555 1234';
+    phone.dataset.i18nIgnore = '';
+    phone.addEventListener('focus', () => {
+      phoneFormatting().then(module => module?.attachPhoneInput(phone));
+    });
+  }
   const contactStatus = contactDialog.querySelector('[role="status"]');
   const contactSubmit = contactForm.querySelector('[type="submit"]');
   let contactPending = false;
@@ -178,6 +189,7 @@
       ...referralFields(),
       ...smsConsentFields(fields),
       name: fields.get('name').trim(), email: fields.get('email').trim(),
+      phone: fields.get('phone').trim(),
       message: fields.get('message').trim(), language: window.TurkLuxxI18n.language,
       source: 'general-contact', page: window.location.href
     };
@@ -187,6 +199,7 @@
     contactForm.setAttribute('aria-busy', 'true');
     window.TurkLuxxI18n.bind(contactStatus, 'contact.sending');
     try {
+      payload.phone = (await phoneFormatting())?.normalizePhone(payload.phone) ?? payload.phone;
       contactForm.dispatchEvent(new CustomEvent('turkluxx:lead-ready', { detail: payload, bubbles: true }));
       const response = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin', body: JSON.stringify(payload), signal: AbortSignal.timeout(30000) });
@@ -295,6 +308,7 @@
     window.TurkLuxxI18n.bind(status, 'callback.sending');
     try {
       // Preserve the existing local event. This handler alone performs the send.
+      payload.phone = (await phoneFormatting())?.normalizePhone(payload.phone) ?? payload.phone;
       form.dispatchEvent(new CustomEvent('turkluxx:lead-ready', { detail: payload, bubbles: true }));
       const response = await fetch('/api/lead', {
         method: 'POST',

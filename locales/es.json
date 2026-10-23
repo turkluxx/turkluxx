@@ -465,6 +465,6 @@
   "home.statistics.excellence": "Construido sobre la excelencia",
   "home.statistics.vision": "Unidos por una visión",
   "home.statistics.presented": "Presentado al mundo por TurkLuxx",
-  "sms.informational": "Al marcar esta casilla, acepta recibir mensajes SMS transaccionales e informativos de TurkLuxx sobre su consulta, citas y atención al cliente. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos. Responda HELP para obtener ayuda o STOP para darse de baja.",
-  "sms.marketing": "Al marcar esta casilla, acepta recibir mensajes SMS promocionales y de marketing de TurkLuxx, incluidas ofertas inmobiliarias, novedades y servicios relacionados. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos. Responda HELP para obtener ayuda o STOP para darse de baja."
+  "sms.consent": "Al marcar esta casilla, acepta recibir mensajes SMS transaccionales/informativos y promocionales/de marketing de TurkLuxx sobre su consulta, citas, atención al cliente y ofertas promocionales. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos. Responda HELP para obtener ayuda o STOP para darse de baja.",
+  "contact.phone": "Número de teléfono"
 }

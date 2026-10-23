@@ -1,7 +1,7 @@
 // Local Chrome CDP checks. Start Chrome with --remote-debugging-port=9227.
 // node scripts/test-sms-browser.mjs [--dist]
 import http from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import assert from 'node:assert/strict';
 import worker from '../worker/index.mjs';
@@ -70,36 +70,88 @@ const catalogs = Object.fromEntries(await Promise.all(['en', 'ru', 'es', 'ar', '
 
 try {
  let submissions = 0;
- for (const width of [1440, 390]) {
+ const phones = [
+   ['+19495551234', '+1 949 555 1234'], ['+31612345678', '+31 6 1234 5678'],
+   ['+447911123456', '+44 7911 123456'], ['+905321234567', '+90 532 123 45 67']
+ ];
+ for (const width of [1440, 320, 375, 390]) {
   await send('Emulation.setDeviceMetricsOverride', {width,height:700,deviceScaleFactor:1,mobile:width<768});
   for (const code of Object.keys(catalogs)) {
    await navigate('/?lang='+code);
    for (const selector of ['#turkluxx-callback', '#turkluxx-contact']) {
-    await evaluate(selector === '#turkluxx-contact' ? "document.querySelector('[data-home-scroll=contact]').click()" : "document.querySelector('.turkluxx-callback-trigger').click()");
+    await evaluate(selector === '#turkluxx-contact' ? "document.querySelector('.turkluxx-footer-legal [data-home-scroll=contact]').click()" : "document.querySelector('.turkluxx-callback-trigger').click()");
     await until('document.querySelector('+JSON.stringify(selector)+').open');
     const inspect = await evaluate(`(() => { const d=document.querySelector(${JSON.stringify(selector)}); return { controls: [...d.querySelectorAll('[type=checkbox]')].map(c=>({checked:c.checked,required:c.required,label:c.closest('label').innerText})), dir:getComputedStyle(d).direction, links:[...d.querySelectorAll('.turkluxx-sms-consent a')].map(a=>a.getAttribute('href')) }; })()`);
-    assert.equal(inspect.controls.length,2);
+    assert.equal(inspect.controls.length,1);
     inspect.controls.forEach(c=>{assert.equal(c.checked,false);assert.equal(c.required,false);});
-    assert.equal(inspect.controls[0].label,catalogs[code]['sms.informational']);
-    assert.equal(inspect.controls[1].label,catalogs[code]['sms.marketing']);
+    assert.equal(inspect.controls[0].label,catalogs[code]['sms.consent']);
     assert.equal(inspect.dir,code==='ar'?'rtl':'ltr');
     assert.deepEqual(inspect.links,['privacy-policy.html','terms-and-conditions.html']);
-    for(const info of [false,true]) for(const marketing of [false,true]) {
+    const phoneSettings = await evaluate(`(() => {const f=document.querySelector(${JSON.stringify(selector)}).querySelector('form'), p=f.elements.phone;return {type:p.type, autocomplete:p.autocomplete, inputmode:p.inputMode, dir:getComputedStyle(p).direction, placeholder:p.placeholder, hasCountry:!!f.elements.country};})()`);
+    assert.deepEqual(phoneSettings,{type:'tel',autocomplete:'tel',inputmode:'tel',dir:'ltr',placeholder:'+1 949 555 1234',hasCountry:false});
+    // Scroll the full disclaimer into view and verify it is neither hidden nor clipped.
+    const visible = await evaluate(`(() => { const d=document.querySelector(${JSON.stringify(selector)}), text=d.querySelector('.turkluxx-sms-consent span'); text.scrollIntoView({block:'center'}); const r=text.getBoundingClientRect(), box=d.getBoundingClientRect(), s=getComputedStyle(text); return { font:parseFloat(s.fontSize), visible: s.display!=='none' && s.visibility==='visible' && r.height>0 && r.top>=Math.max(box.top,0) && r.bottom<=Math.min(box.bottom,innerHeight), overflow:d.scrollWidth>d.clientWidth+1 }; })()`);
+    assert.equal(visible.visible,true,JSON.stringify({width,code,selector,visible}));
+    assert.equal(visible.overflow,false);
+    assert.equal(visible.font,width===1440?11.5:12);
+    if (selector === '#turkluxx-contact') {
+      const details = await evaluate(`(() => {const f=document.querySelector('#turkluxx-contact form');return {phoneType:f.elements.phone.type, phoneLabel:f.elements.phone.labels[0].innerText, hasCountry:!!f.elements.country};})()`);
+      assert.equal(details.phoneType,'tel');
+      assert.equal(details.phoneLabel,catalogs[code]['contact.phone']);
+      assert.equal(details.hasCountry,false);
+    }
+    if (width===320 && ['en','ar'].includes(code)) {
+      await mkdir(resolve(root,'build/combined-consent'),{recursive:true});
+      const shot=await send('Page.captureScreenshot',{format:'png'});
+      await writeFile(resolve(root,`build/combined-consent/${code}-${selector.slice(1)}.png`),Buffer.from(shot.data,'base64'));
+    }
+    // Exercise actual browser typing, deletion, middle edits, and paste events.
+    if ((code==='en' && [1440,390].includes(width)) || (code==='ar' && width===320)) {
+      await evaluate(`document.querySelector(${JSON.stringify(selector)}).querySelector('[name=phone]').focus()`);
+      await evaluate(`import('./js/phone-format.js').then(m => m.attachPhoneInput(document.querySelector(${JSON.stringify(selector)}).querySelector('[name=phone]')))`);
+      for (const [number, display] of phones) {
+        await evaluate(`document.activeElement.value='';`);
+        for (const digit of number) await send('Input.insertText',{text:digit});
+        assert.equal(await evaluate('document.activeElement.value'),display);
+        await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Backspace',code:'Backspace',windowsVirtualKeyCode:8});
+        await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Backspace',code:'Backspace',windowsVirtualKeyCode:8});
+        assert.equal(await evaluate('document.activeElement.value'),display.slice(0,-1));
+        await send('Input.insertText',{text:number.at(-1)});
+        assert.equal(await evaluate('document.activeElement.value'),display);
+        await evaluate('document.activeElement.setSelectionRange(2,3)');
+        await send('Input.insertText',{text:'9'});
+        assert.equal(await evaluate('document.activeElement.selectionStart'),3);
+        await evaluate(`document.activeElement.value='';`);
+        const pasted=display.replaceAll(' ','-');
+        // insertFromPaste is a native input event type; clipboard input must keep all digits.
+        await evaluate(`(() => {const p=document.activeElement;p.value=${JSON.stringify(pasted)};p.setSelectionRange(p.value.length,p.value.length);p.dispatchEvent(new InputEvent('input',{inputType:'insertFromPaste',bubbles:true}));})()`);
+        assert.equal(await evaluate('document.activeElement.value'),display);
+      }
+      const national='0612345678';
+      await evaluate(`document.activeElement.value='';`);
+      await send('Input.insertText',{text:national});
+      assert.equal(await evaluate('document.activeElement.value'),national);
+    }
+    const [phoneNumber,phoneDisplay] = phones[Object.keys(catalogs).indexOf(code)%phones.length];
+    for(const consent of [false,true]) {
      const before=messages.length;
-     await evaluate(`(() => { const f=document.querySelector(${JSON.stringify(selector)}).querySelector('form'); f.elements.name.value='SMS Test'; f.elements.email.value='sms@example.com'; if(f.elements.phone) f.elements.phone.value='+1 949 555 1234'; if(f.elements.message) f.elements.message.value='Consent test message'; f.elements.smsInformationalConsent.checked=${info}; f.elements.smsMarketingConsent.checked=${marketing}; [...f.querySelectorAll("input, textarea")].forEach(c=>c.dispatchEvent(new Event("input",{bubbles:true}))); f.requestSubmit(); })()`);
+     await evaluate(`(() => { const f=document.querySelector(${JSON.stringify(selector)}).querySelector('form'); f.elements.name.value='SMS Test'; f.elements.email.value='sms@example.com'; f.elements.phone.value=${JSON.stringify(phoneDisplay)}; if(f.elements.message) f.elements.message.value='Consent test message'; f.elements.smsConsent.checked=${consent}; [...f.querySelectorAll("input, textarea")].forEach(c=>c.dispatchEvent(new Event("input",{bubbles:true}))); f.requestSubmit(); })()`);
      for(let i=0;i<100 && messages.length===before;i++) await pause(30);
-     assert.equal(messages.length,before+1, JSON.stringify({selector,code,info,marketing,errors,payloads}));
+     assert.equal(messages.length,before+1, JSON.stringify({selector,code,consent,errors,payloads}));
      await until(`!document.querySelector(${JSON.stringify(selector)}).querySelector('[type=submit]').disabled`);
      const payload=payloads.at(-1), email=messages.at(-1);
-     assert.equal(payload.smsInformationalConsent,info); assert.equal(payload.smsMarketingConsent,marketing);
-     assert.ok(email.text.includes('Informational / Transactional SMS: '+(info?'YES':'NO')));
-     assert.ok(email.text.includes('Promotional / Marketing SMS: '+(marketing?'YES':'NO')));
+     assert.equal(payload.smsConsent,consent);
+     assert.ok(email.text.includes('Transactional / Informational + Promotional / Marketing SMS: '+(consent?'YES':'NO')));
+     assert.equal(payload.phone,phoneNumber);
+     assert.ok(email.text.includes('Phone: '+phoneNumber));
+     assert.equal(Object.hasOwn(payload,'country'),false);
+     assert.ok(!email.text.includes('Country:'));
      assert.ok(email.text.includes('SMS Test')); assert.ok(email.text.includes('sms@example.com'));
-     assert.ok(email.text.includes(selector.includes('callback')?'+1 949 555 1234':'Consent test message'));
+     if(selector === '#turkluxx-contact') assert.ok(email.text.includes('Consent test message'));
      submissions++;
     }
-    // Native keyboard toggling stays independent; focus scrolls controls into view.
-    await evaluate(`document.querySelector(${JSON.stringify(selector)}).querySelector('[name=smsInformationalConsent]').focus()`);
+    // Native keyboard toggling and focus scroll controls into view.
+    await evaluate(`document.querySelector(${JSON.stringify(selector)}).querySelector('[name=smsConsent]').focus()`);
     const checked=await evaluate(`document.activeElement.checked`);
     await send('Input.dispatchKeyEvent',{type:'keyDown',key:' ',code:'Space',windowsVirtualKeyCode:32});
     await send('Input.dispatchKeyEvent',{type:'keyUp',key:' ',code:'Space',windowsVirtualKeyCode:32});
@@ -111,7 +163,7 @@ try {
   }
  }
  assert.equal(errors.length,0,JSON.stringify(errors));
- console.log('PASS: '+submissions+' submissions; both forms, all six languages, desktop/mobile, independent keyboard toggling, RTL and visible Submit. Email binding mocked; no live email sent.');
+ console.log('PASS: '+submissions+' submissions; both forms, all six languages, 1440/320/375/390px, full disclaimer visible, footer popup, normalized phone, no Country, keyboard toggling, RTL and visible Submit. Email binding mocked; no live email sent.');
 } finally {
  ws.close(); server.closeAllConnections(); server.close();
  await fetch('http://127.0.0.1:9227/json/close/'+target.id).catch(()=>{});

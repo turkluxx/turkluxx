@@ -14,5 +14,8 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "libphonenumber-js": "^1.13.15"
   }
 }

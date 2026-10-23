@@ -1,6 +1,7 @@
 [
     "favicon.ico",
     "site.webmanifest",
+    "js/phone-format.js",
     "img/favicon/favicon-16x16.png",
     "img/favicon/favicon-32x32.png",
     "img/favicon/apple-touch-icon.png",

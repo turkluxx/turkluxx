@@ -1,4 +1,5 @@
 import '../js/referral-registry.js';
+import { normalizePhone } from '../scripts/phone-format.mjs';
 const registry = globalThis.TurkLuxxReferralRegistry;
 const normalizeReferral = globalThis.normalizeTurkLuxxReferral;
 const parents = Object.fromEntries(Object.entries(registry)
@@ -98,8 +99,7 @@ export function validateLead(data) {
   const generalContact = data.source === 'general-contact';
   const lead = {
     referral,
-    smsInformationalConsent: data.smsInformationalConsent === true,
-    smsMarketingConsent: data.smsMarketingConsent === true,
+    smsConsent: data.smsConsent === true,
     ...(hasClient ? { client: data.client } : {}),
     ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: path ? path.parentConsultant : referral } : {}),
     ...(path ? { referralPath: path.referralPath } : {}),
@@ -120,6 +120,7 @@ export function validateLead(data) {
     throw new InputError(400, 'Invalid email.');
   }
   // Client-supplied leadId/submittedAt/from/to and other unknown keys are ignored.
+  if (lead.phone) lead.phone = normalizePhone(lead.phone);
   return lead;
 }
 
@@ -136,8 +137,7 @@ export function createLeadEmail(lead, leadId, submittedAt) {
   lines.push(`Submitted: ${submittedAt}`);
   if (lead.source === 'general-contact') lines.push(`Source: ${lead.source}`, `Language: ${lead.language}`, '', 'Message:', lead.message);
   lines.push('', '---', 'SMS Consent',
-    `Informational / Transactional SMS: ${lead.smsInformationalConsent === true ? 'YES' : 'NO'}`,
-    `Promotional / Marketing SMS: ${lead.smsMarketingConsent === true ? 'YES' : 'NO'}`, '---');
+    `Transactional / Informational + Promotional / Marketing SMS: ${lead.smsConsent === true ? 'YES' : 'NO'}`, '---');
   return {
     to: RECIPIENT,
     from: { name: 'TurkLuxx Leads', email: 'leads@turkluxx.com' },

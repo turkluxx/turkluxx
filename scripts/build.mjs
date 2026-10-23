@@ -1,5 +1,5 @@
 import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { transform } from 'esbuild';
+import { build, transform } from 'esbuild';
 import postcss from 'postcss';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -80,6 +80,13 @@ function pageHtml(file) {
 }
 
 async function bundle(files) {
+  // A local, lazy-loaded module serves both source previews and production.
+  if (files.includes('js/phone-format.js')) {
+    await build({ entryPoints: [join(root, 'scripts/phone-format.mjs')],
+      outfile: join(root, 'js/phone-format.js'), bundle: true, format: 'esm',
+      minify: true, target: 'es2022', legalComments: 'eof' });
+    copyFileSync(join(root, 'js/phone-format.js'), join(dist, 'js/phone-format.js'));
+  }
   const pages = files.filter(file => file.endsWith('.html')).map(file => {
     const html = pageHtml(file);
     return { file, id: file === 'index.html' ? 'home' : file.replace('rengi-', '').replace('.html', ''),

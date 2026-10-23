@@ -465,6 +465,6 @@
   "home.statistics.excellence": "Built on excellence",
   "home.statistics.vision": "United by vision",
   "home.statistics.presented": "Presented to the world by TurkLuxx",
-  "sms.informational": "By checking this box, you agree to receive transactional and informational SMS messages from TurkLuxx regarding your inquiry, appointments, and customer care. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to opt out.",
-  "sms.marketing": "By checking this box, you agree to receive promotional and marketing SMS messages from TurkLuxx, including property offers, updates, and related services. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to opt out."
+  "sms.consent": "By checking this box, you agree to receive transactional/informational and promotional/marketing SMS messages from TurkLuxx regarding your inquiry, appointments, customer care, and promotional offers. Message frequency may vary. Msg & data rates may apply. Reply HELP for help or STOP to opt out.",
+  "contact.phone": "Phone Number"
 }
