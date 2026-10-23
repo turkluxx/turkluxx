@@ -21,10 +21,25 @@ test('Six catalogs cover every English key with valid strings and matching param
             assert.deepEqual(placeholders(value), placeholders(catalogs.en[key]), `${code} ${key}`);
             assert.ok(!/<\/?(?:script|iframe|img|div|span)\b/i.test(value));
             const numbers = s => (s.match(/\d+(?:[.,]\d+)*(?:%|\+)?/g) || []).sort();
-            assert.deepEqual(numbers(value), numbers(catalogs.en[key]), `${code} ${key}: figures`);
+            // Arabic intentionally reverses the ROI endpoints while keeping one trailing percent sign.
+            const figures = code === 'ar' && catalogs.en[key].includes('30–70%')
+                ? value.replaceAll('70–30%', '30–70%') : value;
+            assert.deepEqual(numbers(figures), numbers(catalogs.en[key]), `${code} ${key}: figures`);
             for (const name of ['TurkLuxx', 'Rengi Istanbul', 'Rengi Antalya', 'Karaarslan Group']) {
                 if (catalogs.en[key].includes(name)) assert.ok(value.includes(name), `${code} ${key}: ${name}`);
             }
+        }
+    }
+});
+test('ROI ranges have one trailing percent sign and Arabic preserves its isolated visual order', async () => {
+    const keys = ['common.roi_30_70', 'nav.roi_30_70', 'home.roi.potential', 'home.roi.appreciation', 'mobile.nav.roi', 'mobile.nav.primary_roi'];
+    const { api } = runtime();
+    for (const language of codes) {
+        await api.setLanguage(language);
+        for (const key of keys) {
+            const value = api.t(key);
+            assert.ok(value.includes(language === 'ar' ? '\u206670–30%\u2069' : '30–70%'));
+            assert.equal((value.match(/%/g) || []).length, 1);
         }
     }
 });

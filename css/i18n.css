@@ -1347,3 +1347,4 @@ html[dir="rtl"] .turkluxx-footer [data-company-field="address"] {
 html[dir="rtl"] .turkluxx-footer [data-company-field="phone"] a {
     display: inline-block;
 }
+.turkluxx-roi-range { white-space: nowrap; unicode-bidi: isolate; }

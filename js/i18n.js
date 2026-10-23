@@ -106,7 +106,7 @@
         // Keep the full section heading, but treat its range as one unit.
         if (element.id === 'rengi-roi-title') {
             if (element.textContent === value && element.querySelector('.rengi-roi-percentage')) return;
-            const range = value.match(/\([\u2066-\u2069]*30%–70%[\u2066-\u2069]*\)/u);
+            const range = value.match(/\([\u2066-\u2069]*(?:30–70|70–30)%[\u2066-\u2069]*\)/u);
             if (range) {
                 const percentage = document.createElement('span');
                 percentage.className = 'rengi-roi-percentage';
@@ -120,6 +120,17 @@
                 element.replaceChildren(lastWord ? prefix.slice(0, lastWord.index) : prefix, ending, value.slice(range.index + range[0].length));
                 return;
             }
+        }
+        // Keep the ROI range together when prose wraps, including in RTL text.
+        const roiRange = value.match(/[\u2066-\u2069]*(?:30–70|70–30)%[\u2066-\u2069]*/u);
+        if (roiRange) {
+            if (element.textContent === value && element.querySelector('.turkluxx-roi-range')) return;
+            const range = document.createElement('span');
+            range.className = 'turkluxx-roi-range';
+            range.dir = 'ltr';
+            range.textContent = roiRange[0];
+            element.replaceChildren(value.slice(0, roiRange.index), range, value.slice(roiRange.index + roiRange[0].length));
+            return;
         }
         if (element.textContent !== value) element.textContent = value;
     }

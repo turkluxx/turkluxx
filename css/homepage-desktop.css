@@ -1572,8 +1572,8 @@ html[dir="rtl"] .turkluxx-partnership-intro { direction: rtl; }
     .turkluxx-partnership-wordmark span { font-size: clamp(27px, 7vw, 36px); }
     .turkluxx-partnership-wordmark small { font-size: 10px; letter-spacing: .12em; }
     .turkluxx-statistics-card:nth-of-type(1) { grid-area: 2 / 1; }
-    .turkluxx-statistics-card:nth-of-type(2) { grid-area: 2 / 2; }
-    .turkluxx-statistics-card:nth-of-type(3) { grid-area: 3 / 1; }
+    .turkluxx-statistics-card:nth-of-type(2) { grid-area: 3 / 1; }
+    .turkluxx-statistics-card:nth-of-type(3) { grid-area: 2 / 2; }
     .turkluxx-statistics-card:nth-of-type(4) { grid-area: 3 / 2; }
     .turkluxx-statistics-card { height: auto; min-height: 0; padding: 30px 8px 28px; border-radius: 20px; }
     .turkluxx-statistics-card > :is(h3, p) { min-width: 0; max-width: 100%; }
