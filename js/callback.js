@@ -39,6 +39,8 @@
       phone: value('phone'),
       ...smsConsentFields(fields),
       email: value('email'),
+      message: value('message'),
+      source: 'callback',
       project: context?.project || null,
       property: context?.property || null,
       propertyCode: context?.propertyCode || null,
@@ -105,22 +107,25 @@
   // One general contact form shares the existing enquiry modal controller.
   const contactDialog = document.createElement('dialog');
   contactDialog.id = 'turkluxx-contact';
-  contactDialog.className = 'turkluxx-callback turkluxx-contact';
+  contactDialog.className = 'turkluxx-callback turkluxx-contact turkluxx-inquiry';
   contactDialog.setAttribute('aria-labelledby', 'turkluxx-contact-title');
   contactDialog.innerHTML = `
     <button class="turkluxx-callback-close" type="button" aria-label="Close contact form">&times;</button>
     <h2 id="turkluxx-contact-title" data-i18n="contact.title">Contact Us</h2>
     <form>
-      <div class="turkluxx-callback-field"><label for="contact-name" data-i18n="contact.name">Name</label><input id="contact-name" name="name" autocomplete="name" maxlength="120" required autofocus></div>
-      <div class="turkluxx-callback-field"><label for="contact-email" data-i18n="contact.email">Email</label><input id="contact-email" name="email" type="email" dir="ltr" autocomplete="email" maxlength="254" required></div>
-      <div class="turkluxx-callback-field"><label for="contact-phone" data-i18n="contact.phone">Phone Number</label><input id="contact-phone" name="phone" type="tel" dir="ltr" autocomplete="tel" maxlength="80"></div>
-      <div class="turkluxx-callback-field"><label for="contact-message" data-i18n="contact.message">Message</label><textarea id="contact-message" name="message" rows="4" maxlength="2000" required></textarea></div>
       <button class="turkluxx-callback-submit" type="submit" data-i18n="contact.submit">SEND MESSAGE</button>
       <p class="turkluxx-callback-status" role="status" aria-live="polite"></p>
     </form>`;
   document.body.append(contactDialog);
   const contact = modalController(contactDialog);
   const contactForm = contactDialog.querySelector('form');
+  // Callback markup is the common field template on every page.
+  for (const field of [...form.querySelectorAll('.turkluxx-callback-field')].reverse()) {
+    const copy = field.cloneNode(true);
+    copy.querySelectorAll('[id]').forEach(element => { element.id = element.id.replace(/^callback-/, 'contact-'); });
+    copy.querySelectorAll('label[for]').forEach(label => { label.htmlFor = label.htmlFor.replace(/^callback-/, 'contact-'); });
+    contactForm.prepend(copy);
+  }
   // Native optional controls share one markup and payload mapping across both forms.
   const smsConsentFields = fields => ({
     smsConsent: fields.get('smsConsent') === 'on'
@@ -168,16 +173,23 @@
       contact.open(opener);
     });
   });
-  const contactValidators = [...contactForm.querySelectorAll('input:not([type="checkbox"]), textarea')].map(input => {
-    const validate = () => {
-      const key = !input.value.trim() ? { name: 'requiredName', email: 'requiredEmail', message: 'requiredMessage' }[input.name]
-        : input.type === 'email' && (input.validity.typeMismatch || !/^[^\s<>(),;:"\\@]+@[^\s<>(),;:"\\@]+\.[^\s<>(),;:"\\@]+$/u.test(input.value.trim())) ? 'invalidEmail' : null;
-      input.setCustomValidity(key ? window.TurkLuxxI18n.t(`contact.${key}`) : '');
-    };
-    input.addEventListener('input', validate);
-    input.addEventListener('invalid', validate);
-    return validate;
-  });
+  function createInquiryValidators(targetForm, onInput = () => {}) {
+    return [...targetForm.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), textarea')].map(input => {
+      const validate = () => {
+        const missing = input.required && !input.value.trim();
+        const invalidEmail = input.type === 'email' && input.value.trim() &&
+          (input.validity.typeMismatch || !/^[^\s<>(),;:"\\@]+@[^\s<>(),;:"\\@]+\.[^\s<>(),;:"\\@]+$/u.test(input.value.trim()));
+        const key = missing ? { name: 'callback.requiredName', phone: 'callback.requiredPhone', email: 'callback.requiredEmail' }[input.name]
+          : invalidEmail ? 'callback.invalidEmail' : null;
+        input.setCustomValidity(key ? window.TurkLuxxI18n.t(key) : '');
+      };
+      input.addEventListener('input', () => { validate(); onInput(); });
+      input.addEventListener('change', validate);
+      input.addEventListener('invalid', validate);
+      return validate;
+    });
+  }
+  const contactValidators = createInquiryValidators(contactForm);
   window.addEventListener('turkluxx:language-change', () => contactValidators.forEach(validate => validate()));
   contactForm.addEventListener('submit', async event => {
     event.preventDefault();
@@ -199,7 +211,7 @@
     contactForm.setAttribute('aria-busy', 'true');
     window.TurkLuxxI18n.bind(contactStatus, 'contact.sending');
     try {
-      payload.phone = (await phoneFormatting())?.normalizePhone(payload.phone) ?? payload.phone;
+      if (payload.phone) payload.phone = (await phoneFormatting())?.normalizePhone(payload.phone) ?? payload.phone;
       contactForm.dispatchEvent(new CustomEvent('turkluxx:lead-ready', { detail: payload, bubbles: true }));
       const response = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin', body: JSON.stringify(payload), signal: AbortSignal.timeout(30000) });
@@ -278,20 +290,7 @@
     });
   });
 
-  const validators = [];
-  for (const input of form.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"])')) {
-    const validate = () => {
-      const missing = !input.value.trim();
-      const invalidEmail = input.type === 'email' && input.validity.typeMismatch;
-      const key = missing ? { name: 'callback.requiredName', phone: 'callback.requiredPhone', email: 'callback.requiredEmail' }[input.name]
-        : invalidEmail ? 'callback.invalidEmail' : null;
-      input.setCustomValidity(key ? window.TurkLuxxI18n.t(key) : '');
-    };
-    validators.push(validate);
-    input.addEventListener('input', () => { validate(); status.textContent = ''; });
-    input.addEventListener('change', validate);
-    input.addEventListener('invalid', validate);
-  }
+  const validators = createInquiryValidators(form, () => { status.textContent = ''; });
   window.addEventListener('turkluxx:language-change', () => {
     validators.forEach(validate => validate());
   });
@@ -308,7 +307,7 @@
     window.TurkLuxxI18n.bind(status, 'callback.sending');
     try {
       // Preserve the existing local event. This handler alone performs the send.
-      payload.phone = (await phoneFormatting())?.normalizePhone(payload.phone) ?? payload.phone;
+      if (payload.phone) payload.phone = (await phoneFormatting())?.normalizePhone(payload.phone) ?? payload.phone;
       form.dispatchEvent(new CustomEvent('turkluxx:lead-ready', { detail: payload, bubbles: true }));
       const response = await fetch('/api/lead', {
         method: 'POST',

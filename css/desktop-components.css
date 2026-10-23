@@ -169,4 +169,17 @@
         background: rgb(33 44 108 / 74%);
         border-color: #d8b66a;
     }
+
+    /* Arabic labels use their natural widths while the header keeps its layout. */
+    html[lang='ar'] .turkluxx-page .turkluxx-sales-header > .turkluxx-sales-nav {
+        justify-content: center;
+        gap: clamp(3px, calc(1.5vw - 15px), 8px);
+    }
+
+    html[lang='ar'] .turkluxx-page .turkluxx-sales-header > .turkluxx-sales-nav a {
+        flex: 0 0 auto;
+        width: auto;
+        padding-inline: clamp(3px, calc(3vw - 33px), 11px);
+        white-space: nowrap;
+    }
 }

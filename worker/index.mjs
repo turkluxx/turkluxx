@@ -97,24 +97,27 @@ export function validateLead(data) {
     throw new InputError(400, 'Invalid referral client.');
   }
   const generalContact = data.source === 'general-contact';
+  const message = data.message ?? '';
+  if (typeof message !== 'string' || message.length > 2000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(message)) {
+    throw new InputError(400, 'Invalid message.');
+  }
   const lead = {
     referral,
+    source: generalContact ? 'general-contact' : 'callback',
+    message: message.trim(),
     smsConsent: data.smsConsent === true,
     ...(hasClient ? { client: data.client } : {}),
     ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: path ? path.parentConsultant : referral } : {}),
     ...(path ? { referralPath: path.referralPath } : {}),
     ...(Object.hasOwn(parents, referral) ? { parentConsultant: parents[referral] } : {}),
-    name: field('name', 120, true), phone: field('phone', 80, !generalContact), email: field('email', 254, true),
+    name: field('name', 120, true), phone: field('phone', 80), email: field('email', 254, true),
     project: field('project', 120), property: field('property', 180), propertyCode: field('propertyCode', 80),
     page,
     ...(diagnostics ? { diagnostics } : {})
   };
   if (generalContact) {
     if (!['en', 'nl', 'es', 'ru', 'tr', 'ar'].includes(data.language)) throw new InputError(400, 'Invalid language.');
-    if (typeof data.message !== 'string' || !data.message.trim() || data.message.length > 2000 || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(data.message)) {
-      throw new InputError(400, 'Invalid message.');
-    }
-    Object.assign(lead, { source: 'general-contact', language: data.language, message: data.message.trim(), project: null, property: null, propertyCode: null });
+    Object.assign(lead, { language: data.language, project: null, property: null, propertyCode: null });
   }
   if (!/^[^\s<>(),;:"\\@]+@[^\s<>(),;:"\\@]+\.[^\s<>(),;:"\\@]+$/u.test(lead.email)) {
     throw new InputError(400, 'Invalid email.');
@@ -128,14 +131,16 @@ export function createLeadEmail(lead, leadId, submittedAt) {
   const context = lead.source === 'general-contact' ? 'Contact Us' : lead.property || lead.project || 'General Enquiry';
   const lines = [
     'NEW TURKLUXX LEAD', '', `Lead ID: ${leadId}`, `Referral: ${lead.referral}`, ...(lead.client ? [`Participant: ${lead.client}`] : []), ...(lead.subref ? [`Sub-referrer: ${lead.subref}`, `Direct Referrer: ${lead.directReferrer}`] : []), ...(lead.parentConsultant ? [`Parent Consultant: ${lead.parentConsultant}`] : []), '',
-    `Name: ${lead.name}`, ...(lead.phone ? [`Phone: ${lead.phone}`] : []), `Email: ${lead.email}`, ''
+    `Name: ${lead.name}`, `Phone: ${lead.phone || 'Not provided'}`, `Email: ${lead.email}`, ''
   ];
   for (const [key, label] of [['project', 'Project'], ['property', 'Property'], ['propertyCode', 'Property Code'], ['page', 'Page']]) {
     if (lead[key]) lines.push(`${label}: ${lead[key]}`);
   }
   if (lead.diagnostics?.originalPage) lines.push(`Original page (diagnostic only): ${lead.diagnostics.originalPage}`);
   lines.push(`Submitted: ${submittedAt}`);
-  if (lead.source === 'general-contact') lines.push(`Source: ${lead.source}`, `Language: ${lead.language}`, '', 'Message:', lead.message);
+  lines.push(`Form source: ${lead.source === 'general-contact' ? 'Contact Us' : 'Request a Callback'}`);
+  if (lead.source === 'general-contact') lines.push(`Source: ${lead.source}`, `Language: ${lead.language}`);
+  lines.push('', 'Message:', lead.message || 'Not provided');
   lines.push('', '---', 'SMS Consent',
     `Transactional / Informational + Promotional / Marketing SMS: ${lead.smsConsent === true ? 'YES' : 'NO'}`, '---');
   return {

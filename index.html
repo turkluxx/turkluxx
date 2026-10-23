@@ -496,23 +496,27 @@
         <span data-i18n="home.roi.closingHold">Or hold for the future and let your investment continue to work for you.</span>
     </p>
 </dialog>
-<dialog class="turkluxx-callback" id="turkluxx-callback" aria-labelledby="turkluxx-callback-title"
+<dialog class="turkluxx-callback turkluxx-inquiry" id="turkluxx-callback" aria-labelledby="turkluxx-callback-title"
         aria-describedby="turkluxx-callback-description">
     <button class="turkluxx-callback-close" type="button" aria-label="Close callback form">&times;</button>
     <h2 id="turkluxx-callback-title">LET'S TALK</h2>
     <p id="turkluxx-callback-description">Leave your details and our team will get in touch with you.</p>
     <form id="turkluxx-callback-form">
         <div class="turkluxx-callback-field">
-            <label for="callback-name">Name</label>
-            <input id="callback-name" name="name" type="text" autocomplete="name" required autofocus>
+            <label for="callback-name" data-i18n="contact.name">Name</label>
+            <input id="callback-name" name="name" type="text" autocomplete="name" maxlength="120" required autofocus>
         </div>
         <div class="turkluxx-callback-field">
-            <label for="callback-phone">Phone</label>
-            <input id="callback-phone" name="phone" type="tel" autocomplete="tel" required>
+            <label for="callback-phone" data-i18n="contact.phone">Phone Number</label>
+            <input id="callback-phone" name="phone" type="tel" dir="ltr" autocomplete="tel" maxlength="80">
         </div>
         <div class="turkluxx-callback-field">
-            <label for="callback-email">Email</label>
-            <input id="callback-email" name="email" type="email" autocomplete="email" required>
+            <label for="callback-email" data-i18n="contact.email">Email</label>
+            <input id="callback-email" name="email" type="email" dir="ltr" autocomplete="email" maxlength="254" required>
+        </div>
+        <div class="turkluxx-callback-field">
+            <label for="callback-message" data-i18n="contact.message">Message</label>
+            <textarea id="callback-message" name="message" rows="4" maxlength="2000"></textarea>
         </div>
         <button class="turkluxx-callback-submit" type="submit">REQUEST A CALLBACK</button>
         <p class="turkluxx-callback-status" role="status" aria-live="polite"></p>

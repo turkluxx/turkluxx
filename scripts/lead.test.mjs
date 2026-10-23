@@ -4,10 +4,10 @@ import worker, { validateLead } from '../worker/index.mjs';
 import { normalizePhone } from './phone-format.mjs';
 
 const generic = { referral: 'DIRECT', name: 'Sarah Williams', phone: '+44 20 1234 5678', email: 'sarah@example.com', project: null, property: null, propertyCode: null, page: 'https://turkluxx.com/' };
-test('General contact sends multiline message and language without requiring a phone', async () => {
+test('General contact sends phone, multiline message and language', async () => {
   for (const language of ['en', 'nl', 'es', 'ru', 'tr', 'ar']) {
     const env = environment();
-    const lead = { ...generic, phone: undefined, source: 'general-contact', language, message: 'Interested in your services.\nPlease contact me.', property: 'ignored' };
+    const lead = { ...generic, source: 'general-contact', language, message: 'Interested in your services.\nPlease contact me.', property: 'ignored' };
     assert.equal((await worker.fetch(request(lead), env)).status, 200);
     assert.ok(env.messages[0].subject.endsWith('Contact Us'));
     assert.ok(env.messages[0].text.includes(lead.message));
@@ -16,11 +16,31 @@ test('General contact sends multiline message and language without requiring a p
     assert.ok(!env.messages[0].text.includes('Property:'));
   }
 });
-test('General contact rejects missing message, unsupported language and excessive message length', async () => {
-  for (const patch of [{ message: '' }, { message: '  ' }, { message: null }, { message: 42 }, { message: 'x'.repeat(2001) }, { language: 'de' }]) {
+test('General contact rejects invalid message types, unsupported language and excessive message length', async () => {
+  for (const patch of [{ message: 42 }, { message: 'x'.repeat(2001) }, { language: 'de' }]) {
     const env = environment();
     assert.equal((await worker.fetch(request({ ...generic, source: 'general-contact', language: 'en', message: 'Hello', ...patch }), env)).status, 400);
     assert.equal(env.messages.length, 0);
+  }
+});
+test('Both forms accept optional multiline messages and report the correct form source', async () => {
+  for (const source of ['general-contact', 'callback']) {
+    for (const message of [undefined, '', '  ', 'Interested in a villa.\nPlease call me.']) {
+      for (const smsConsent of [false, true]) {
+        const env = environment();
+        assert.equal((await worker.fetch(request({ ...generic, source, language: 'en', message, smsConsent }), env)).status, 200);
+        const notification = env.messages[0];
+        assert.ok(notification.text.includes(`Form source: ${source === 'general-contact' ? 'Contact Us' : 'Request a Callback'}`));
+        assert.ok(notification.text.includes(`Message:\n${message?.trim() || 'Not provided'}`));
+        assert.ok(notification.text.includes(`Transactional / Informational + Promotional / Marketing SMS: ${smsConsent ? 'YES' : 'NO'}`));
+        assert.equal(notification.to, 'turkluxx101@gmail.com');
+      }
+    }
+    for (const patch of [{ email: 'invalid' }, { name: '' }, { message: 'x'.repeat(2001) }, { message: '\u0000' }]) {
+      const env = environment();
+      assert.equal((await worker.fetch(request({ ...generic, source, language: 'en', ...patch }), env)).status, 400);
+      assert.equal(env.messages.length, 0);
+    }
   }
 });
 function request(data = generic, options = {}) {
@@ -29,6 +49,27 @@ function request(data = generic, options = {}) {
     body: JSON.stringify(data), ...options
   });
 }
+test('Both forms accept only name and email with absent, empty or whitespace phone values', async () => {
+  for (const source of ['general-contact', 'callback']) {
+    for (const language of ['en', 'nl', 'es', 'ru', 'tr', 'ar']) {
+      for (const phone of [undefined, null, '', '  ']) {
+        const env = environment();
+        const response = await worker.fetch(request({ name: generic.name, email: generic.email,
+          referral: 'DIRECT', source, language, phone }), env);
+        assert.equal(response.status, 200);
+        assert.equal(env.messages.length, 1);
+        const email = env.messages[0];
+        assert.ok(email.text.includes(`Name: ${generic.name}`));
+        assert.ok(email.text.includes(`Email: ${generic.email}`));
+        assert.ok(email.text.includes('Phone: Not provided'));
+        assert.ok(email.text.includes('Message:\nNot provided'));
+        assert.ok(email.text.includes('Transactional / Informational + Promotional / Marketing SMS: NO'));
+        assert.ok(email.text.includes(`Form source: ${source === 'general-contact' ? 'Contact Us' : 'Request a Callback'}`));
+        assert.equal(email.to, 'turkluxx101@gmail.com');
+      }
+    }
+  }
+});
 function environment() {
   const messages = [];
   return { messages, LEAD_EMAIL: { async send(message) { messages.push(message); } }, ASSETS: { fetch: async () => new Response('asset') } };
@@ -85,7 +126,7 @@ for (const [label, fields, subject] of [
   });
 }
 test('E/F/G invalid referral, required values and email rejected without sending', async () => {
-  for (const patch of [{ referral: 'WALT01' }, { referral: 'alma' }, { referral: null }, { name: '' }, { name: '   ' }, { phone: null }, { email: 'not-an-email' }, { name: 42 }, { email: 'x@example.com\r\nBcc: victim@example.com' }]) {
+  for (const patch of [{ referral: 'WALT01' }, { referral: 'alma' }, { referral: null }, { name: '' }, { name: '   ' }, { email: 'not-an-email' }, { name: 42 }, { email: 'x@example.com\r\nBcc: victim@example.com' }]) {
     const env = environment();
     assert.equal((await worker.fetch(request({ ...generic, ...patch }), env)).status, 400);
     assert.equal(env.messages.length, 0);
