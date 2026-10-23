@@ -464,5 +464,7 @@
   "home.statistics.intro": "TurkLuxx takes Karaarslan Insaat’s legacy of excellence beyond borders, connecting exceptional craftsmanship with the world.",
   "home.statistics.excellence": "Built on excellence",
   "home.statistics.vision": "United by vision",
-  "home.statistics.presented": "Presented to the world by TurkLuxx"
+  "home.statistics.presented": "Presented to the world by TurkLuxx",
+  "sms.informational": "By checking this box, you agree to receive transactional and informational SMS messages from TurkLuxx regarding your inquiry, appointments, and customer care. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to opt out.",
+  "sms.marketing": "By checking this box, you agree to receive promotional and marketing SMS messages from TurkLuxx, including property offers, updates, and related services. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to opt out."
 }

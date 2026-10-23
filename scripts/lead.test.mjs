@@ -32,6 +32,33 @@ function environment() {
   const messages = [];
   return { messages, LEAD_EMAIL: { async send(message) { messages.push(message); } }, ASSETS: { fetch: async () => new Response('asset') } };
 }
+test('Both inquiry types preserve all four independent SMS choices in existing email notifications', async () => {
+  for (const source of ['callback', 'general-contact']) {
+    for (const smsInformationalConsent of [false, true]) {
+      for (const smsMarketingConsent of [false, true]) {
+        const env = environment();
+        const payload = { ...generic, smsInformationalConsent, smsMarketingConsent,
+          ...(source === 'general-contact' ? { source, language: 'en', message: 'Please contact me.' } : {}) };
+        assert.equal((await worker.fetch(request(payload), env)).status, 200);
+        assert.equal(env.messages.length, 1);
+        const message = env.messages[0];
+        assert.match(message.text, new RegExp(`Informational / Transactional SMS: ${smsInformationalConsent ? 'YES' : 'NO'}`));
+        assert.match(message.text, new RegExp(`Promotional / Marketing SMS: ${smsMarketingConsent ? 'YES' : 'NO'}`));
+        for (const key of ['name', 'email', 'phone']) assert.ok(message.text.includes(generic[key]));
+        if (payload.message) assert.ok(message.text.includes(payload.message));
+        assert.equal(message.to, 'turkluxx101@gmail.com');
+      }
+    }
+  }
+});
+test('Missing and non-boolean SMS fields never grant consent', async () => {
+  for (const value of [undefined, null, 'false', 'true', 'on', 1, {}, []]) {
+    const env = environment();
+    assert.equal((await worker.fetch(request({ ...generic, smsInformationalConsent: value, smsMarketingConsent: value }), env)).status, 200);
+    assert.match(env.messages[0].text, /Informational \/ Transactional SMS: NO/);
+    assert.match(env.messages[0].text, /Promotional \/ Marketing SMS: NO/);
+  }
+});
 for (const [label, fields, subject] of [
   ['A/I DIRECT generic and null optionals', {}, 'General Enquiry'],
   ['Citizenship information enquiry', { property: 'Turkish Citizenship Through Real Estate Investment' }, 'Turkish Citizenship Through Real Estate Investment'],

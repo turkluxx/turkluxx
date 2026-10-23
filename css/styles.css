@@ -3588,3 +3588,10 @@ footer a[href^="https://wa.me/"]:hover {
         -webkit-text-fill-color: currentColor;
     }
 }
+
+/* Optional SMS consent: logical alignment follows the active language direction. */
+.turkluxx-callback .turkluxx-sms-consent { margin-block: 16px; text-align: start; }
+.turkluxx-callback .turkluxx-sms-consent label { display: flex; align-items: flex-start; gap: 10px; margin-block: 0 12px; font-size: 12px; line-height: 1.5; cursor: pointer; }
+.turkluxx-callback .turkluxx-sms-consent input { flex: 0 0 18px; width: 18px; height: 18px; min-height: 0; padding: 0; margin: 3px 0 0; accent-color: #d8b66a; }
+.turkluxx-callback .turkluxx-sms-consent p { margin: 0; font-size: 12px; line-height: 1.5; }
+.turkluxx-callback .turkluxx-sms-consent a { color: #eee1bf; text-decoration: underline; text-underline-offset: 3px; }

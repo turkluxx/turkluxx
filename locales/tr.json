@@ -464,5 +464,7 @@
   "home.statistics.intro": "TurkLuxx, Karaarslan Insaat’ın mükemmellik mirasını sınırların ötesine taşıyarak üstün işçiliği dünyayla buluşturuyor.",
   "home.statistics.excellence": "Mükemmellik üzerine inşa edildi",
   "home.statistics.vision": "Ortak bir vizyonla birleştik",
-  "home.statistics.presented": "TurkLuxx tarafından dünyaya sunuluyor"
+  "home.statistics.presented": "TurkLuxx tarafından dünyaya sunuluyor",
+  "sms.informational": "Bu kutuyu işaretleyerek TurkLuxx’tan talebiniz, randevularınız ve müşteri hizmetleriyle ilgili işlem ve bilgilendirme amaçlı SMS mesajları almayı kabul edersiniz. Mesaj sıklığı değişebilir. Mesaj ve veri ücretleri uygulanabilir. Yardım için HELP, abonelikten çıkmak için STOP yazarak yanıtlayın.",
+  "sms.marketing": "Bu kutuyu işaretleyerek TurkLuxx’tan gayrimenkul teklifleri, güncellemeler ve ilgili hizmetler dahil tanıtım ve pazarlama amaçlı SMS mesajları almayı kabul edersiniz. Mesaj sıklığı değişebilir. Mesaj ve veri ücretleri uygulanabilir. Yardım için HELP, abonelikten çıkmak için STOP yazarak yanıtlayın."
 }

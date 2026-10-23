@@ -37,6 +37,7 @@
       ...referralFields(),
       name: value('name'),
       phone: value('phone'),
+      ...smsConsentFields(fields),
       email: value('email'),
       project: context?.project || null,
       property: context?.property || null,
@@ -119,6 +120,25 @@
   document.body.append(contactDialog);
   const contact = modalController(contactDialog);
   const contactForm = contactDialog.querySelector('form');
+  // Native optional controls share one markup and payload mapping across both forms.
+  const smsConsentFields = fields => ({
+    smsInformationalConsent: fields.get('smsInformationalConsent') === 'on',
+    smsMarketingConsent: fields.get('smsMarketingConsent') === 'on'
+  });
+  function addSmsConsent(targetForm) {
+    const section = document.createElement('div');
+    section.className = 'turkluxx-sms-consent';
+    section.innerHTML = `
+      <label><input type="checkbox" name="smsInformationalConsent"><span data-i18n="sms.informational">By checking this box, you agree to receive transactional and informational SMS messages from TurkLuxx regarding your inquiry, appointments, and customer care. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to opt out.</span></label>
+      <label><input type="checkbox" name="smsMarketingConsent"><span data-i18n="sms.marketing">By checking this box, you agree to receive promotional and marketing SMS messages from TurkLuxx, including property offers, updates, and related services. Message frequency may vary. Message and data rates may apply. Reply HELP for help or STOP to opt out.</span></label>
+      <p><a href="privacy-policy.html" data-i18n="common.privacy_policy">Privacy Policy</a> &middot; <a href="terms-and-conditions.html" data-i18n="common.terms_conditions">Terms &amp; Conditions</a></p>`;
+    targetForm.querySelector('[type="submit"]').before(section);
+    window.TurkLuxxI18n.ready.then(() => {
+      section.querySelectorAll('[data-i18n]').forEach(element => window.TurkLuxxI18n.bind(element, element.dataset.i18n));
+    });
+  }
+  addSmsConsent(form);
+  addSmsConsent(contactForm);
   const contactStatus = contactDialog.querySelector('[role="status"]');
   const contactSubmit = contactForm.querySelector('[type="submit"]');
   let contactPending = false;
@@ -137,7 +157,7 @@
       contact.open(opener);
     });
   });
-  const contactValidators = [...contactForm.querySelectorAll('input, textarea')].map(input => {
+  const contactValidators = [...contactForm.querySelectorAll('input:not([type="checkbox"]), textarea')].map(input => {
     const validate = () => {
       const key = !input.value.trim() ? { name: 'requiredName', email: 'requiredEmail', message: 'requiredMessage' }[input.name]
         : input.type === 'email' && (input.validity.typeMismatch || !/^[^\s<>(),;:"\\@]+@[^\s<>(),;:"\\@]+\.[^\s<>(),;:"\\@]+$/u.test(input.value.trim())) ? 'invalidEmail' : null;
@@ -156,6 +176,7 @@
     const fields = new FormData(contactForm);
     const payload = {
       ...referralFields(),
+      ...smsConsentFields(fields),
       name: fields.get('name').trim(), email: fields.get('email').trim(),
       message: fields.get('message').trim(), language: window.TurkLuxxI18n.language,
       source: 'general-contact', page: window.location.href
@@ -245,7 +266,7 @@
   });
 
   const validators = [];
-  for (const input of form.querySelectorAll('input:not([type="hidden"])')) {
+  for (const input of form.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"])')) {
     const validate = () => {
       const missing = !input.value.trim();
       const invalidEmail = input.type === 'email' && input.validity.typeMismatch;
