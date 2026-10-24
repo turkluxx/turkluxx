@@ -1561,20 +1561,29 @@ html[dir="rtl"] .turkluxx-partnership-intro { direction: rtl; }
     .turkluxx-statistics-number { font-size: clamp(48px, 3.5vw, 58px); }
     .turkluxx-statistics-caption { margin-top: 10px; font-size: 13px; line-height: 1.5; }
 }
+/* Keep each brand's cards in its own column in portrait and landscape. */
+@media (max-width: 1023px) {
+    .turkluxx-partnership-brand[data-brand="turkluxx"] { grid-area: 1 / 1; }
+    .turkluxx-partnership-brand[data-brand="karaarslan"] { grid-area: 1 / 2; }
+    .turkluxx-statistics-card:nth-of-type(1) { grid-area: 2 / 1; }
+    .turkluxx-statistics-card:nth-of-type(2) { grid-area: 3 / 1; }
+    .turkluxx-statistics-card:nth-of-type(3) { grid-area: 2 / 2; }
+    .turkluxx-statistics-card:nth-of-type(4) { grid-area: 3 / 2; }
+}
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+    .turkluxx-statistics { padding: 24px 16px 28px; }
+    .turkluxx-statistics-grid { gap: 14px 10px; }
+    .turkluxx-partnership-brand { height: 72px; margin-bottom: 0; }
+    .turkluxx-statistics-card { min-height: 174px; padding: 24px 18px; }
+}
 @media (max-width: 767px) {
     .turkluxx-statistics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .turkluxx-partnership-intro { margin-bottom: 28px; }
     .turkluxx-partnership-slogans { flex-direction: column; gap: 6px; }
     .turkluxx-partnership-brand { height: 72px; margin: 0; }
-    .turkluxx-partnership-brand[data-brand="turkluxx"] { grid-area: 1 / 1; }
-    .turkluxx-partnership-brand[data-brand="karaarslan"] { grid-area: 1 / 2; }
     .turkluxx-partnership-brand[data-brand="karaarslan"] img { width: 100%; max-width: 180px; }
     .turkluxx-partnership-wordmark span { font-size: clamp(27px, 7vw, 36px); }
     .turkluxx-partnership-wordmark small { font-size: 10px; letter-spacing: .12em; }
-    .turkluxx-statistics-card:nth-of-type(1) { grid-area: 2 / 1; }
-    .turkluxx-statistics-card:nth-of-type(2) { grid-area: 3 / 1; }
-    .turkluxx-statistics-card:nth-of-type(3) { grid-area: 2 / 2; }
-    .turkluxx-statistics-card:nth-of-type(4) { grid-area: 3 / 2; }
     .turkluxx-statistics-card { height: auto; min-height: 0; padding: 30px 8px 28px; border-radius: 20px; }
     .turkluxx-statistics-card > :is(h3, p) { min-width: 0; max-width: 100%; }
     .turkluxx-statistics-card h3 { margin-bottom: 6px; font-size: 11px; line-height: 1.5; }
