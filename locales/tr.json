@@ -466,5 +466,8 @@
   "home.statistics.vision": "Ortak bir vizyonla birleştik",
   "home.statistics.presented": "TurkLuxx tarafından dünyaya sunuluyor",
   "sms.consent": "Bu kutuyu işaretleyerek TurkLuxx’tan talebiniz, randevularınız, müşteri hizmetleri ve promosyon teklifleriyle ilgili işlem/bilgilendirme ve tanıtım/pazarlama amaçlı SMS mesajları almayı kabul edersiniz. Mesaj sıklığı değişebilir. Mesaj ve veri ücretleri uygulanabilir. Yardım için HELP, abonelikten çıkmak için STOP yazarak yanıtlayın.",
-  "contact.phone": "Telefon Numarası"
+  "contact.phone": "Telefon Numarası",
+  "privacy.marketing.heading": "Pazarlama İletişimleri",
+  "privacy.marketing.body": "Yürürlükteki mevzuatın izin verdiği durumlarda TurkLuxx, hakkında bilgi talep ettiğiniz gayrimenkuller veya projeler, benzer fırsatlar, yeni projeler, gayrimenkul güncellemeleri, randevular, danışmanlık görüşmeleri, davetler ve TurkLuxx pazarlama iletişimleri hakkında sizinle iletişime geçebilir. İletişimler e-posta, telefon, SMS/kısa mesaj, WhatsApp veya sağladığınız diğer iletişim yöntemleri aracılığıyla gönderilebilir. SMS/kısa mesajlar için mesaj sıklığı değişiklik gösterir ve mesaj ve veri ücretleri uygulanabilir. Kısa mesaj alımından çıkmak için STOP, yardım almak için HELP yanıtını gönderin. Pazarlama iletişimlerinden istediğiniz zaman çıkabilirsiniz. Pazarlama iletişimlerinden çıkmanız, TurkLuxx’in mevcut bir bilgi talebine, randevuya, isteğe veya hizmetle ilgili başka bir konuya yasal olarak izin verilen bir iletişim yöntemiyle yanıt vermesini engellemez.",
+  "footer.help": "Yardım"
 }

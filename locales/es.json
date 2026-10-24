@@ -466,5 +466,8 @@
   "home.statistics.vision": "Unidos por una visión",
   "home.statistics.presented": "Presentado al mundo por TurkLuxx",
   "sms.consent": "Al marcar esta casilla, acepta recibir mensajes SMS transaccionales/informativos y promocionales/de marketing de TurkLuxx sobre su consulta, citas, atención al cliente y ofertas promocionales. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos. Responda HELP para obtener ayuda o STOP para darse de baja.",
-  "contact.phone": "Número de teléfono"
+  "contact.phone": "Número de teléfono",
+  "privacy.marketing.heading": "Comunicaciones de marketing",
+  "privacy.marketing.body": "Cuando la legislación aplicable lo permita, TurkLuxx podrá ponerse en contacto con usted acerca de propiedades o proyectos sobre los que haya solicitado información, oportunidades similares, nuevos proyectos, novedades inmobiliarias, citas, consultas, invitaciones y comunicaciones de marketing de TurkLuxx. Las comunicaciones podrán enviarse por correo electrónico, teléfono, SMS/mensajes de texto, WhatsApp u otros medios de contacto que usted facilite. En el caso de los SMS/mensajes de texto, la frecuencia de los mensajes varía y pueden aplicarse cargos por mensajes y datos. Responda STOP para dejar de recibir mensajes de texto o HELP para obtener asistencia. Puede darse de baja de las comunicaciones de marketing en cualquier momento. Darse de baja de las comunicaciones de marketing no impide que TurkLuxx responda a una consulta, cita, solicitud u otro asunto relacionado con el servicio ya existente mediante un medio de comunicación legalmente permitido.",
+  "footer.help": "Ayuda"
 }

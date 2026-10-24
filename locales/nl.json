@@ -466,5 +466,8 @@
   "home.statistics.vision": "Verenigd door visie",
   "home.statistics.presented": "Aan de wereld gepresenteerd door TurkLuxx",
   "sms.consent": "Door dit vakje aan te vinken, gaat u akkoord met het ontvangen van transactionele/informatieve en promotionele/marketing-sms-berichten van TurkLuxx over uw aanvraag, afspraken, klantenservice en promotionele aanbiedingen. De berichtfrequentie kan variëren. Er kunnen bericht- en datakosten in rekening worden gebracht. Antwoord HELP voor hulp of STOP om u af te melden.",
-  "contact.phone": "Telefoonnummer"
+  "contact.phone": "Telefoonnummer",
+  "privacy.marketing.heading": "Marketingcommunicatie",
+  "privacy.marketing.body": "Waar de toepasselijke wetgeving dit toestaat, kan TurkLuxx contact met u opnemen over woningen of projecten waarover u informatie hebt aangevraagd, vergelijkbare mogelijkheden, nieuwe projecten, vastgoedupdates, afspraken, adviesgesprekken, uitnodigingen en marketingcommunicatie van TurkLuxx. Communicatie kan plaatsvinden via e-mail, telefoon, SMS/tekstberichten, WhatsApp of andere contactmethoden die u verstrekt. Voor SMS/tekstberichten varieert de berichtfrequentie en kunnen bericht- en datakosten van toepassing zijn. Antwoord STOP om u af te melden voor tekstberichten of HELP voor hulp. U kunt zich op elk moment afmelden voor marketingcommunicatie. Afmelding voor marketingcommunicatie verhindert TurkLuxx niet om via een wettelijk toegestane communicatiemethode te reageren op een bestaande vraag, afspraak, verzoek of andere servicegerelateerde aangelegenheid.",
+  "footer.help": "Hulp"
 }
