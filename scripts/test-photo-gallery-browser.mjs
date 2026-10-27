@@ -47,11 +47,25 @@ try {
         assert.equal(await evaluate('document.title'), catalog['videos.pageTitle']);
         assert.equal(await evaluate("document.querySelector('h1').textContent"), catalog['videos.heading']);
         assert.equal(await evaluate("document.querySelector('.photo-close').getAttribute('aria-label')"), catalog['photos.close']);
-        assert.equal(await evaluate("document.querySelector('#videos-empty iframe').getAttribute('src')"), 'https://drive.google.com/file/d/1YKYxx2zbyk9ky92dLavOF-rv9Mr6X_Lw/preview');
+        assert.equal(await evaluate("document.querySelectorAll('iframe[src*=\"drive.google.com\"]').length"), 0);
         for (const [width, height, columns] of [[1440, 900, 4], [820, 1000, 3], [390, 844, 2], [844, 390, 3]]) {
             await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
             assert.equal(await evaluate("getComputedStyle(document.querySelector('.photos-grid')).gridTemplateColumns.split(' ').length"), columns);
             assert.equal(await evaluate('document.documentElement.scrollWidth <= innerWidth'), true);
+            assert.equal(await evaluate("document.querySelectorAll('iframe[src=\"https://www.youtube.com/embed/nr8T83m6vYM\"]').length"), 1);
+            assert.equal(await evaluate(`(() => {
+                const frame = document.querySelector('.video-youtube iframe');
+                const rect = frame.getBoundingClientRect();
+                const container = frame.parentElement.getBoundingClientRect();
+                const section = document.querySelector('.videos-collection').getBoundingClientRect();
+                return frame.loading === 'lazy' && frame.allowFullscreen &&
+                    frame.referrerPolicy === 'strict-origin-when-cross-origin' && !frame.src.includes('autoplay=') &&
+                    rect.width > 0 && rect.width <= 960 && Math.abs(rect.width / rect.height - 16 / 9) < .01 &&
+                    rect.left >= 0 && rect.right <= innerWidth &&
+                    Math.abs(rect.width - container.width) < 1 && Math.abs(rect.height - container.height) < 1 &&
+                    Math.abs((rect.left + rect.right) - (section.left + section.right)) < 1 &&
+                    (innerWidth >= 767 || Math.abs(rect.width - section.width) < 1);
+            })()`), true);
             await evaluate("document.querySelectorAll('.photo-thumbnail')[2].click()");
             await wait("document.querySelector('.photo-original').naturalWidth > 0");
             assert.equal(await evaluate("document.querySelector('.photo-counter').textContent"), '3 / 10');

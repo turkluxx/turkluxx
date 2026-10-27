@@ -19,7 +19,8 @@ test('Videos source reuses the existing shell and starts without fictional entri
     assert.equal(page.match(/<header\b[\s\S]*?<\/header>/)[0], team.match(/<header\b[\s\S]*?<\/header>/)[0].replace(/            <a href="\/videos"[^>]*>[^<]*<\/a>\r?\n/, ''));
     assert.equal(page.match(/<footer\b[\s\S]*?<\/footer>/)[0], team.match(/<footer\b[\s\S]*?<\/footer>/)[0]);
     assert.match(page, /href="https:\/\/turkluxx.com\/videos"/);
-    assert.match(page, /https:\/\/drive.google.com\/file\/d\/1YKYxx2zbyk9ky92dLavOF-rv9Mr6X_Lw\/preview/);
+    assert.equal(page.match(/https:\/\/www.youtube.com\/embed\/nr8T83m6vYM/g)?.length, 1);
+    assert.doesNotMatch(page, /drive\.google\.com|videos-empty/);
     const window = {}; runInNewContext(read('js/videos-data.js'), { window });
     assert.equal(window.TurkLuxxVideos.length, 0);
     for (const code of ['en','ru','es','ar','tr','nl']) {
@@ -90,19 +91,17 @@ test('EN and NL share English YouTube records; other languages require their own
     for (const value of ['short', 'https://youtube.com.evil.test/watch?v=abcdefghijk', 'http://youtu.be/abcdefghijk', 'https://user:pass@youtube.com/watch?v=abcdefghijk', 'javascript:alert(1)']) assert.equal(youtubeUrls(value), null);
     assert.equal(driveUrls('test_id').preview, 'https://drive.google.com/file/d/test_id/preview');
 });
-test('Language changes rerender the collection, remove active players, and show empty states', async () => {
+test('Language changes rerender the collection and remove active players', async () => {
     const listeners = {};
     const gallery = { children: [], replaceChildren(...nodes) { this.children = nodes; } };
-    const empty = { hidden: false };
-    const document = { querySelector: () => null, getElementById: id => id === 'videos-gallery' ? gallery : empty };
+    const document = { querySelector: () => null, getElementById: id => id === 'videos-gallery' ? gallery : null };
     const window = { TurkLuxxVideos: [], TurkLuxxI18n: { ready: Promise.resolve(), language: 'nl' }, addEventListener(type, handler) { listeners[type] = handler; } };
     runInNewContext(read('js/videos.js'), { window, document, URL });
     await new Promise(resolve => setImmediate(resolve));
     assert.equal(typeof listeners['turkluxx:language-change'], 'function');
-    assert.equal(empty.hidden, false);
     gallery.children = ['active player'];
     window.TurkLuxxI18n.language = 'ar'; listeners['turkluxx:language-change']();
-    assert.equal(gallery.children.length, 0); assert.equal(empty.hidden, false);
+    assert.equal(gallery.children.length, 0);
     for (const code of ['en','nl','es','ru','tr','ar']) {
         const catalog = JSON.parse(read(`locales/${code}.json`));
         assert.match(catalog['videos.fallback'], /\{provider\}/);

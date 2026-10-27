@@ -81,7 +81,6 @@
         const videos = selectVideos(window.TurkLuxxVideos || [], window.TurkLuxxI18n.language);
         // Replacing the gallery also stops and removes players from the previous language.
         gallery.replaceChildren(...videos.map(createVideoCard));
-        document.getElementById('videos-empty').hidden = videos.length > 0;
     }
     window.TurkLuxxVideoGallery = { driveUrls, youtubeUrls, selectVideos, createVideoCard, renderGallery };
     function initPhotos() {
