@@ -8,7 +8,7 @@ const catalogs = Object.fromEntries(codes.map(code => [code, JSON.parse(readFile
 const source = readFileSync(new URL('../js/i18n.js', import.meta.url), 'utf8');
 const placeholders = s => [...s.matchAll(/\{([a-zA-Z]+)\}/g)].map(m => m[1]).sort();
 test('Six catalogs cover every English key with valid strings and matching parameters', () => {
-    assert.equal(Object.keys(catalogs.en).length, 471);
+    assert.equal(Object.keys(catalogs.en).length, 477);
     for (const key of ['istanbul.master_plan_186', 'istanbul.villa_types_188', 'antalya.explore_the_projects_199']) assert.ok(key in catalogs.en);
     for (const code of codes) {
         const bytes = readFileSync(new URL(`../locales/${code}.json`, import.meta.url));
@@ -86,11 +86,11 @@ test('Property data stores description keys; catalogs do not duplicate images or
         assert.ok(!Object.keys(catalog).some(key => /(?:imagePath|mapPath|grossArea|netArea|landShare)$/.test(key)));
     }
 });
-function runtime({ search = '', stored = null, storageMap = null, blocked = false, remote = {}, browserLanguages = ['en-US'], browserLanguage = 'en-US' } = {}) {
+function runtime({ search = '', page = 'https://turkluxx.com/rengi-istanbul.html', videoLinks = [], stored = null, storageMap = null, blocked = false, remote = {}, browserLanguages = ['en-US'], browserLanguage = 'en-US' } = {}) {
     class Element { querySelectorAll() { return []; } closest() { return null; } getAttribute() { return null; } }
-    const document = { documentElement: new Element(), querySelectorAll: () => [], createTreeWalker: () => ({ nextNode: () => false }) };
+    const document = { documentElement: new Element(), querySelectorAll: selector => selector === 'a[data-i18n="nav.videos"]' ? videoLinks : [], createTreeWalker: () => ({ nextNode: () => false }) };
     const storage = storageMap || new Map(stored ? [['turkluxx_language', stored]] : []);
-    const location = new URL('https://turkluxx.com/rengi-istanbul.html' + search);
+    const location = new URL(page + search);
     const window = { dispatchEvent() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) };
     const urls = [];
     runInNewContext(readFileSync(new URL('../js/referral-registry.js', import.meta.url), 'utf8') + source, {
@@ -109,6 +109,36 @@ function runtime({ search = '', stored = null, storageMap = null, blocked = fals
     });
     return { api: window.TurkLuxxI18n, document, storage, urls };
 }
+
+test('Photos and Videos links retain file-preview directories, clean routes, language and referral parameters', async () => {
+    for (const [page, destination] of [
+        ['http://localhost:63342/turkluxx/index.html', '/turkluxx/videos.html'],
+        ['http://localhost:63342/turkluxx/meet-our-team.html', '/turkluxx/videos.html'],
+        ['http://localhost:63342/turkluxx/', '/turkluxx/videos.html'],
+        ['https://turkluxx.com/', '/videos'],
+        ['https://turkluxx.com/rengi-istanbul', '/videos'],
+        ['https://turkluxx.com/videos', '/videos'],
+        ['https://turkluxx.com/meet-our-team.html', '/videos.html']
+    ]) {
+        // Include both source links and the mobile menu's generated fallback.
+        const videoLinks = ['videos.html?campaign=gallery#photos-heading', '/videos', 'videos.html'].map(href => ({
+            href, getAttribute() { return this.href; }, setAttribute(name, value) { this[name] = value; }
+        }));
+        const { api, document } = runtime({ page, videoLinks, search: '?ref=VLAD&subref=TIM_BOND&client=TEST&lang=en' });
+        for (const code of codes) {
+            await api.setLanguage(code);
+            for (const link of videoLinks) {
+                const url = new URL(link.href, page);
+                assert.equal(url.pathname, destination, `${page}: ${code}`);
+                assert.equal(url.searchParams.get('lang'), code);
+                for (const [key, value] of [['ref', 'VLAD'], ['subref', 'TIM_BOND'], ['client', 'TEST']]) assert.equal(url.searchParams.get(key), value);
+            }
+            assert.equal(new URL(videoLinks[0].href, page).searchParams.get('campaign'), 'gallery');
+            assert.equal(new URL(videoLinks[0].href, page).hash, '#photos-heading');
+            assert.equal(document.documentElement.dir, code === 'ar' ? 'rtl' : 'ltr');
+        }
+    }
+});
 
 test('Villa product names follow the active language in labels and dynamic references', async () => {
     const data = runInNewContext(`${readFileSync(new URL('../js/rengi-villa-data.js', import.meta.url), 'utf8')}; villaData`);

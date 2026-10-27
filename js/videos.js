@@ -84,12 +84,77 @@
         document.getElementById('videos-empty').hidden = videos.length > 0;
     }
     window.TurkLuxxVideoGallery = { driveUrls, youtubeUrls, selectVideos, createVideoCard, renderGallery };
+    function initPhotos() {
+        const gallery = document.getElementById('photos-gallery');
+        const dialog = document.getElementById('photo-lightbox');
+        if (!gallery || !dialog || !dialog.querySelector) return;
+        const image = dialog.querySelector('.photo-original');
+        const error = dialog.querySelector('.photo-error');
+        const counter = dialog.querySelector('.photo-counter');
+        const close = dialog.querySelector('.photo-close');
+        const previous = dialog.querySelector('.photo-previous');
+        const next = dialog.querySelector('.photo-next');
+        bind(dialog, 'photos.heading', {}, 'aria-label');
+        for (const [node, key] of [[close, 'close'], [previous, 'previous'], [next, 'next']]) bind(node, 'photos.' + key, {}, 'aria-label');
+        let index = 0, opener, touchStart;
+        const path = number => 'img/gallery/photo' + number + '.jpeg';
+        const show = number => {
+            index = (number + 10) % 10;
+            image.hidden = false; error.hidden = true;
+            bind(image, 'photos.alt', { number: index + 1 }, 'alt');
+            image.src = path(index + 1);
+            counter.textContent = (index + 1) + ' / 10';
+        };
+        image.addEventListener('error', () => { image.hidden = true; error.hidden = false; });
+        image.addEventListener('load', () => { image.hidden = false; error.hidden = true; });
+        for (let number = 1; number <= 10; number++) {
+            const button = document.createElement('button');
+            button.type = 'button'; button.className = 'photo-thumbnail';
+            const thumbnail = document.createElement('img');
+            thumbnail.loading = 'lazy'; thumbnail.decoding = 'async';
+            thumbnail.width = 400; thumbnail.height = 300;
+            bind(thumbnail, 'photos.alt', { number }, 'alt');
+            bind(button, 'photos.alt', { number }, 'aria-label');
+            thumbnail.addEventListener('error', () => { thumbnail.hidden = true; button.classList.add('is-unavailable'); });
+            thumbnail.src = path(number);
+            button.append(thumbnail); gallery.append(button);
+            button.addEventListener('click', () => {
+                opener = button; show(number - 1);
+                dialog.showModal(); close.focus();
+            });
+        }
+        close.addEventListener('click', () => dialog.close());
+        previous.addEventListener('click', () => show(index - 1));
+        next.addEventListener('click', () => show(index + 1));
+        dialog.addEventListener('click', event => { if (event.target === dialog || event.target.classList.contains('photo-stage')) dialog.close(); });
+        dialog.addEventListener('keydown', event => {
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                event.preventDefault(); show(index + (event.key === 'ArrowRight' ? 1 : -1));
+            }
+        });
+        dialog.addEventListener('touchstart', event => {
+            touchStart = event.touches.length === 1 ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null;
+        }, { passive: true });
+        dialog.addEventListener('touchend', event => {
+            if (!touchStart || !event.changedTouches.length) return;
+            const dx = event.changedTouches[0].clientX - touchStart.x;
+            const dy = event.changedTouches[0].clientY - touchStart.y;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(index + (dx < 0 ? 1 : -1));
+            touchStart = null;
+        }, { passive: true });
+        dialog.addEventListener('close', () => {
+            if (dialog.open) return;
+            image.removeAttribute('src');
+            opener?.focus({ preventScroll: true });
+        });
+    }
     async function init() {
         await window.TurkLuxxI18n.ready;
         const meta = document.querySelector('meta[name="description"]');
         if (meta) bind(meta, 'videos.subtitle', {}, 'content');
         window.addEventListener('turkluxx:language-change', renderGallery);
         renderGallery();
+        initPhotos();
     }
     init();
 })();

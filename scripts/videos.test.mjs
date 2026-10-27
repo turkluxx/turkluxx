@@ -16,10 +16,10 @@ test('Drive URLs accept only HTTPS Drive files and retain resource keys', () => 
 });
 test('Videos source reuses the existing shell and starts without fictional entries', () => {
     const page = read('videos.html'); const team = read('meet-our-team.html');
-    assert.equal(page.match(/<header\b[\s\S]*?<\/header>/)[0], team.match(/<header\b[\s\S]*?<\/header>/)[0]);
+    assert.equal(page.match(/<header\b[\s\S]*?<\/header>/)[0], team.match(/<header\b[\s\S]*?<\/header>/)[0].replace(/            <a href="\/videos"[^>]*>[^<]*<\/a>\r?\n/, ''));
     assert.equal(page.match(/<footer\b[\s\S]*?<\/footer>/)[0], team.match(/<footer\b[\s\S]*?<\/footer>/)[0]);
     assert.match(page, /href="https:\/\/turkluxx.com\/videos"/);
-    assert.match(page, /Discover our video collection — coming soon\./);
+    assert.match(page, /https:\/\/drive.google.com\/file\/d\/1YKYxx2zbyk9ky92dLavOF-rv9Mr6X_Lw\/preview/);
     const window = {}; runInNewContext(read('js/videos-data.js'), { window });
     assert.equal(window.TurkLuxxVideos.length, 0);
     for (const code of ['en','ru','es','ar','tr','nl']) {

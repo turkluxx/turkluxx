@@ -341,7 +341,21 @@
             if (url.searchParams.has('lang') && url.searchParams.get('lang') !== code) { url.searchParams.set('lang', code); history.replaceState(null, '', url); }
         }
         document.querySelectorAll('a[data-i18n="nav.videos"]').forEach(link => {
-            link.setAttribute('href', `/videos?lang=${code}`);
+            // File-based previews can live below a directory such as /turkluxx/.
+            // Keep clean routes on extensionless pages; Cloudflare also accepts .html.
+            const fileBased = location.pathname.endsWith('.html')
+                || (location.pathname !== '/' && location.pathname.endsWith('/'));
+            const destination = new URL(fileBased ? 'videos.html' : 'videos', location.href);
+            const url = new URL(link.getAttribute('href') || destination.href, location.href);
+            url.pathname = destination.pathname;
+            for (const key of ['ref', 'subref', 'client']) {
+                const values = new URLSearchParams(location.search).getAll(key);
+                if (!values.length) continue;
+                url.searchParams.delete(key);
+                values.forEach(value => url.searchParams.append(key, value));
+            }
+            url.searchParams.set('lang', code);
+            link.setAttribute('href', url.pathname + url.search + url.hash);
         });
         document.documentElement.lang = code;
         document.documentElement.dir = code === 'ar' ? 'rtl' : 'ltr';

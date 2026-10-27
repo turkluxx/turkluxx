@@ -23,3 +23,31 @@
 .video-card a { color: #212c6c; text-underline-offset: 4px; }
 @media (max-width: 1023px) { .videos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 767px) { .videos-main { padding: 40px 24px 56px; } .videos-intro { padding-bottom: 32px; } .videos-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; } }
+
+.photos-collection { padding-bottom: 48px; }
+.photos-collection h2 { margin: 0 0 24px; font: 500 32px/1.2 'Cormorant Garamond', Georgia, serif; }
+.photos-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.photo-thumbnail { display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; border: 1px solid #d4c8b0; border-radius: 6px; overflow: hidden; background: #eee9df; cursor: zoom-in; }
+.photo-thumbnail img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .2s ease; }
+.photo-thumbnail img[hidden] { display: none; }
+.photo-thumbnail:focus-visible { outline: 3px solid #8c6b30; outline-offset: 3px; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { .photo-thumbnail:hover img { transform: scale(1.025); } }
+html:has(.photo-lightbox[open]) { scrollbar-gutter: stable; overflow: hidden; }
+body:has(.photo-lightbox[open]) { overflow: hidden; }
+.photo-lightbox { position: fixed; inset: 0; width: 100%; height: 100%; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 64px 72px; border: 0; box-sizing: border-box; background: transparent; color: #fff; overflow: hidden; }
+.photo-lightbox::backdrop { background: rgb(8 12 24 / 92%); }
+.photo-lightbox[open] { display: grid; place-items: center; }
+.photo-stage { width: 100%; height: 100%; min-height: 0; display: grid; place-items: center; }
+.photo-original { display: block; max-width: 100%; max-height: calc(100dvh - 128px); width: auto; height: auto; min-height: 0; min-width: 0; object-fit: contain; }
+.photo-original[hidden], .photo-error[hidden] { display: none; }
+.photo-lightbox button { position: absolute; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid #ffffff50; border-radius: 50%; color: #fff; background: #151a2a99; cursor: pointer; font: 32px/1 Arial, sans-serif; }
+.photo-lightbox button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.photo-close { top: max(12px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right)); }
+.photo-previous { left: 16px; top: calc(50% - 22px); }
+.photo-next { right: 16px; top: calc(50% - 22px); }
+.photo-counter { position: absolute; bottom: max(20px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); font: 500 13px/1.5 'Inter', sans-serif; }
+@media (max-width: 1023px) { .photos-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 767px) { .photos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } .photos-collection { padding-bottom: 32px; } .photo-lightbox { padding: 64px 12px; } .photo-previous { left: 8px; } .photo-next { right: 8px; } }
+@media (max-height: 450px) { .photo-original { max-height: calc(100dvh - 52px); } .photo-lightbox { padding: 12px 72px 40px; } .photo-counter { bottom: 8px; } }
+
+.videos-empty iframe { display: block; max-width: 100%; width: 640px; height: auto; aspect-ratio: 4 / 3; border: 0; }

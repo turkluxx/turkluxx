@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="canonical" href="https://turkluxx.com/videos">
     <meta name="theme-color" content="#212c6c">
-    <title data-i18n="team.pageTitle">Meet Our Team — TurkLuxx</title>
+    <title data-i18n="videos.pageTitle">Photos and Videos — TurkLuxx</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@500;600&family=Manrope:wght@500;600;700&family=Oooh+Baby&display=swap" rel="stylesheet">
@@ -86,8 +86,12 @@
 
 <main class="videos-main" id="main-content">
     <section class="videos-intro" aria-labelledby="videos-heading">
-        <h1 id="videos-heading" data-i18n="videos.heading">TurkLuxx Videos</h1>
+        <h1 id="videos-heading" data-i18n="videos.heading">Photos and Videos</h1>
         <p data-i18n="videos.subtitle">Explore exceptional properties, inspiring interiors, and exclusive real estate opportunities in Türkiye.</p>
+    </section>
+    <section class="photos-collection" aria-labelledby="photos-heading">
+        <h2 id="photos-heading" data-i18n="photos.heading">Photos</h2>
+        <div class="photos-grid" id="photos-gallery"></div>
     </section>
     <section class="videos-collection" aria-labelledby="videos-heading">
         <div class="videos-grid" id="videos-gallery"></div>
@@ -96,6 +100,16 @@
         </div>
     </section>
 </main>
+<dialog class="photo-lightbox" id="photo-lightbox" aria-label="Photos">
+    <button class="photo-close" type="button" aria-label="Close photo viewer">&times;</button>
+    <button class="photo-previous" type="button" aria-label="Previous photo">&#8249;</button>
+    <div class="photo-stage">
+        <img class="photo-original" alt="">
+        <p class="photo-error" data-i18n="photos.unavailable" hidden>Photo unavailable</p>
+    </div>
+    <button class="photo-next" type="button" aria-label="Next photo">&#8250;</button>
+    <span class="photo-counter" dir="ltr" aria-live="polite" aria-atomic="true"></span>
+</dialog>
 <div class="turkluxx-homepage rengi-footer-scope">
 <footer class="turkluxx-footer" id="rengi-footer">
     <div class="turkluxx-footer-inner">

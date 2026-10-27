@@ -73,7 +73,7 @@
         link(roi, null, 'mobile.nav.primary_roi'),
         link(properties, null, 'mobile.nav.primary_properties'),
         link(source.querySelector('[data-home-scroll="contact"]'), null, 'mobile.nav.contact'),
-        link(source.querySelector('[data-i18n="nav.videos"]'), '/videos', 'nav.videos')
+        link(source.querySelector('[data-i18n="nav.videos"]'), 'videos.html', 'nav.videos')
     );
     wrapper.append(surface, toggle, menu);
     controls.append(wrapper);
