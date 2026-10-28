@@ -28,10 +28,10 @@ test('Ambiguous numbers, invalid numbers and extensions are preserved without gu
 });
 test('Existing inquiry emails use E.164 when valid, retain fallback input, omit Country and preserve consent', async () => {
   for (const source of ['callback', 'general-contact']) {
-    for (const smsConsent of [false, true]) {
+    for (const smsConsent of [false, true]) for (const marketingConsent of [false, true]) {
       for (const phone of [...examples.map(([, display]) => display), '0612345678', '+90 (212) 555-0100 ext. 12']) {
         const data = { referral: 'DIRECT', name: 'Phone Test', email: 'phone@example.com', phone,
-          smsConsent, country: 'obsolete value',
+          smsTransactionalConsent: smsConsent, smsMarketingConsent: marketingConsent, country: 'obsolete value',
           ...(source === 'general-contact' ? { source, message: 'International inquiry', language: 'ar' } : {}) };
         assert.equal(Object.hasOwn(validateLead(data), 'country'), false);
         let email;
@@ -41,7 +41,8 @@ test('Existing inquiry emails use E.164 when valid, retain fallback input, omit 
         assert.equal(response.status, 200);
         assert.ok(email.text.includes(`Phone: ${normalizePhone(phone)}`));
         assert.ok(!email.text.includes('Country:'));
-        assert.ok(email.text.includes(`Transactional / Informational + Promotional / Marketing SMS: ${smsConsent ? 'YES' : 'NO'}`));
+        assert.ok(email.text.includes(`Transactional / Informational SMS Consent: ${smsConsent ? 'YES' : 'NO'}`));
+        assert.ok(email.text.includes(`Promotional / Marketing SMS Consent: ${marketingConsent ? 'YES' : 'NO'}`));
         assert.equal(email.to, 'turkluxx101@gmail.com');
       }
     }

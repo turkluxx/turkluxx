@@ -105,7 +105,8 @@ export function validateLead(data) {
     referral,
     source: generalContact ? 'general-contact' : 'callback',
     message: message.trim(),
-    smsConsent: data.smsConsent === true,
+    smsTransactionalConsent: data.smsTransactionalConsent === true,
+    smsMarketingConsent: data.smsMarketingConsent === true,
     ...(hasClient ? { client: data.client } : {}),
     ...(hasSubref ? { subref: data.subref, directReferrer: data.subref, parentConsultant: path ? path.parentConsultant : referral } : {}),
     ...(path ? { referralPath: path.referralPath } : {}),
@@ -142,7 +143,8 @@ export function createLeadEmail(lead, leadId, submittedAt) {
   if (lead.source === 'general-contact') lines.push(`Source: ${lead.source}`, `Language: ${lead.language}`);
   lines.push('', 'Message:', lead.message || 'Not provided');
   lines.push('', '---', 'SMS Consent',
-    `Transactional / Informational + Promotional / Marketing SMS: ${lead.smsConsent === true ? 'YES' : 'NO'}`, '---');
+    `Transactional / Informational SMS Consent: ${lead.smsTransactionalConsent === true ? 'YES' : 'NO'}`,
+    `Promotional / Marketing SMS Consent: ${lead.smsMarketingConsent === true ? 'YES' : 'NO'}`, '---');
   return {
     to: RECIPIENT,
     from: { name: 'TurkLuxx Leads', email: 'leads@turkluxx.com' },

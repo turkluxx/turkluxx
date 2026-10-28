@@ -128,13 +128,15 @@
   }
   // Native optional controls share one markup and payload mapping across both forms.
   const smsConsentFields = fields => ({
-    smsConsent: fields.get('smsConsent') === 'on'
+    smsTransactionalConsent: fields.get('smsTransactionalConsent') === 'on',
+    smsMarketingConsent: fields.get('smsMarketingConsent') === 'on'
   });
   function addSmsConsent(targetForm) {
     const section = document.createElement('div');
     section.className = 'turkluxx-sms-consent';
     section.innerHTML = `
-      <label><input type="checkbox" name="smsConsent"><span data-i18n="sms.consent">By checking this box, you agree to receive transactional/informational and promotional/marketing SMS messages from TurkLuxx regarding your inquiry, appointments, customer care, and promotional offers. Message frequency may vary. Msg &amp; data rates may apply. Reply HELP for help or STOP to opt out.</span></label>`;
+      <label><input type="checkbox" name="smsTransactionalConsent"><span data-i18n="sms.transactionalConsent">I agree to receive transactional and informational SMS messages from TurkLuxx regarding my inquiries, appointments, consultations, and customer service. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for assistance.</span></label>
+      <label><input type="checkbox" name="smsMarketingConsent"><span data-i18n="sms.marketingConsent">I agree to receive promotional and marketing SMS messages from TurkLuxx, including property offers, new developments, invitations, and property updates. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for assistance.</span></label>`;
     targetForm.querySelector('[type="submit"]').before(section);
     window.TurkLuxxI18n.ready.then(() => {
       section.querySelectorAll('[data-i18n]').forEach(element => window.TurkLuxxI18n.bind(element, element.dataset.i18n));

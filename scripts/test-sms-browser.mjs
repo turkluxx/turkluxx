@@ -83,24 +83,27 @@ try {
     await evaluate(selector === '#turkluxx-contact' ? "document.querySelector('.turkluxx-footer-legal [data-home-scroll=contact]').click()" : "document.querySelector('.turkluxx-callback-trigger').click()");
     await until('document.querySelector('+JSON.stringify(selector)+').open');
     const inspect = await evaluate(`(() => { const d=document.querySelector(${JSON.stringify(selector)}); return { controls: [...d.querySelectorAll('[type=checkbox]')].map(c=>({checked:c.checked,required:c.required,label:c.closest('label').innerText})), dir:getComputedStyle(d).direction, links:[...d.querySelectorAll('.turkluxx-sms-consent a')].map(a=>a.getAttribute('href')) }; })()`);
-    assert.equal(inspect.controls.length,1);
+    assert.equal(inspect.controls.length,2);
     inspect.controls.forEach(c=>{assert.equal(c.checked,false);assert.equal(c.required,false);});
-    assert.equal(inspect.controls[0].label,catalogs[code]['sms.consent']);
+    assert.equal(inspect.controls[0].label,catalogs[code]['sms.transactionalConsent']);
+    assert.equal(inspect.controls[1].label,catalogs[code]['sms.marketingConsent']);
     assert.equal(inspect.dir,code==='ar'?'rtl':'ltr');
     assert.deepEqual(inspect.links,[]);
     const structure = await evaluate(`(() => {const d=document.querySelector(${JSON.stringify(selector)}),f=d.querySelector('form'),s=getComputedStyle(d);return {fields:[...f.elements].filter(e=>e.name && e.type!=="hidden").map(e=>({name:e.name,required:e.required,type:e.type,rows:e.rows,maxLength:e.maxLength,label:e.labels[0]?.textContent})),design:{padding:s.padding,border:s.border,background:s.background,width:d.getBoundingClientRect().width,fields:[...f.querySelectorAll('.turkluxx-callback-field')].map(field=>{const e=field.querySelector('input,textarea'),s=getComputedStyle(e),l=getComputedStyle(field.querySelector('label'));return {width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height,font:s.font,padding:s.padding,border:s.border,labelFont:l.font,spacing:getComputedStyle(field).marginBottom}})}};})()`);
-    assert.deepEqual(structure.fields.map(f=>f.name),['name','phone','email','message','smsConsent']);
-    assert.deepEqual(structure.fields.map(f=>f.required),[true,false,true,false,false]);
+    assert.deepEqual(structure.fields.map(f=>f.name),['name','phone','email','message','smsTransactionalConsent','smsMarketingConsent']);
+    assert.deepEqual(structure.fields.map(f=>f.required),[true,false,true,false,false,false]);
     assert.equal(structure.fields[3].type,'textarea');assert.equal(structure.fields[3].rows,4);assert.equal(structure.fields[3].maxLength,2000);
     assert.deepEqual(structure.fields.slice(0,4).map(f=>f.label),['contact.name','contact.phone','contact.email','contact.message'].map(key=>catalogs[code][key]));
     if(sharedDesign)assert.deepEqual(structure.design,sharedDesign,'Both forms have identical field and modal styling');else sharedDesign=structure.design;
     const phoneSettings = await evaluate(`(() => {const f=document.querySelector(${JSON.stringify(selector)}).querySelector('form'), p=f.elements.phone;return {type:p.type, autocomplete:p.autocomplete, inputmode:p.inputMode, dir:getComputedStyle(p).direction, placeholder:p.placeholder, hasCountry:!!f.elements.country};})()`);
     assert.deepEqual(phoneSettings,{type:'tel',autocomplete:'tel',inputmode:'tel',dir:'ltr',placeholder:'+1 949 555 1234',hasCountry:false});
     // Scroll the full disclaimer into view and verify it is neither hidden nor clipped.
-    const visible = await evaluate(`(() => { const d=document.querySelector(${JSON.stringify(selector)}), text=d.querySelector('.turkluxx-sms-consent span'); text.scrollIntoView({block:'center'}); const r=text.getBoundingClientRect(), box=d.getBoundingClientRect(), s=getComputedStyle(text); return { font:parseFloat(s.fontSize), visible: s.display!=='none' && s.visibility==='visible' && r.height>0 && r.top>=Math.max(box.top,0) && r.bottom<=Math.min(box.bottom,innerHeight), overflow:d.scrollWidth>d.clientWidth+1 }; })()`);
+    for (const consentIndex of [0,1]) {
+    const visible = await evaluate(`(() => { const d=document.querySelector(${JSON.stringify(selector)}), text=d.querySelectorAll('.turkluxx-sms-consent span')[${consentIndex}]; text.scrollIntoView({block:'center'}); const r=text.getBoundingClientRect(), box=d.getBoundingClientRect(), s=getComputedStyle(text); return { font:parseFloat(s.fontSize), visible: s.display!=='none' && s.visibility==='visible' && r.height>0 && r.top>=Math.max(box.top,0) && r.bottom<=Math.min(box.bottom,innerHeight), overflow:d.scrollWidth>d.clientWidth+1 }; })()`);
     assert.equal(visible.visible,true,JSON.stringify({width,code,selector,visible}));
     assert.equal(visible.overflow,false);
     assert.equal(visible.font,width===1440?11.5:12);
+    }
     if (selector === '#turkluxx-contact') {
       const details = await evaluate(`(() => {const f=document.querySelector('#turkluxx-contact form');return {phoneType:f.elements.phone.type, phoneLabel:f.elements.phone.labels[0].innerText, hasCountry:!!f.elements.country};})()`);
       assert.equal(details.phoneType,'tel');
@@ -108,9 +111,9 @@ try {
       assert.equal(details.hasCountry,false);
     }
     if (width===320 && ['en','ar'].includes(code)) {
-      await mkdir(resolve(root,'build/combined-consent'),{recursive:true});
+      await mkdir(resolve(root,'build/separate-consent'),{recursive:true});
       const shot=await send('Page.captureScreenshot',{format:'png'});
-      await writeFile(resolve(root,`build/combined-consent/${code}-${selector.slice(1)}.png`),Buffer.from(shot.data,'base64'));
+      await writeFile(resolve(root,`build/separate-consent/${code}-${selector.slice(1)}.png`),Buffer.from(shot.data,'base64'));
     }
     // Exercise actual browser typing, deletion, middle edits, and paste events.
     if ((code==='en' && [1440,390].includes(width)) || (code==='ar' && width===320)) {
@@ -140,15 +143,17 @@ try {
       assert.equal(await evaluate('document.activeElement.value'),national);
     }
     const [phoneNumber,phoneDisplay] = phones[Object.keys(catalogs).indexOf(code)%phones.length];
-    for(const includePhone of [false,true]) for(const consent of [false,true]) for(const messageText of ['', 'Consent test message\nPlease call me.']) {
+    for(const includePhone of [false,true]) for(const consent of [false,true]) for(const marketingConsent of [false,true]) for(const messageText of ['', 'Consent test message\nPlease call me.']) {
      const before=messages.length;
-     await evaluate(`(() => { const f=document.querySelector(${JSON.stringify(selector)}).querySelector('form'); f.elements.name.value='SMS Test'; f.elements.email.value='sms@example.com'; f.elements.phone.value=${JSON.stringify(includePhone ? phoneDisplay : '')}; f.elements.message.value=${JSON.stringify(messageText)}; f.elements.smsConsent.checked=${consent}; [...f.querySelectorAll("input, textarea")].forEach(c=>c.dispatchEvent(new Event("input",{bubbles:true}))); f.requestSubmit(); })()`);
+     await evaluate(`(() => { const f=document.querySelector(${JSON.stringify(selector)}).querySelector('form'); f.elements.name.value='SMS Test'; f.elements.email.value='sms@example.com'; f.elements.phone.value=${JSON.stringify(includePhone ? phoneDisplay : '')}; f.elements.message.value=${JSON.stringify(messageText)}; f.elements.smsTransactionalConsent.checked=${consent}; f.elements.smsMarketingConsent.checked=${marketingConsent}; [...f.querySelectorAll("input, textarea")].forEach(c=>c.dispatchEvent(new Event("input",{bubbles:true}))); f.requestSubmit(); })()`);
      for(let i=0;i<100 && messages.length===before;i++) await pause(30);
      assert.equal(messages.length,before+1, JSON.stringify({selector,code,consent,errors,payloads}));
      await until(`!document.querySelector(${JSON.stringify(selector)}).querySelector('[type=submit]').disabled`);
      const payload=payloads.at(-1), email=messages.at(-1);
-     assert.equal(payload.smsConsent,consent);
-     assert.ok(email.text.includes('Transactional / Informational + Promotional / Marketing SMS: '+(consent?'YES':'NO')));
+     assert.equal(payload.smsTransactionalConsent,consent);
+     assert.equal(payload.smsMarketingConsent,marketingConsent);
+     assert.ok(email.text.includes('Transactional / Informational SMS Consent: '+(consent?'YES':'NO')));
+     assert.ok(email.text.includes('Promotional / Marketing SMS Consent: '+(marketingConsent?'YES':'NO')));
      assert.equal(payload.phone,includePhone ? phoneNumber : '');
      assert.ok(email.text.includes('Phone: '+(includePhone ? phoneNumber : 'Not provided')));
      assert.equal(Object.hasOwn(payload,'country'),false);
@@ -161,7 +166,7 @@ try {
      submissions++;
     }
     // Native keyboard toggling and focus scroll controls into view.
-    await evaluate(`document.querySelector(${JSON.stringify(selector)}).querySelector('[name=smsConsent]').focus()`);
+    await evaluate(`document.querySelector(${JSON.stringify(selector)}).querySelector('[name=smsTransactionalConsent]').focus()`);
     const checked=await evaluate(`document.activeElement.checked`);
     await send('Input.dispatchKeyEvent',{type:'keyDown',key:' ',code:'Space',windowsVirtualKeyCode:32});
     await send('Input.dispatchKeyEvent',{type:'keyUp',key:' ',code:'Space',windowsVirtualKeyCode:32});
@@ -178,7 +183,11 @@ try {
   for(const code of Object.keys(catalogs)) {
    await navigate(path+'?lang='+code);
    const forms=await evaluate(`['#turkluxx-callback','#turkluxx-contact'].map(selector=>{const d=document.querySelector(selector),f=d.querySelector('form');return {sharedStyle:d.classList.contains('turkluxx-inquiry'),names:[...f.elements].filter(e=>e.name && e.type!=="hidden").map(e=>e.name),required:[...f.elements].filter(e=>e.name && e.type!=="hidden").map(e=>e.required),labels:[...f.querySelectorAll('.turkluxx-callback-field label')].map(l=>l.textContent),idsValid:[...f.querySelectorAll('label[for]')].every(l=>l.control && f.contains(l.control))};})`);
-   for(const form of forms){assert.equal(form.sharedStyle,true);assert.equal(form.idsValid,true);assert.deepEqual(form.names,['name','phone','email','message','smsConsent']);assert.deepEqual(form.required,[true,false,true,false,false]);assert.deepEqual(form.labels,['contact.name','contact.phone','contact.email','contact.message'].map(key=>catalogs[code][key]));}
+   for(const form of forms){assert.equal(form.sharedStyle,true);assert.equal(form.idsValid,true);assert.deepEqual(form.names,['name','phone','email','message','smsTransactionalConsent','smsMarketingConsent']);assert.deepEqual(form.required,[true,false,true,false,false,false]);assert.deepEqual(form.labels,['contact.name','contact.phone','contact.email','contact.message'].map(key=>catalogs[code][key]));}
+   if (path === '/privacy-policy.html') {
+    const policy = await evaluate(`['heading','noSharing','providers','optIn'].map(key=>document.querySelector('[data-i18n="privacy.sms.'+key+'"]').textContent)`);
+    assert.deepEqual(policy,['heading','noSharing','providers','optIn'].map(key=>catalogs[code]['privacy.sms.'+key]));
+   }
    pageChecks++;
   }
  }

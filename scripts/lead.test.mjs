@@ -26,13 +26,14 @@ test('General contact rejects invalid message types, unsupported language and ex
 test('Both forms accept optional multiline messages and report the correct form source', async () => {
   for (const source of ['general-contact', 'callback']) {
     for (const message of [undefined, '', '  ', 'Interested in a villa.\nPlease call me.']) {
-      for (const smsConsent of [false, true]) {
+      for (const smsConsent of [false, true]) for (const marketingConsent of [false, true]) {
         const env = environment();
-        assert.equal((await worker.fetch(request({ ...generic, source, language: 'en', message, smsConsent }), env)).status, 200);
+        assert.equal((await worker.fetch(request({ ...generic, source, language: 'en', message, smsTransactionalConsent: smsConsent, smsMarketingConsent: marketingConsent }), env)).status, 200);
         const notification = env.messages[0];
         assert.ok(notification.text.includes(`Form source: ${source === 'general-contact' ? 'Contact Us' : 'Request a Callback'}`));
         assert.ok(notification.text.includes(`Message:\n${message?.trim() || 'Not provided'}`));
-        assert.ok(notification.text.includes(`Transactional / Informational + Promotional / Marketing SMS: ${smsConsent ? 'YES' : 'NO'}`));
+        assert.ok(notification.text.includes(`Transactional / Informational SMS Consent: ${smsConsent ? 'YES' : 'NO'}`));
+        assert.ok(notification.text.includes(`Promotional / Marketing SMS Consent: ${marketingConsent ? 'YES' : 'NO'}`));
         assert.equal(notification.to, 'turkluxx101@gmail.com');
       }
     }
@@ -63,7 +64,8 @@ test('Both forms accept only name and email with absent, empty or whitespace pho
         assert.ok(email.text.includes(`Email: ${generic.email}`));
         assert.ok(email.text.includes('Phone: Not provided'));
         assert.ok(email.text.includes('Message:\nNot provided'));
-        assert.ok(email.text.includes('Transactional / Informational + Promotional / Marketing SMS: NO'));
+        assert.ok(email.text.includes('Transactional / Informational SMS Consent: NO'));
+        assert.ok(email.text.includes('Promotional / Marketing SMS Consent: NO'));
         assert.ok(email.text.includes(`Form source: ${source === 'general-contact' ? 'Contact Us' : 'Request a Callback'}`));
         assert.equal(email.to, 'turkluxx101@gmail.com');
       }
@@ -74,16 +76,17 @@ function environment() {
   const messages = [];
   return { messages, LEAD_EMAIL: { async send(message) { messages.push(message); } }, ASSETS: { fetch: async () => new Response('asset') } };
 }
-test('Both inquiry types preserve combined SMS consent and contact details in existing notifications', async () => {
+test('Both inquiry types preserve independent SMS consent and contact details in existing notifications', async () => {
   for (const source of ['callback', 'general-contact']) {
-    for (const smsConsent of [false, true]) {
+    for (const smsConsent of [false, true]) for (const marketingConsent of [false, true]) {
         const env = environment();
-        const payload = { ...generic, smsConsent,
+        const payload = { ...generic, smsTransactionalConsent: smsConsent, smsMarketingConsent: marketingConsent,
           ...(source === 'general-contact' ? { source, language: 'en', message: 'Please contact me.' } : {}) };
         assert.equal((await worker.fetch(request(payload), env)).status, 200);
         assert.equal(env.messages.length, 1);
         const message = env.messages[0];
-        assert.ok(message.text.includes(`Transactional / Informational + Promotional / Marketing SMS: ${smsConsent ? 'YES' : 'NO'}`));
+        assert.ok(message.text.includes(`Transactional / Informational SMS Consent: ${smsConsent ? 'YES' : 'NO'}`));
+        assert.ok(message.text.includes(`Promotional / Marketing SMS Consent: ${marketingConsent ? 'YES' : 'NO'}`));
         assert.ok(!message.text.includes('Country:'));
         for (const key of ['name', 'email']) assert.ok(message.text.includes(generic[key]));
         assert.ok(message.text.includes(normalizePhone(generic.phone)));
@@ -95,8 +98,9 @@ test('Both inquiry types preserve combined SMS consent and contact details in ex
 test('Missing and non-boolean SMS fields never grant consent', async () => {
   for (const value of [undefined, null, 'false', 'true', 'on', 1, {}, []]) {
     const env = environment();
-    assert.equal((await worker.fetch(request({ ...generic, smsConsent: value }), env)).status, 200);
-    assert.ok(env.messages[0].text.includes('Transactional / Informational + Promotional / Marketing SMS: NO'));
+    assert.equal((await worker.fetch(request({ ...generic, smsConsent: true, smsTransactionalConsent: value, smsMarketingConsent: value }), env)).status, 200);
+    assert.ok(env.messages[0].text.includes('Transactional / Informational SMS Consent: NO'));
+    assert.ok(env.messages[0].text.includes('Promotional / Marketing SMS Consent: NO'));
   }
 });
 for (const [label, fields, subject] of [
