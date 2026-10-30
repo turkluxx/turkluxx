@@ -155,8 +155,11 @@
         <figure class="rengi-master-media">
                 <button class="rengi-master-preview" type="button" aria-label="Open master plan fullscreen"
                         aria-haspopup="dialog" aria-controls="rengi-plan-lightbox">
-                    <img id="rengi-master-image" src="assets/rengi/master-plan.jpg"
-                         alt="Rengi Istanbul overall site plan from the project brochure" width="1116" height="713"
+                    <img id="rengi-master-image" src="assets/rengi/master-plan-new.jpeg"
+                         alt="Rengi Istanbul overall site plan from the project brochure" width="1254" height="1254"
+                         loading="lazy">
+                    <img class="rengi-master-legend" src="assets/rengi/map_legend.jpeg"
+                         alt="Rengi Istanbul villa categories and numbers" width="1536" height="1024"
                          loading="lazy">
                 </button>
             </figure>
@@ -388,7 +391,10 @@
         </div>
     </div>
     <div class="rengi-lightbox-scroll" tabindex="0" aria-label="Plan image; zoom and scroll to inspect"><img
-            id="rengi-lightbox-image" alt=""></div>
+            id="rengi-lightbox-image" alt="">
+        <img id="rengi-lightbox-legend" src="assets/rengi/map_legend.jpeg"
+             alt="Rengi Istanbul villa categories and numbers" width="1536" height="1024" loading="lazy">
+    </div>
 </dialog>
 <script src="js/callback.js" defer></script>
 <script src="js/homepage-navigation.js" defer></script>

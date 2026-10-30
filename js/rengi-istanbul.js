@@ -27,10 +27,11 @@
         alignImage();
     }
     // Existing Master Plan viewer; villa selection is handled by rengi-villa-explorer.js.
-    const masterPlan = { units: [], src: 'assets/rengi/master-plan.jpg' };
+    const masterPlan = { units: [], src: 'assets/rengi/master-plan-new.jpeg' };
     const dialog = document.querySelector('#rengi-plan-lightbox');
     if (!dialog) return;
     const lightboxImage = dialog.querySelector('#rengi-lightbox-image');
+    const legend = dialog.querySelector('#rengi-lightbox-legend');
     const scroll = dialog.querySelector('.rengi-lightbox-scroll');
     let zoom = 100;
     let baseWidth = 0;
@@ -38,6 +39,7 @@
     function setZoom(value) {
         zoom = Math.max(100, Math.min(300, value));
         lightboxImage.style.width = `${baseWidth * zoom / 100}px`;
+        legend.style.width = lightboxImage.style.width;
         dialog.querySelector('#rengi-plan-zoom').textContent = `${zoom}%`;
         dialog.querySelector('#rengi-plan-zoom-out').disabled = zoom === 100;
         dialog.querySelector('#rengi-plan-zoom-in').disabled = zoom === 300;

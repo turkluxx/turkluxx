@@ -1136,6 +1136,12 @@ html[dir="rtl"] .rengi-roi-learn > [aria-hidden="true"] { transform: scaleX(-1);
 .rengi-location .rengi-master-preview img {
     width: 100%;
 }
+.rengi-location .rengi-master-preview img {
+    height: auto;
+    max-height: none;
+}
+.rengi-master-legend,
+#rengi-lightbox-legend { margin-top: 12px; }
 .rengi-master-preview { cursor: zoom-in; }
 .rengi-master-preview:focus-visible {
     outline: 2px solid #212c6c;
